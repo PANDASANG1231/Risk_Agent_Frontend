@@ -3569,3 +3569,462 @@
 2025-08-21 23:30:42,294 - werkzeug - INFO -  * Debugger PIN: 755-011-982
 2025-08-21 23:30:42,295 - werkzeug - INFO -  * Debugger PIN: 755-011-982
 2025-08-21 23:30:42,295 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-21 23:36:29,676 - __main__ - INFO - Request: GET http://localhost:5000/ from 127.0.0.1
+2025-08-21 23:36:29,677 - __main__ - INFO - Received request for index.html
+2025-08-21 23:36:29,677 - __main__ - INFO - index.html loaded successfully
+2025-08-21 23:36:29,677 - __main__ - INFO - Response: 200 for GET http://localhost:5000/
+2025-08-21 23:36:29,678 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:36:29] "GET / HTTP/1.1" 200 -
+2025-08-21 23:36:29,952 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-21 23:36:29,953 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-21 23:36:29,953 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-21 23:36:29,953 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-21 23:36:29,954 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:36:29,954 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:36:29,955 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:36:29,955 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:36:29,955 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-21 23:36:29,955 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-21 23:36:29,956 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-21 23:36:29,956 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-21 23:36:29,957 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:36:29] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-21 23:36:29,957 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:36:29] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-21 23:36:30,256 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-21 23:36:30,257 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-21 23:36:30,257 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-21 23:36:30,258 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-21 23:36:30,258 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-21 23:36:30,258 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-21 23:36:30,258 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-21 23:36:30,258 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-21 23:36:30,259 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:36:30,259 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-21 23:36:30,259 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:36:30,259 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:36:30,259 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:36:30,259 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:36:30,260 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:36:30,260 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-21 23:36:30,260 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-21 23:36:30,260 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:36:30,260 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:36:30,261 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-21 23:36:30,261 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-21 23:36:30,261 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-21 23:36:30,261 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-21 23:36:30,261 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:36:30] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-21 23:36:30,262 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:36:30] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-21 23:36:30,262 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-21 23:36:30,262 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-21 23:36:30,263 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:36:30] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-21 23:36:30,263 - __main__ - INFO - Starting business pattern text processing
+2025-08-21 23:36:30,263 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-21 23:36:30,264 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-21 23:36:30,264 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-21 23:36:30,265 - __main__ - INFO - Processing last key: conclusion
+2025-08-21 23:36:30,265 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-21 23:36:30,266 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-21 23:36:30,266 - __main__ - INFO - Business pattern text processing completed
+2025-08-21 23:36:30,266 - __main__ - INFO - Sending business pattern response
+2025-08-21 23:36:30,266 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-21 23:36:30,266 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:36:30] "GET /api/business-pattern HTTP/1.1" 200 -
+2025-08-21 23:42:26,134 - __main__ - INFO - Request: GET http://localhost:5000/ from 127.0.0.1
+2025-08-21 23:42:26,135 - __main__ - INFO - Received request for index.html
+2025-08-21 23:42:26,135 - __main__ - INFO - index.html loaded successfully
+2025-08-21 23:42:26,135 - __main__ - INFO - Response: 200 for GET http://localhost:5000/
+2025-08-21 23:42:26,136 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:26] "GET / HTTP/1.1" 200 -
+2025-08-21 23:42:26,430 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-21 23:42:26,431 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-21 23:42:26,431 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-21 23:42:26,432 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-21 23:42:26,432 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:26,432 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:26,433 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:26,433 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:26,433 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-21 23:42:26,433 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-21 23:42:26,434 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-21 23:42:26,434 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-21 23:42:26,434 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:26] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-21 23:42:26,435 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:26] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-21 23:42:26,735 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-21 23:42:26,736 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-21 23:42:26,736 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-21 23:42:26,737 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-21 23:42:26,737 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-21 23:42:26,737 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-21 23:42:26,738 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-21 23:42:26,738 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-21 23:42:26,738 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:26,738 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-21 23:42:26,738 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:26,738 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:26,739 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:26,739 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:26,740 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:26,740 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-21 23:42:26,740 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:26,740 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-21 23:42:26,741 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-21 23:42:26,741 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-21 23:42:26,741 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:26,741 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-21 23:42:26,742 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:26] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-21 23:42:26,742 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:26] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-21 23:42:26,742 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-21 23:42:26,743 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-21 23:42:26,743 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-21 23:42:26,744 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:26] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-21 23:42:26,744 - __main__ - INFO - Starting business pattern text processing
+2025-08-21 23:42:26,744 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-21 23:42:26,744 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-21 23:42:26,744 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-21 23:42:26,744 - __main__ - INFO - Processing last key: conclusion
+2025-08-21 23:42:26,745 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-21 23:42:26,745 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-21 23:42:26,745 - __main__ - INFO - Business pattern text processing completed
+2025-08-21 23:42:26,745 - __main__ - INFO - Sending business pattern response
+2025-08-21 23:42:26,745 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-21 23:42:26,745 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:26] "GET /api/business-pattern HTTP/1.1" 200 -
+2025-08-21 23:42:52,407 - __main__ - INFO - Request: GET http://localhost:5000/ from 127.0.0.1
+2025-08-21 23:42:52,408 - __main__ - INFO - Received request for index.html
+2025-08-21 23:42:52,408 - __main__ - INFO - index.html loaded successfully
+2025-08-21 23:42:52,409 - __main__ - INFO - Response: 200 for GET http://localhost:5000/
+2025-08-21 23:42:52,409 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:52] "GET / HTTP/1.1" 200 -
+2025-08-21 23:42:52,567 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-21 23:42:52,568 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-21 23:42:52,568 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:52,569 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:52,569 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-21 23:42:52,569 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-21 23:42:52,570 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:52] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-21 23:42:52,656 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-21 23:42:52,656 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-21 23:42:52,656 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:52,657 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:52,657 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-21 23:42:52,657 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-21 23:42:52,657 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:52] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-21 23:42:52,872 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-21 23:42:52,872 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-21 23:42:52,872 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-21 23:42:52,873 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-21 23:42:52,873 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-21 23:42:52,873 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-21 23:42:52,873 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-21 23:42:52,873 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:52,874 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-21 23:42:52,874 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-21 23:42:52,874 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:52,874 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:52,874 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:42:52,874 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:52,875 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:52,875 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:52,875 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-21 23:42:52,876 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:42:52,876 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-21 23:42:52,876 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-21 23:42:52,876 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-21 23:42:52,876 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-21 23:42:52,876 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-21 23:42:52,876 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-21 23:42:52,876 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:52] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-21 23:42:52,877 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-21 23:42:52,877 - __main__ - INFO - Starting business pattern text processing
+2025-08-21 23:42:52,877 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:52] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-21 23:42:52,877 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:52] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-21 23:42:52,877 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-21 23:42:52,878 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-21 23:42:52,878 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-21 23:42:52,878 - __main__ - INFO - Processing last key: conclusion
+2025-08-21 23:42:52,878 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-21 23:42:52,879 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-21 23:42:52,879 - __main__ - INFO - Business pattern text processing completed
+2025-08-21 23:42:52,879 - __main__ - INFO - Sending business pattern response
+2025-08-21 23:42:52,880 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-21 23:42:52,880 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:42:52] "GET /api/business-pattern HTTP/1.1" 200 -
+2025-08-21 23:45:10,976 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-21 23:45:10,977 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-21 23:45:10,977 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-21 23:45:10,977 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-21 23:45:10,977 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-21 23:45:10,978 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-21 23:45:10,978 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-21 23:45:10,979 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-21 23:45:10,979 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-21 23:45:10,979 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-21 23:45:10,979 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:45:10,980 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-21 23:45:10,980 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:45:10,980 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-21 23:45:10,980 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-21 23:45:10,980 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:45:10,981 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:45:10,981 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:45:10,981 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:45:10,982 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:45:10,982 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:45:10,982 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-21 23:45:10,982 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:45:10,983 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:45:10,983 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-21 23:45:10,983 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-21 23:45:10,983 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:45:10,984 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-21 23:45:10,984 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:45:10,984 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-21 23:45:10,984 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-21 23:45:10,985 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:45:10] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-21 23:45:10,985 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-21 23:45:10,985 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-21 23:45:10,985 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-21 23:45:10,985 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-21 23:45:10,986 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:45:10] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-21 23:45:10,986 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-21 23:45:10,986 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:45:10] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-21 23:45:10,986 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-21 23:45:10,987 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:45:10] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-21 23:45:10,987 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:45:10] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-21 23:45:10,988 - __main__ - INFO - Starting business pattern text processing
+2025-08-21 23:45:10,988 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-21 23:45:10,990 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-21 23:45:10,992 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-21 23:45:10,993 - __main__ - INFO - Processing last key: conclusion
+2025-08-21 23:45:10,993 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-21 23:45:10,993 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-21 23:45:10,993 - __main__ - INFO - Business pattern text processing completed
+2025-08-21 23:45:10,993 - __main__ - INFO - Sending business pattern response
+2025-08-21 23:45:10,993 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-21 23:45:10,994 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:45:10] "GET /api/business-pattern HTTP/1.1" 200 -
+2025-08-21 23:50:02,605 - __main__ - INFO - Request: GET http://localhost:5000/ from 127.0.0.1
+2025-08-21 23:50:02,605 - __main__ - INFO - Received request for index.html
+2025-08-21 23:50:02,606 - __main__ - INFO - index.html loaded successfully
+2025-08-21 23:50:02,606 - __main__ - INFO - Response: 200 for GET http://localhost:5000/
+2025-08-21 23:50:02,606 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:50:02] "GET / HTTP/1.1" 200 -
+2025-08-21 23:50:02,987 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-21 23:50:02,988 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-21 23:50:02,989 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-21 23:50:02,989 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-21 23:50:02,989 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:50:02,989 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:50:02,990 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:50:02,991 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:50:02,991 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-21 23:50:02,991 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-21 23:50:02,992 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-21 23:50:02,993 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-21 23:50:02,994 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:50:02] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-21 23:50:02,995 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:50:02] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-21 23:50:03,293 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-21 23:50:03,293 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-21 23:50:03,294 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-21 23:50:03,294 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-21 23:50:03,294 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-21 23:50:03,295 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-21 23:50:03,295 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-21 23:50:03,295 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:50:03,295 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-21 23:50:03,295 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-21 23:50:03,295 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:50:03,296 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:50:03,296 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:50:03,296 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:50:03,297 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:50:03,297 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-21 23:50:03,298 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-21 23:50:03,298 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:50:03,298 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-21 23:50:03,298 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:50:03,299 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-21 23:50:03,299 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-21 23:50:03,299 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:50:03] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-21 23:50:03,299 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-21 23:50:03,300 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:50:03] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-21 23:50:03,300 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-21 23:50:03,300 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-21 23:50:03,301 - __main__ - INFO - Starting business pattern text processing
+2025-08-21 23:50:03,301 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:50:03] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-21 23:50:03,302 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-21 23:50:03,302 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-21 23:50:03,302 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-21 23:50:03,303 - __main__ - INFO - Processing last key: conclusion
+2025-08-21 23:50:03,303 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-21 23:50:03,303 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-21 23:50:03,303 - __main__ - INFO - Business pattern text processing completed
+2025-08-21 23:50:03,303 - __main__ - INFO - Sending business pattern response
+2025-08-21 23:50:03,304 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-21 23:50:03,304 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:50:03] "GET /api/business-pattern HTTP/1.1" 200 -
+2025-08-21 23:51:27,433 - __main__ - INFO - Request: GET http://localhost:5000/ from 127.0.0.1
+2025-08-21 23:51:27,433 - __main__ - INFO - Received request for index.html
+2025-08-21 23:51:27,434 - __main__ - INFO - index.html loaded successfully
+2025-08-21 23:51:27,434 - __main__ - INFO - Response: 200 for GET http://localhost:5000/
+2025-08-21 23:51:27,434 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:51:27] "GET / HTTP/1.1" 200 -
+2025-08-21 23:51:27,716 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-21 23:51:27,717 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-21 23:51:27,717 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-21 23:51:27,717 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-21 23:51:27,718 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:51:27,718 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:51:27,719 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:51:27,719 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:51:27,720 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-21 23:51:27,720 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-21 23:51:27,720 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-21 23:51:27,721 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-21 23:51:27,721 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:51:27] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-21 23:51:27,722 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:51:27] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-21 23:51:28,031 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-21 23:51:28,031 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-21 23:51:28,032 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-21 23:51:28,032 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-21 23:51:28,033 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-21 23:51:28,033 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-21 23:51:28,033 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-21 23:51:28,033 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:51:28,033 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-21 23:51:28,033 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:51:28,034 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-21 23:51:28,034 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:51:28,034 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:51:28,034 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:51:28,035 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:51:28,035 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-21 23:51:28,035 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:51:28,036 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-21 23:51:28,036 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-21 23:51:28,036 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:51:28,036 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-21 23:51:28,036 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-21 23:51:28,037 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:51:28] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-21 23:51:28,037 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-21 23:51:28,037 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-21 23:51:28,038 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:51:28] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-21 23:51:28,038 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-21 23:51:28,038 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:51:28] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-21 23:51:28,039 - __main__ - INFO - Starting business pattern text processing
+2025-08-21 23:51:28,039 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-21 23:51:28,039 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-21 23:51:28,040 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-21 23:51:28,040 - __main__ - INFO - Processing last key: conclusion
+2025-08-21 23:51:28,040 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-21 23:51:28,041 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-21 23:51:28,041 - __main__ - INFO - Business pattern text processing completed
+2025-08-21 23:51:28,041 - __main__ - INFO - Sending business pattern response
+2025-08-21 23:51:28,042 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-21 23:51:28,043 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:51:28] "GET /api/business-pattern HTTP/1.1" 200 -
+2025-08-21 23:55:42,545 - __main__ - INFO - Request: GET http://localhost:5000/ from 127.0.0.1
+2025-08-21 23:55:42,546 - __main__ - INFO - Received request for index.html
+2025-08-21 23:55:42,546 - __main__ - INFO - index.html loaded successfully
+2025-08-21 23:55:42,546 - __main__ - INFO - Response: 200 for GET http://localhost:5000/
+2025-08-21 23:55:42,547 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:55:42] "GET / HTTP/1.1" 200 -
+2025-08-21 23:55:42,877 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-21 23:55:42,878 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-21 23:55:42,878 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-21 23:55:42,878 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-21 23:55:42,878 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:55:42,878 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:55:42,879 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:55:42,880 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:55:42,880 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-21 23:55:42,880 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-21 23:55:42,880 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-21 23:55:42,880 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-21 23:55:42,881 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:55:42] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-21 23:55:42,881 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:55:42] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-21 23:55:43,188 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-21 23:55:43,188 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-21 23:55:43,189 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-21 23:55:43,189 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-21 23:55:43,189 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-21 23:55:43,190 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-21 23:55:43,190 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-21 23:55:43,190 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:55:43,190 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-21 23:55:43,190 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-21 23:55:43,191 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:55:43,191 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:55:43,191 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:55:43,192 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:55:43,192 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-21 23:55:43,192 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:55:43,193 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:55:43,193 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-21 23:55:43,193 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:55:43,193 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-21 23:55:43,193 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-21 23:55:43,194 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:55:43] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-21 23:55:43,194 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-21 23:55:43,194 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-21 23:55:43,194 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-21 23:55:43,195 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-21 23:55:43,195 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:55:43] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-21 23:55:43,195 - __main__ - INFO - Starting business pattern text processing
+2025-08-21 23:55:43,196 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:55:43] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-21 23:55:43,196 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-21 23:55:43,197 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-21 23:55:43,198 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-21 23:55:43,198 - __main__ - INFO - Processing last key: conclusion
+2025-08-21 23:55:43,199 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-21 23:55:43,199 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-21 23:55:43,199 - __main__ - INFO - Business pattern text processing completed
+2025-08-21 23:55:43,200 - __main__ - INFO - Sending business pattern response
+2025-08-21 23:55:43,200 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-21 23:55:43,200 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:55:43] "GET /api/business-pattern HTTP/1.1" 200 -
+2025-08-21 23:57:14,695 - __main__ - INFO - Request: GET http://localhost:5000/ from 127.0.0.1
+2025-08-21 23:57:14,696 - __main__ - INFO - Received request for index.html
+2025-08-21 23:57:14,696 - __main__ - INFO - index.html loaded successfully
+2025-08-21 23:57:14,697 - __main__ - INFO - Response: 200 for GET http://localhost:5000/
+2025-08-21 23:57:14,697 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:57:14] "GET / HTTP/1.1" 200 -
+2025-08-21 23:57:14,942 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-21 23:57:14,943 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-21 23:57:14,943 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:57:14,944 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-21 23:57:14,944 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-21 23:57:14,944 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:57:14,945 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:57:14,945 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-21 23:57:14,946 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:57:14,946 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-21 23:57:14,947 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-21 23:57:14,947 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:57:14] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-21 23:57:14,948 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-21 23:57:14,948 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:57:14] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-21 23:57:15,257 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-21 23:57:15,258 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-21 23:57:15,258 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-21 23:57:15,259 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-21 23:57:15,259 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-21 23:57:15,259 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-21 23:57:15,259 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-21 23:57:15,259 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:57:15,259 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-21 23:57:15,260 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-21 23:57:15,260 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:57:15,260 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:57:15,260 - __main__ - INFO - Attempting to load data from E:\cursor\risk_agent_frontend\analysis_result.json
+2025-08-21 23:57:15,261 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:57:15,261 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:57:15,261 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-21 23:57:15,262 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:57:15,262 - __main__ - INFO - Data loaded successfully
+2025-08-21 23:57:15,263 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-21 23:57:15,263 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-21 23:57:15,263 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-21 23:57:15,263 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-21 23:57:15,263 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-21 23:57:15,263 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:57:15] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-21 23:57:15,264 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-21 23:57:15,264 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-21 23:57:15,264 - __main__ - INFO - Starting business pattern text processing
+2025-08-21 23:57:15,264 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:57:15] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-21 23:57:15,265 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:57:15] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-21 23:57:15,265 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-21 23:57:15,265 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-21 23:57:15,266 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-21 23:57:15,267 - __main__ - INFO - Processing last key: conclusion
+2025-08-21 23:57:15,267 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-21 23:57:15,267 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-21 23:57:15,268 - __main__ - INFO - Business pattern text processing completed
+2025-08-21 23:57:15,268 - __main__ - INFO - Sending business pattern response
+2025-08-21 23:57:15,269 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-21 23:57:15,269 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2025 23:57:15] "GET /api/business-pattern HTTP/1.1" 200 -

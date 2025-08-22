@@ -163,14 +163,164 @@
         }
 
         .section-content {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .section-content.active {
             opacity: 1;
             transform: translateY(0);
+            margin-bottom: 2rem;
+        }
+
+        /* Make main content scrollable */
+        main {
+            max-height: calc(100vh - 6rem);
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        /* Sidebar scroll sync */
+        .sidebar-sync {
+            position: sticky;
+            top: 1.5rem;
+            height: calc(100vh - 3rem);
+            overflow-y: auto;
+        }
+
+        /* Active section indicator */
+        .nav-item.active {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #8b5cf6 100%);
+            color: white;
+            transform: translateX(8px);
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-item.active:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #7c3aed 100%);
+            transform: translateX(8px) scale(1.02);
+            box-shadow: 0 6px 25px rgba(79, 70, 229, 0.5);
+        }
+
+        .nav-item.active .text-gray-900 {
+            color: white !important;
+        }
+
+        .nav-item.active .text-gray-500 {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .nav-item.active .text-gray-600 {
+            color: white !important;
+        }
+
+        .nav-item.active .bg-gray-100 {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .nav-item.active .text-primary-600 {
+            color: white !important;
+        }
+
+        /* Navigation item hover effects */
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover:not(.active) {
+            background-color: rgba(79, 70, 229, 0.08);
+            transform: translateX(4px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Active state animations */
+        .nav-item.active {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-10px);
+                opacity: 0.8;
+            }
+            to {
+                transform: translateX(8px);
+                opacity: 1;
+            }
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed, #8b5cf6);
+            z-index: 1000;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Compact card styling */
+        .card-elevated {
+            padding: 1.5rem !important;
+            margin-bottom: 1.5rem !important;
+        }
+
+        /* Compact section headers */
+        .section-header {
+            margin-bottom: 1rem !important;
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 0.25rem !important;
+        }
+
+        .section-header p {
+            font-size: 0.875rem !important;
+            line-height: 1.25 !important;
+        }
+
+        /* Compact content spacing */
+        .compact-content {
+            margin-bottom: 0.75rem !important;
+        }
+
+        .compact-content:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        /* Compact prose content */
+        .prose {
+            font-size: 0.875rem !important;
+            line-height: 1.5 !important;
+        }
+
+        .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+            margin-top: 1rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .prose p {
+            margin-bottom: 0.5rem !important;
+        }
+
+        /* Compact card content */
+        .card-content {
+            padding: 1rem !important;
+        }
+
+        /* Reduce spacing in data formatting */
+        .data-item {
+            margin-bottom: 0.75rem !important;
+            padding-bottom: 0.75rem !important;
+        }
+
+        .data-item:last-child {
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
         }
 
         ::-webkit-scrollbar {
@@ -193,6 +343,9 @@
     <div class="progress-bar fixed top-0 left-0 w-full z-50">
         <div class="progress-indicator w-0" id="progress-indicator"></div>
     </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator" id="scroll-indicator"></div>
 
     <!-- Header -->
     <header class="glass fixed top-1 left-4 right-4 z-40 rounded-2xl">
@@ -267,9 +420,28 @@
 
                         <!-- Content Sections -->
             <div id="content-container">
+                <!-- Company Info Section -->
+                <section id="public-info" class="section-content">
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
+                        <p class="text-gray-600">Public information</p>
+                        <button onclick="refreshCompanyInfo()" class="ml-4 px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors">
+                            <i data-lucide="refresh-cw" class="w-3 h-3 inline mr-1"></i>
+                            Refresh
+                        </button>
+                    </div>
+                    <div class="card-elevated" id="public-info-content">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </section>
+
                 <!-- Transactions Section -->
                 <section id="transactions" class="section-content">
-                    <div class="card-elevated p-6" id="transactions-content">
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">Transactions</h2>
+                        <p class="text-gray-600">Transaction breakdown</p>
+                    </div>
+                    <div class="card-elevated" id="transactions-content">
                         <!-- Will be populated dynamically -->
                     </div>
                 </section>
@@ -289,16 +461,16 @@
         createIcons();
 
         // Global state
-        let currentSection = 'transactions';
+        let currentSection = 'public-info';
         let apiData = {};
         
         // Navigation configuration
         const sections = [
+            { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' },
             { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
             { id: 'money-usage', name: 'Usage Patterns', icon: 'pie-chart', description: 'Spending analysis' },
-            { id: 'high-cash', name: 'Cash Analysis', icon: 'dollar-sign', description: 'Cash flow insights' },
             { id: 'business-pattern', name: 'Business Pattern', icon: 'bar-chart-3', description: 'Industry alignment' },
-            { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' }
+            { id: 'high-cash', name: 'Cash Analysis', icon: 'dollar-sign', description: 'Cash flow insights' }
         ];
 
         // Utility functions
@@ -318,14 +490,22 @@
         // API functions
         async function fetchApiData(endpoint) {
             try {
+                console.log(`Fetching data from /api/${endpoint}...`);
                 const response = await fetch(`/api/${endpoint}`);
+                
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch ${endpoint}: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error(`HTTP ${response.status} for ${endpoint}:`, errorText);
+                    throw new Error(`Failed to fetch ${endpoint}: ${response.status} - ${errorText}`);
                 }
-                return await response.json();
+                
+                const data = await response.json();
+                console.log(`Successfully fetched ${endpoint}:`, data);
+                return data;
             } catch (error) {
                 console.error(`Error fetching ${endpoint}:`, error);
-                throw error;
+                // Return empty object instead of throwing to prevent dashboard failure
+                return {};
             }
         }
 
@@ -354,7 +534,7 @@
             createIcons();
         }
 
-        // Show section
+        // Show section and scroll to it
         function showSection(sectionId) {
             currentSection = sectionId;
             
@@ -364,32 +544,31 @@
             });
 
             // Create section if it doesn't exist
-            if (!document.getElementById(sectionId) && sectionId !== 'transactions') {
+            if (!document.getElementById(sectionId) && sectionId !== 'transactions' && sectionId !== 'public-info') {
                 createSection(sectionId);
             }
             
-            // Update content
-            document.querySelectorAll('.section-content').forEach(section => {
-                if (section.id === sectionId) {
-                    section.classList.remove('hidden');
-                    setTimeout(() => {
-                        section.classList.add('active');
-                        
-                        // Resize Sankey chart when transactions section becomes visible
-                        if (sectionId === 'transactions' && document.getElementById('sankey-chart')) {
-                            setTimeout(() => {
-                                Plotly.Plots.resize('sankey-chart');
-                            }, 100);
-                        }
-                    }, 50);
-                } else {
-                    section.classList.remove('active');
-                    section.classList.add('hidden');
-                }
-            });
+            // Scroll to section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
             
             // Update progress
             updateProgress();
+            
+            // Special handling for transactions section
+            if (sectionId === 'transactions') {
+                setTimeout(() => {
+                    const chart = document.getElementById('sankey-chart');
+                    if (chart && chart.data) {
+                        Plotly.Plots.resize(chart);
+                    }
+                }, 100);
+            }
             
             // Close mobile menu
             if (window.innerWidth < 1024) {
@@ -397,48 +576,103 @@
             }
         }
 
-        // Create section dynamically
+        // Update active navigation based on scroll position
+        function updateActiveNavigation() {
+            const sections = document.querySelectorAll('.section-content');
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            let currentActiveSection = 'public-info';
+            
+            // Simple approach: find the section that's most visible in the viewport
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const sectionTop = rect.top;
+                const sectionHeight = rect.height;
+                
+                // If section is mostly visible in the viewport, make it active
+                if (sectionTop <= 100 && sectionTop + sectionHeight > 100) {
+                    currentActiveSection = section.id;
+                }
+            });
+            
+            // Update navigation active state
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.section === currentActiveSection);
+            });
+            
+            // Update current section
+            if (currentActiveSection !== currentSection) {
+                currentSection = currentActiveSection;
+            }
+            
+            // Update scroll indicator
+            updateScrollIndicator();
+        }
+
+        // Update scroll indicator width
+        function updateScrollIndicator() {
+            const scrollIndicator = document.getElementById('scroll-indicator');
+            if (scrollIndicator) {
+                const mainElement = document.querySelector('main');
+                const scrollTop = mainElement.scrollTop;
+                const scrollHeight = mainElement.scrollHeight - mainElement.clientHeight;
+                const scrollPercentage = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+                scrollIndicator.style.width = `${scrollPercentage}%`;
+            }
+        }
+
+                // Create section dynamically
         function createSection(sectionId) {
             const container = document.getElementById('content-container');
             const sectionConfig = sections.find(s => s.id === sectionId);
             
             const sectionElement = document.createElement('section');
             sectionElement.id = sectionId;
-            sectionElement.className = 'section-content hidden';
+            sectionElement.className = 'section-content';
             
             // Special handling for high-cash section
             if (sectionId === 'high-cash') {
                 sectionElement.innerHTML = `
-                    <div class="card-elevated p-8" id="${sectionId}-content">
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
+                    </div>
+                    <div class="card-elevated" id="${sectionId}-content">
                         ${createHighCashContent()}
                     </div>
                 `;
             } else if (sectionId === 'business-pattern') {
                 sectionElement.innerHTML = `
-                    <div class="card-elevated p-8" id="${sectionId}-content">
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
+                    </div>
+                    <div class="card-elevated" id="${sectionId}-content">
                         ${createBusinessPatternContent()}
                     </div>
                 `;
             } else if (sectionId === 'money-usage') {
                 sectionElement.innerHTML = `
-                    <div class="card-elevated p-8" id="${sectionId}-content">
-                        ${createMoneyUsageContent()}
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
                     </div>
-                `;
-            } else if (sectionId === 'public-info') {
-                sectionElement.innerHTML = `
-                    <div class="card-elevated p-8" id="${sectionId}-content">
-                        ${createPublicInfoContent()}
+                    <div class="card-elevated" id="${sectionId}-content">
+                    ${createMoneyUsageContent()}
                     </div>
                 `;
             } else {
                 sectionElement.innerHTML = `
-                    <div class="card-elevated p-8" id="${sectionId}-content">
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
+                    </div>
+                    <div class="card-elevated" id="${sectionId}-content">
                         <div class="text-center">
-                            <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <i data-lucide="${sectionConfig.icon}" class="w-10 h-10 text-primary-600"></i>
+                            <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="${sectionConfig.icon}" class="w-8 h-8 text-primary-600"></i>
                             </div>
-                            <p class="text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
+                            <p class="text-sm text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
                         </div>
                     </div>
                 `;
@@ -453,19 +687,19 @@
             if (!apiData.highCash) {
                 return `
                     <div class="text-center">
-                        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                            <i data-lucide="dollar-sign" class="w-10 h-10 text-primary-600"></i>
+                        <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="dollar-sign" class="w-8 h-8 text-primary-600"></i>
                         </div>
-                        <p class="text-gray-600">Loading cash analysis data...</p>
+                        <p class="text-sm text-gray-600">Loading cash analysis data...</p>
                     </div>
                 `;
             }
 
             return `
-                <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl p-8">
+                <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl p-4">
                     <div class="prose prose-primary max-w-none">
-                        <div class="bg-white rounded-xl p-6 shadow-sm">
-                            <div class="text-gray-700 leading-relaxed">${formatText(apiData.highCash.raw_analysis)}</div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="text-sm text-gray-700 leading-relaxed">${formatText(apiData.highCash.raw_analysis)}</div>
                         </div>
                     </div>
                 </div>
@@ -477,10 +711,10 @@
             if (!apiData.moneyUsage) {
                 return `
                     <div class="text-center">
-                        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                            <i data-lucide="pie-chart" class="w-10 h-10 text-primary-600"></i>
+                        <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="pie-chart" class="w-8 h-8 text-primary-600"></i>
                         </div>
-                        <p class="text-gray-600">Loading money usage analysis data...</p>
+                        <p class="text-sm text-gray-600">Loading money usage analysis data...</p>
                     </div>
                 `;
             }
@@ -532,9 +766,9 @@
             }
 
             return `
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8">
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4">
                     <div class="prose prose-green max-w-none">
-                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
                             ${contentHtml}
                         </div>
                     </div>
@@ -644,13 +878,20 @@
 
         // Create public info content with both public-info and public-address
         function createPublicInfoContent() {
-            if (!apiData.publicInfo && !apiData.publicAddress) {
+            console.log('Creating public info content with apiData:', apiData);
+            
+            // Check if data exists and has content
+            const hasPublicInfo = apiData.publicInfo && Object.keys(apiData.publicInfo).length > 0;
+            const hasPublicAddress = apiData.publicAddress && Object.keys(apiData.publicAddress).length > 0;
+            
+            if (!hasPublicInfo && !hasPublicAddress) {
                 return `
                     <div class="text-center">
-                        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                            <i data-lucide="building" class="w-10 h-10 text-primary-600"></i>
+                        <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="building" class="w-8 h-8 text-primary-600"></i>
                         </div>
-                        <p class="text-gray-600">Loading company information...</p>
+                        <p class="text-sm text-gray-600">No company information available</p>
+                        <p class="text-xs text-gray-500 mt-2">Check if the API endpoints are working correctly</p>
                     </div>
                 `;
             }
@@ -846,11 +1087,10 @@
             if (!apiData.businessPattern) {
                 return `
                     <div class="text-center">
-                        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                            <i data-lucide="bar-chart-3" class="w-10 h-10 text-primary-600"></i>
-                        </div>
-                        <p class="text-gray-600">Loading business pattern analysis data...</p>
+                        <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="bar-chart-3" class="w-8 h-8 text-primary-600"></i>
                     </div>
+                    <p class="text-sm text-gray-600">Loading business pattern analysis data...</p>
                 `;
             }
 
@@ -887,9 +1127,9 @@
             }
 
             return `
-                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8">
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4">
                     <div class="prose prose-gray max-w-none">
-                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
                             ${contentHtml}
                         </div>
                     </div>
@@ -1207,16 +1447,39 @@
                     publicAddress: publicAddressData
                 };
 
+                console.log('Stored apiData:', apiData);
+                console.log('Public Info Data:', publicInfoData);
+                console.log('Public Address Data:', publicAddressData);
+
                 // Create UI components
                 createNavigation();
                 createTransactionsSankey(transactionsData);
                 createKeyMetrics(transactionsData);
                 
+                // Populate public-info section content
+                const publicInfoContainer = document.getElementById('public-info-content');
+                if (publicInfoContainer) {
+                    publicInfoContainer.innerHTML = createPublicInfoContent();
+                }
+                
+                // Create other sections (excluding transactions and public-info)
+                sections.forEach(section => {
+                    if (section.id !== 'transactions' && section.id !== 'public-info') {
+                        createSection(section.id);
+                    }
+                });
+                
                 // Initialize features
                 initEventListeners();
                 
-                // Show transactions as default
-                showSection('transactions');
+                // Show company info as default
+                showSection('public-info');
+                
+                // Set up scroll sync
+                setupScrollSync();
+                
+                // Test API endpoints for debugging
+                testAPIEndpoints();
                 
             } catch (error) {
                 console.error('Error initializing dashboard:', error);
@@ -1226,7 +1489,79 @@
             }
         }
 
+        // Set up scroll sync functionality
+        function setupScrollSync() {
+            const mainElement = document.querySelector('main');
+            let scrollTimeout;
+            
+            // Debounced scroll handler
+            const debouncedScrollHandler = () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    updateActiveNavigation();
+                }, 50); // 50ms delay
+            };
+            
+            // Add scroll event listener to main content
+            mainElement.addEventListener('scroll', debouncedScrollHandler);
+            
+            // Also listen for window scroll events (for mobile)
+            window.addEventListener('scroll', debouncedScrollHandler);
+            
+            // Initial update
+            updateActiveNavigation();
+        }
 
+        // Test API endpoints to debug issues
+        async function testAPIEndpoints() {
+            console.log('Testing API endpoints...');
+            
+            try {
+                const endpoints = ['public-info', 'public-address'];
+                
+                for (const endpoint of endpoints) {
+                    console.log(`\n--- Testing ${endpoint} ---`);
+                    const data = await fetchApiData(endpoint);
+                    console.log(`${endpoint} response:`, data);
+                    
+                    if (data && Object.keys(data).length > 0) {
+                        console.log(`${endpoint} has data with keys:`, Object.keys(data));
+                    } else {
+                        console.log(`${endpoint} has no data or empty response`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error testing API endpoints:', error);
+            }
+        }
+
+        // Refresh company info data
+        async function refreshCompanyInfo() {
+            console.log('Refreshing company info...');
+            
+            try {
+                // Fetch fresh data
+                const [publicInfoData, publicAddressData] = await Promise.all([
+                    fetchApiData('public-info'),
+                    fetchApiData('public-address')
+                ]);
+                
+                // Update global data
+                apiData.publicInfo = publicInfoData;
+                apiData.publicAddress = publicAddressData;
+                
+                // Update the content
+                const publicInfoContainer = document.getElementById('public-info-content');
+                if (publicInfoContainer) {
+                    publicInfoContainer.innerHTML = createPublicInfoContent();
+                }
+                
+                console.log('Company info refreshed successfully');
+            } catch (error) {
+                console.error('Error refreshing company info:', error);
+                alert('Failed to refresh company info. Check console for details.');
+            }
+        }
 
         // Create quick insights
         function createQuickInsights() {
