@@ -235,6 +235,17 @@ def get_wire_money_usage():
         print(f"Error in get_wire_money_usage: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/transactions_usage_dict')
+def get_trans_usage_dict():
+    """Get transaction usage dictionary data from JSON"""
+    try:
+        print("Received request for /api/trans_usage_dict")
+        result, status_code = get_key_data('transactions_usage_dict')
+        return jsonify(result), status_code
+    except Exception as e:
+        print(f"Error in get_trans_usage_dict: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/endpoints')
 def list_endpoints():
     """List all available API endpoints"""
@@ -284,6 +295,11 @@ def list_endpoints():
                 'path': '/api/wire-usage',
                 'method': 'GET',
                 'description': 'Get wire transfer money usage analysis (bonus endpoint)'
+            },
+            {
+                'path': '/api/trans_usage_dict',
+                'method': 'GET',
+                'description': 'Get transaction usage dictionary data from JSON'
             },
             {
                 'path': '/api/endpoints',

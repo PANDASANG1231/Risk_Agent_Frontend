@@ -1,0 +1,268 @@
+2025-08-22 09:54:05,198 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 09:54:05,199 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 09:54:05,199 - __main__ - INFO - Log file: api_server.log
+2025-08-22 09:54:05,237 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-08-22 09:54:05,238 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-22 09:54:05,239 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 09:54:05,475 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 09:54:05,475 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 09:54:05,476 - __main__ - INFO - Log file: api_server.log
+2025-08-22 09:54:05,502 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 09:54:05,506 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 09:54:08,737 - __main__ - INFO - Request: GET http://localhost:5000/ from 127.0.0.1
+2025-08-22 09:54:08,738 - __main__ - INFO - Received request for index.html
+2025-08-22 09:54:08,777 - __main__ - INFO - index.html loaded successfully
+2025-08-22 09:54:08,778 - __main__ - INFO - Response: 200 for GET http://localhost:5000/
+2025-08-22 09:54:08,778 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:54:08] "GET / HTTP/1.1" 200 -
+2025-08-22 09:54:09,003 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-22 09:54:09,004 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-22 09:54:09,004 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-22 09:54:09,004 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-22 09:54:09,004 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:54:09,004 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:54:09,005 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:54:09,006 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:54:09,006 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-22 09:54:09,006 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-22 09:54:09,006 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-22 09:54:09,006 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-22 09:54:09,006 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:54:09] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-22 09:54:09,007 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:54:09] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-22 09:54:09,314 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-22 09:54:09,315 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-22 09:54:09,315 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-22 09:54:09,316 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-22 09:54:09,316 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-22 09:54:09,316 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-22 09:54:09,317 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-22 09:54:09,317 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-22 09:54:09,317 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:54:09,317 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-22 09:54:09,317 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:54:09,317 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:54:09,317 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:54:09,318 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:54:09,318 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:54:09,318 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-22 09:54:09,319 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:54:09,319 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:54:09,319 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-22 09:54:09,319 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-22 09:54:09,320 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-22 09:54:09,320 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-22 09:54:09,320 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-22 09:54:09,320 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:54:09] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-22 09:54:09,320 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-22 09:54:09,320 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-22 09:54:09,321 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:54:09] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-22 09:54:09,321 - __main__ - INFO - Starting business pattern text processing
+2025-08-22 09:54:09,321 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:54:09] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-22 09:54:09,322 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-22 09:54:09,322 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-22 09:54:09,323 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-22 09:54:09,324 - __main__ - INFO - Processing last key: conclusion
+2025-08-22 09:54:09,324 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-22 09:54:09,324 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-22 09:54:09,324 - __main__ - INFO - Business pattern text processing completed
+2025-08-22 09:54:09,324 - __main__ - INFO - Sending business pattern response
+2025-08-22 09:54:09,324 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-22 09:54:09,325 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:54:09] "GET /api/business-pattern HTTP/1.1" 200 -
+2025-08-22 09:54:09,658 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-22 09:54:09,658 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-22 09:54:09,659 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:54:09,660 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:54:09,660 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-22 09:54:09,661 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-22 09:54:09,661 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:54:09] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-22 09:54:09,921 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-22 09:54:09,921 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-22 09:54:09,921 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:54:09,922 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:54:09,922 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-22 09:54:09,923 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-22 09:54:09,923 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:54:09] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-22 09:55:45,974 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 09:55:46,005 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 09:55:46,246 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 09:55:46,246 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 09:55:46,246 - __main__ - INFO - Log file: api_server.log
+2025-08-22 09:55:46,274 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 09:55:46,277 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 09:55:56,036 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 09:55:56,071 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 09:55:56,312 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 09:55:56,312 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 09:55:56,313 - __main__ - INFO - Log file: api_server.log
+2025-08-22 09:55:56,341 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 09:55:56,344 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 09:56:04,540 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 09:56:04,576 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 09:56:04,807 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 09:56:04,807 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 09:56:04,807 - __main__ - INFO - Log file: api_server.log
+2025-08-22 09:56:04,835 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 09:56:04,837 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 09:58:07,877 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 09:58:07,877 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 09:58:07,878 - __main__ - INFO - Log file: api_server.log
+2025-08-22 09:58:07,915 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-08-22 09:58:07,916 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-22 09:58:07,917 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 09:58:08,155 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 09:58:08,156 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 09:58:08,156 - __main__ - INFO - Log file: api_server.log
+2025-08-22 09:58:08,185 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 09:58:08,187 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 09:58:12,942 - __main__ - INFO - Request: GET http://localhost:5000/ from 127.0.0.1
+2025-08-22 09:58:12,943 - __main__ - INFO - Received request for index.html
+2025-08-22 09:58:12,944 - __main__ - INFO - index.html loaded successfully
+2025-08-22 09:58:12,945 - __main__ - INFO - Response: 200 for GET http://localhost:5000/
+2025-08-22 09:58:12,946 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:12] "GET / HTTP/1.1" 200 -
+2025-08-22 09:58:13,372 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions from 127.0.0.1
+2025-08-22 09:58:13,372 - __main__ - INFO - Request: GET http://localhost:5000/api/money-usage from 127.0.0.1
+2025-08-22 09:58:13,373 - __main__ - INFO - Retrieving data for key: transactions_data
+2025-08-22 09:58:13,373 - __main__ - INFO - Retrieving data for key: money_usage_summary
+2025-08-22 09:58:13,373 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:58:13,373 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:58:13,374 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:58:13,374 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:58:13,374 - __main__ - INFO - Successfully retrieved data for key: money_usage_summary
+2025-08-22 09:58:13,375 - __main__ - INFO - Successfully retrieved data for key: transactions_data
+2025-08-22 09:58:13,375 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/money-usage
+2025-08-22 09:58:13,376 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions
+2025-08-22 09:58:13,376 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:13] "GET /api/money-usage HTTP/1.1" 200 -
+2025-08-22 09:58:13,377 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:13] "GET /api/transactions HTTP/1.1" 200 -
+2025-08-22 09:58:13,674 - __main__ - INFO - Request: GET http://localhost:5000/api/high-cash from 127.0.0.1
+2025-08-22 09:58:13,674 - __main__ - INFO - Request: GET http://localhost:5000/api/business-pattern from 127.0.0.1
+2025-08-22 09:58:13,674 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-22 09:58:13,675 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-22 09:58:13,675 - __main__ - INFO - Retrieving data for key: high_cash_summary
+2025-08-22 09:58:13,675 - __main__ - INFO - Received request for /api/business-pattern
+2025-08-22 09:58:13,675 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-22 09:58:13,676 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-22 09:58:13,676 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:58:13,676 - __main__ - INFO - Retrieving data for key: business_pattern
+2025-08-22 09:58:13,676 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:58:13,676 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:58:13,676 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:58:13,677 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:58:13,677 - __main__ - INFO - Successfully retrieved data for key: high_cash_summary
+2025-08-22 09:58:13,678 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:58:13,678 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:58:13,678 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/high-cash
+2025-08-22 09:58:13,679 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:58:13,679 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-22 09:58:13,679 - __main__ - INFO - Successfully retrieved data for key: business_pattern
+2025-08-22 09:58:13,679 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:13] "GET /api/high-cash HTTP/1.1" 200 -
+2025-08-22 09:58:13,679 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-22 09:58:13,679 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-22 09:58:13,680 - __main__ - INFO - Processing raw_analysis text for business pattern
+2025-08-22 09:58:13,680 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-22 09:58:13,680 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:13] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-22 09:58:13,680 - __main__ - INFO - Starting business pattern text processing
+2025-08-22 09:58:13,681 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:13] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-22 09:58:13,681 - __main__ - INFO - Found 2 XML matches: ['industry_alignment', 'conclusion']
+2025-08-22 09:58:13,682 - __main__ - INFO - Processing non-last key: industry_alignment
+2025-08-22 09:58:13,682 - __main__ - INFO - Successfully processed industry_alignment (length: 1481 -> 1467)
+2025-08-22 09:58:13,683 - __main__ - INFO - Processing last key: conclusion
+2025-08-22 09:58:13,683 - __main__ - INFO - Successfully processed last key conclusion (length: 447 -> 447)
+2025-08-22 09:58:13,683 - __main__ - INFO - Business pattern text processing completed successfully
+2025-08-22 09:58:13,683 - __main__ - INFO - Business pattern text processing completed
+2025-08-22 09:58:13,684 - __main__ - INFO - Sending business pattern response
+2025-08-22 09:58:13,684 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/business-pattern
+2025-08-22 09:58:13,684 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:13] "GET /api/business-pattern HTTP/1.1" 200 -
+2025-08-22 09:58:14,016 - __main__ - INFO - Request: GET http://localhost:5000/api/public-info from 127.0.0.1
+2025-08-22 09:58:14,017 - __main__ - INFO - Retrieving data for key: public_info
+2025-08-22 09:58:14,017 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:58:14,018 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:58:14,018 - __main__ - INFO - Successfully retrieved data for key: public_info
+2025-08-22 09:58:14,018 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-info
+2025-08-22 09:58:14,019 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:14] "GET /api/public-info HTTP/1.1" 200 -
+2025-08-22 09:58:14,282 - __main__ - INFO - Request: GET http://localhost:5000/api/public-address from 127.0.0.1
+2025-08-22 09:58:14,282 - __main__ - INFO - Retrieving data for key: public_address_info
+2025-08-22 09:58:14,283 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:58:14,283 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:58:14,284 - __main__ - INFO - Successfully retrieved data for key: public_address_info
+2025-08-22 09:58:14,284 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/public-address
+2025-08-22 09:58:14,284 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:14] "GET /api/public-address HTTP/1.1" 200 -
+2025-08-22 09:58:20,077 - __main__ - INFO - Request: GET http://localhost:5000/api from 127.0.0.1
+2025-08-22 09:58:20,078 - __main__ - INFO - Response: 404 for GET http://localhost:5000/api
+2025-08-22 09:58:20,078 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:20] "[33mGET /api HTTP/1.1[0m" 404 -
+2025-08-22 09:58:41,998 - __main__ - INFO - Request: GET http://localhost:5000/api/endpoints from 127.0.0.1
+2025-08-22 09:58:41,998 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/endpoints
+2025-08-22 09:58:41,998 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:41] "GET /api/endpoints HTTP/1.1" 200 -
+2025-08-22 09:58:53,643 - __main__ - INFO - Request: GET http://localhost:5000/api/trans_usage_dict from 127.0.0.1
+2025-08-22 09:58:53,643 - __main__ - INFO - Retrieving data for key: trans_usage_dict
+2025-08-22 09:58:53,643 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 09:58:53,644 - __main__ - INFO - Data loaded successfully
+2025-08-22 09:58:53,644 - __main__ - WARNING - Key "trans_usage_dict" not found in data
+2025-08-22 09:58:53,644 - __main__ - INFO - Response: 404 for GET http://localhost:5000/api/trans_usage_dict
+2025-08-22 09:58:53,644 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 09:58:53] "[33mGET /api/trans_usage_dict HTTP/1.1[0m" 404 -
+2025-08-22 09:59:22,936 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 09:59:22,969 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 09:59:23,204 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 09:59:23,204 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 09:59:23,204 - __main__ - INFO - Log file: api_server.log
+2025-08-22 09:59:23,233 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 09:59:23,236 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 09:59:23,485 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 09:59:23,517 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 09:59:23,850 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 09:59:23,850 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 09:59:23,860 - __main__ - INFO - Log file: api_server.log
+2025-08-22 09:59:23,893 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 09:59:23,896 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 10:00:16,073 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 10:00:16,102 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 10:00:16,345 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 10:00:16,345 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 10:00:16,345 - __main__ - INFO - Log file: api_server.log
+2025-08-22 10:00:16,373 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 10:00:16,375 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 10:00:16,833 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 10:00:16,863 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 10:00:17,108 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 10:00:17,108 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 10:00:17,108 - __main__ - INFO - Log file: api_server.log
+2025-08-22 10:00:17,137 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 10:00:17,140 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 10:00:19,441 - __main__ - INFO - Request: GET http://localhost:5000/api/trans_usage_dict from 127.0.0.1
+2025-08-22 10:00:19,443 - __main__ - INFO - Response: 404 for GET http://localhost:5000/api/trans_usage_dict
+2025-08-22 10:00:19,444 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 10:00:19] "[33mGET /api/trans_usage_dict HTTP/1.1[0m" 404 -
+2025-08-22 10:00:26,224 - __main__ - INFO - Request: GET http://localhost:5000/api/transactions_usage_dict from 127.0.0.1
+2025-08-22 10:00:26,224 - __main__ - INFO - Retrieving data for key: transactions_usage_dict
+2025-08-22 10:00:26,224 - __main__ - INFO - Attempting to load data from E:\cursor\Risk_Agent_Frontend\analysis_result.json
+2025-08-22 10:00:26,225 - __main__ - INFO - Data loaded successfully
+2025-08-22 10:00:26,225 - __main__ - INFO - Successfully retrieved data for key: transactions_usage_dict
+2025-08-22 10:00:26,225 - __main__ - INFO - Response: 200 for GET http://localhost:5000/api/transactions_usage_dict
+2025-08-22 10:00:26,225 - werkzeug - INFO - 127.0.0.1 - - [22/Aug/2025 10:00:26] "GET /api/transactions_usage_dict HTTP/1.1" 200 -
+2025-08-22 10:00:36,893 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 10:00:36,920 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 10:00:37,167 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 10:00:37,167 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 10:00:37,167 - __main__ - INFO - Log file: api_server.log
+2025-08-22 10:00:37,196 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 10:00:37,199 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 10:00:37,502 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 10:00:37,543 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 10:00:37,805 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 10:00:37,805 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 10:00:37,805 - __main__ - INFO - Log file: api_server.log
+2025-08-22 10:00:37,836 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 10:00:37,839 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 10:00:39,579 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 10:00:39,618 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 10:00:39,872 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 10:00:39,873 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 10:00:39,883 - __main__ - INFO - Log file: api_server.log
+2025-08-22 10:00:39,932 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 10:00:39,937 - werkzeug - INFO -  * Debugger PIN: 755-011-982
+2025-08-22 10:00:40,185 - werkzeug - INFO -  * Detected change in 'E:\\cursor\\Risk_Agent_Frontend\\api_server.py', reloading
+2025-08-22 10:00:40,221 - werkzeug - INFO -  * Restarting with stat
+2025-08-22 10:00:40,458 - __main__ - INFO - Starting Flask Risk Agent API Server...
+2025-08-22 10:00:40,459 - __main__ - INFO - Server configuration: Debug=True, Port=5000
+2025-08-22 10:00:40,459 - __main__ - INFO - Log file: api_server.log
+2025-08-22 10:00:40,490 - werkzeug - WARNING -  * Debugger is active!
+2025-08-22 10:00:40,493 - werkzeug - INFO -  * Debugger PIN: 755-011-982
