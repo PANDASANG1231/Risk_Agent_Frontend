@@ -162,11 +162,27 @@
             box-shadow: 0 0 0 1px #3b82f6;
         }
 
-        .section-content {
-            opacity: 1;
-            transform: translateY(0);
-            margin-bottom: 0.5rem;
-        }
+                 .section-content {
+             opacity: 1;
+             transform: translateY(0);
+             margin-bottom: 0.5rem;
+             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+         }
+
+         .section-content.fade-in {
+             animation: fadeInUp 0.5s ease-out forwards;
+         }
+
+         @keyframes fadeInUp {
+             from {
+                 opacity: 0;
+                 transform: translateY(20px);
+             }
+             to {
+                 opacity: 1;
+                 transform: translateY(0);
+             }
+         }
 
         /* Make main content scrollable */
         main {
@@ -462,9 +478,31 @@
                 <p class="text-center text-gray-600 mt-4">Loading risk analysis data...</p>
                         </div>
 
-                        <!-- Content Sections -->
-            <div id="content-container">
-                                 <!-- Company Info Section -->
+                                                 <!-- Content Sections -->
+             <div id="content-container">
+                                  <!-- Business Pattern Section -->
+                  <section id="business-pattern" class="section-content">
+                      <div class="section-header">
+                          <h2 class="text-xl font-bold text-gray-900">Business Pattern</h2>
+                          <p class="text-gray-600">Industry alignment</p>
+                      </div>
+                      <div class="card-elevated" id="business-pattern-content">
+                          <!-- Will be populated dynamically -->
+                      </div>
+                  </section>
+
+                 <!-- Transactions Section -->
+                 <section id="transactions" class="section-content">
+                     <div class="section-header">
+                         <h2 class="text-xl font-bold text-gray-900">Transactions</h2>
+                         <p class="text-gray-600">Transaction breakdown</p>
+                     </div>
+                     <div class="card-elevated" id="transactions-content">
+                         <!-- Will be populated dynamically -->
+                     </div>
+                 </section>
+
+                 <!-- Company Info Section -->
                  <section id="public-info" class="section-content">
                      <div class="section-header">
                          <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
@@ -479,19 +517,8 @@
                      </div>
                  </section>
 
-                <!-- Transactions Section -->
-                <section id="transactions" class="section-content">
-                    <div class="section-header">
-                        <h2 class="text-xl font-bold text-gray-900">Transactions</h2>
-                        <p class="text-gray-600">Transaction breakdown</p>
-                    </div>
-                    <div class="card-elevated" id="transactions-content">
-                        <!-- Will be populated dynamically -->
-                    </div>
-                </section>
-
-                <!-- Other sections will be added dynamically -->
-                    </div>
+                 <!-- Other sections will be added dynamically -->
+                     </div>
             </main>
     </div>
 
@@ -504,18 +531,17 @@
         const { createIcons } = window.lucide;
         createIcons();
 
-        // Global state
-        let currentSection = 'public-info';
+                 // Global state
+         let currentSection = 'business-pattern';
         let apiData = {};
         
-        // Navigation configuration
-        const sections = [
-            { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' },
-            { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
-            { id: 'money-usage', name: 'Usage Patterns', icon: 'pie-chart', description: 'Spending analysis' },
-            { id: 'business-pattern', name: 'Business Pattern', icon: 'bar-chart-3', description: 'Industry alignment' },
-            { id: 'high-cash', name: 'Cash Analysis', icon: 'dollar-sign', description: 'Cash flow insights' }
-        ];
+                 // Navigation configuration
+         const sections = [
+             { id: 'business-pattern', name: 'Business Pattern', icon: 'bar-chart-3', description: 'Industry alignment' },
+             { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
+             { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' },
+             { id: 'high-cash', name: 'Cash Analysis', icon: 'dollar-sign', description: 'Cash flow insights' }
+         ];
 
         // Utility functions
         function formatCurrency(amount) {
@@ -578,54 +604,71 @@
             createIcons();
         }
 
-        // Show section and scroll to it
-        function showSection(sectionId) {
-            currentSection = sectionId;
-            
-            // Update navigation
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.section === sectionId);
-            });
+                 // Show section and scroll to it
+         function showSection(sectionId) {
+             currentSection = sectionId;
+             
+             // Update navigation
+             document.querySelectorAll('.nav-item').forEach(item => {
+                 item.classList.toggle('active', item.dataset.section === sectionId);
+             });
 
-            // Create section if it doesn't exist
-            if (!document.getElementById(sectionId) && sectionId !== 'transactions' && sectionId !== 'public-info') {
-                createSection(sectionId);
-            }
-            
-            // Scroll to section
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
-                targetSection.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
-            }
-            
-            // Update progress
-            updateProgress();
-            
-            // Special handling for transactions section
-            if (sectionId === 'transactions') {
-                setTimeout(() => {
-                    const chart = document.getElementById('sankey-chart');
-                    if (chart && chart.data) {
-                        Plotly.Plots.resize(chart);
-                    }
-                }, 100);
-            }
-            
-            // Close mobile menu
-            if (window.innerWidth < 1024) {
-                toggleMobileMenu(false);
-            }
-        }
+             // Create section if it doesn't exist
+             if (!document.getElementById(sectionId) && sectionId !== 'transactions' && sectionId !== 'public-info' && sectionId !== 'business-pattern') {
+                 createSection(sectionId);
+             }
+             
+             // Add smooth transition effects
+             document.querySelectorAll('.section-content').forEach(section => {
+                 section.style.opacity = '0.7';
+                 section.style.transform = 'scale(0.98)';
+             });
+             
+             // Highlight the target section
+             const targetSection = document.getElementById(sectionId);
+             if (targetSection) {
+                 setTimeout(() => {
+                     targetSection.style.opacity = '1';
+                     targetSection.style.transform = 'scale(1)';
+                     targetSection.classList.add('fade-in');
+                     
+                     // Remove fade-in class after animation
+                     setTimeout(() => {
+                         targetSection.classList.remove('fade-in');
+                     }, 500);
+                 }, 100);
+                 
+                 targetSection.scrollIntoView({ 
+                     behavior: 'smooth', 
+                     block: 'start' 
+                 });
+             }
+             
+             // Update progress
+             updateProgress();
+             
+             // Special handling for transactions section
+             if (sectionId === 'transactions') {
+                 setTimeout(() => {
+                     const chart = document.getElementById('sankey-chart');
+                     if (chart && chart.data) {
+                         Plotly.Plots.resize(chart);
+                     }
+                 }, 100);
+             }
+             
+             // Close mobile menu
+             if (window.innerWidth < 1024) {
+                 toggleMobileMenu(false);
+             }
+         }
 
         // Update active navigation based on scroll position
         function updateActiveNavigation() {
             const sections = document.querySelectorAll('.section-content');
             const navItems = document.querySelectorAll('.nav-item');
             
-            let currentActiveSection = 'public-info';
+                         let currentActiveSection = 'business-pattern';
             
             // Simple approach: find the section that's most visible in the viewport
             sections.forEach(section => {
@@ -685,27 +728,17 @@
                          ${createHighCashContent()}
                      </div>
                  `;
-             } else if (sectionId === 'business-pattern') {
-                 sectionElement.innerHTML = `
-                     <div class="section-header">
-                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                         <p class="text-gray-600">${sectionConfig.description}</p>
-                     </div>
-                     <div class="card-elevated" id="${sectionId}-content">
-                         ${createBusinessPatternContent()}
-                     </div>
-                 `;
-             } else if (sectionId === 'money-usage') {
-                 sectionElement.innerHTML = `
-                     <div class="section-header">
-                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                         <p class="text-gray-600">${sectionConfig.description}</p>
-                     </div>
-                     <div class="card-elevated" id="${sectionId}-content">
-                     ${createMoneyUsageContent()}
-                     </div>
-                 `;
-             } else {
+                           } else if (sectionId === 'business-pattern') {
+                  sectionElement.innerHTML = `
+                      <div class="section-header">
+                          <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                          <p class="text-gray-600">${sectionConfig.description}</p>
+                      </div>
+                      <div class="card-elevated" id="${sectionId}-content">
+                          ${createBusinessPatternContent()}
+                      </div>
+                  `;
+              } else {
                  sectionElement.innerHTML = `
                      <div class="section-header">
                          <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
@@ -750,175 +783,11 @@
              `;
          }
 
-                 // Create money usage content
-         function createMoneyUsageContent() {
-             if (!apiData.moneyUsage) {
-                 return `
-                     <div class="text-center">
-                         <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                             <i data-lucide="pie-chart" class="w-6 h-6 text-primary-600"></i>
-                         </div>
-                         <p class="text-xs text-gray-600">Loading money usage analysis data...</p>
-                     </div>
-                 `;
-             }
-
-            // Check if dict_analysis exists, otherwise use raw_analysis
-            let contentHtml = '';
-            if (apiData.moneyUsage && apiData.moneyUsage.dict_analysis) {
-                                 // Add Summary at the top if it exists
-                 let summaryHtml = '';
-                 if (apiData.moneyUsage.dict_analysis.Summary) {
-                     summaryHtml = `
-                         <div class="mb-2 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                             <h4 class="text-sm font-semibold text-blue-900 mb-1">Summary</h4>
-                             <div class="text-xs text-blue-800 leading-relaxed">${formatText(apiData.moneyUsage.dict_analysis.Summary)}</div>
-                         </div>
-                     `;
-                 }
-                
-                // Special handling for Description key - show credit/debit layout
-                if (apiData.moneyUsage.dict_analysis.Description) {
-                    contentHtml = summaryHtml + createDescriptionLayout(apiData.moneyUsage.dict_analysis.Description);
-                } else {
-                    // Handle other dict_analysis keys normally
-                    const entries = Object.entries(apiData.moneyUsage.dict_analysis);
-                    const reversedEntries = [...entries].reverse(); // Reverse to show last first
-                    
-                    contentHtml = summaryHtml + reversedEntries.map(([key, value]) => {
-                        // Format the key to be more readable
-                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        
-                        // Recursively format the value
-                        const formattedValue = formatDictValue(value, 0);
-                        
-                        return `
-                            <div class="mb-6 border-b border-gray-200 pb-4 last:border-b-0">
-                                <h4 class="text-lg font-semibold text-gray-900 mb-3">${formattedKey}</h4>
-                                <div class="text-sm text-gray-700 leading-relaxed">${formattedValue}</div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            } else if (apiData.moneyUsage && apiData.moneyUsage.raw_analysis) {
-                // Handle raw_analysis with consolidated text formatting
-                const formattedText = formatText(apiData.moneyUsage.raw_analysis);
-                contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">${formattedText}</div>`;
-            } else {
-                // Fallback for other data types
-                contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">No money usage data available</div>`;
-            }
-
-                         return `
-                 <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-2">
-                     <div class="prose prose-green max-w-none">
-                         <div class="bg-white rounded-lg p-2 shadow-sm">
-                             ${contentHtml}
-                         </div>
-                     </div>
-                 </div>
-             `;
-        }
-
-        // Create special layout for Description with credit/debit columns
-        function createDescriptionLayout(descriptionData) {
-            if (!descriptionData || typeof descriptionData !== 'object') {
-                return `<div class="text-sm text-gray-700 leading-relaxed">${formatText(descriptionData)}</div>`;
-            }
-
-            // Define colors for different transaction types
-            const transactionColors = {
-                'wire_transfer': 'bg-blue-100 text-blue-800 border-blue-200',
-                'ach_debit': 'bg-red-100 text-red-800 border-red-200',
-                'ach_credit': 'bg-green-100 text-green-800 border-green-200',
-                'check': 'bg-purple-100 text-purple-800 border-purple-200',
-                'cash': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                'default': 'bg-gray-100 text-gray-800 border-gray-200'
-            };
-
-            // Separate credit and debit data
-            const creditData = {};
-            const debitData = {};
-            
-            Object.entries(descriptionData).forEach(([key, value]) => {
-                if (key.toLowerCase().includes('credit') || key.toLowerCase().includes('inflow')) {
-                    creditData[key] = value;
-                } else if (key.toLowerCase().includes('debit') || key.toLowerCase().includes('outflow')) {
-                    debitData[key] = value;
-                } else {
-                    // Default to credit if unclear
-                    creditData[key] = value;
-                }
-            });
-
-                         // Create credit column
-             const creditHtml = Object.entries(creditData).map(([key, value]) => {
-                 const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                 const colorClass = getTransactionColor(key, transactionColors);
                  
-                 return `
-                     <div class="mb-1 p-1 rounded border ${colorClass}">
-                         <div class="text-xs font-semibold mb-0.5">${formattedKey}</div>
-                         <div class="text-xs">${formatDictValue(value, 0)}</div>
-                     </div>
-                 `;
-             }).join('');
 
-             // Create debit column
-             const debitHtml = Object.entries(debitData).map(([key, value]) => {
-                 const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                 const colorClass = getTransactionColor(key, transactionColors);
-                 
-                 return `
-                     <div class="mb-1 p-1 rounded border ${colorClass}">
-                         <div class="text-xs font-semibold mb-0.5">${formattedKey}</div>
-                         <div class="text-xs">${formatDictValue(value, 0)}</div>
-                     </div>
-                 `;
-             }).join('');
 
-                             return `
-                     <div class="mb-2">
-                         <h4 class="text-sm font-semibold text-gray-900 mb-2">Description</h4>
-                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                             <!-- Credit Column -->
-                             <div>
-                                 <h5 class="text-xs font-semibold text-green-700 mb-1 flex items-center">
-                                     <i data-lucide="arrow-down-right" class="w-2.5 h-2.5 mr-1"></i>
-                                     Credit/Inflow
-                                 </h5>
-                                 <div class="space-y-1">
-                                     ${creditHtml || '<div class="text-gray-500 text-xs">No credit data available</div>'}
-                                 </div>
-                             </div>
-                             
-                             <!-- Debit Column -->
-                             <div>
-                                 <h5 class="text-xs font-semibold text-red-700 mb-1 flex items-center">
-                                     <i data-lucide="arrow-up-right" class="w-2.5 h-2.5 mr-1"></i>
-                                     Debit/Outflow
-                                 </h5>
-                                 <div class="space-y-1">
-                                     ${debitHtml || '<div class="text-gray-500 text-xs">No debit data available</div>'}
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                 `;
-        }
 
-        // Helper function to determine transaction color
-        function getTransactionColor(key, colorMap) {
-            const lowerKey = key.toLowerCase();
-            
-            for (const [pattern, colorClass] of Object.entries(colorMap)) {
-                if (lowerKey.includes(pattern)) {
-                    return colorClass;
-                }
-            }
-            
-            return colorMap.default;
-        }
+
 
         // Create public info content with both public-info and public-address
         function createPublicInfoContent() {
@@ -1450,33 +1319,30 @@
             try {
                 loadingContainer.classList.remove('hidden');
                 
-                // Fetch all data
-                console.log('Fetching data from all API endpoints...');
-                const [
-                    transactionsData,
-                    moneyUsageData,
-                    highCashData,
-                    businessPatternData,
-                    publicInfoData,
-                    publicAddressData
-                ] = await Promise.all([
-                    fetchApiData('transactions'),
-                    fetchApiData('money-usage'),
-                    fetchApiData('high-cash'),
-                    fetchApiData('business-pattern'),
-                    fetchApiData('public-info'),
-                    fetchApiData('public-address')
-                ]);
+                                 // Fetch all data
+                 console.log('Fetching data from all API endpoints...');
+                 const [
+                     transactionsData,
+                     highCashData,
+                     businessPatternData,
+                     publicInfoData,
+                     publicAddressData
+                 ] = await Promise.all([
+                     fetchApiData('transactions'),
+                     fetchApiData('high-cash'),
+                     fetchApiData('business-pattern'),
+                     fetchApiData('public-info'),
+                     fetchApiData('public-address')
+                 ]);
 
-                // Store data globally
-                apiData = {
-                    transactions: transactionsData,
-                    moneyUsage: moneyUsageData,
-                    highCash: highCashData,
-                    businessPattern: businessPatternData,
-                    publicInfo: publicInfoData,
-                    publicAddress: publicAddressData
-                };
+                 // Store data globally
+                 apiData = {
+                     transactions: transactionsData,
+                     highCash: highCashData,
+                     businessPattern: businessPatternData,
+                     publicInfo: publicInfoData,
+                     publicAddress: publicAddressData
+                 };
 
                 console.log('Stored apiData:', apiData);
                 console.log('Public Info Data:', publicInfoData);
@@ -1487,24 +1353,30 @@
                 createTransactionsSankey(transactionsData);
                 createKeyMetrics(transactionsData);
                 
-                // Populate public-info section content
-                const publicInfoContainer = document.getElementById('public-info-content');
-                if (publicInfoContainer) {
-                    publicInfoContainer.innerHTML = createPublicInfoContent();
-                }
-                
-                // Create other sections (excluding transactions and public-info)
-                sections.forEach(section => {
-                    if (section.id !== 'transactions' && section.id !== 'public-info') {
-                        createSection(section.id);
-                    }
-                });
+                                 // Populate business-pattern section content
+                 const businessPatternContainer = document.getElementById('business-pattern-content');
+                 if (businessPatternContainer) {
+                     businessPatternContainer.innerHTML = createBusinessPatternContent();
+                 }
+                 
+                 // Populate public-info section content
+                 const publicInfoContainer = document.getElementById('public-info-content');
+                 if (publicInfoContainer) {
+                     publicInfoContainer.innerHTML = createPublicInfoContent();
+                 }
+                 
+                 // Create other sections (excluding transactions, public-info, and business-pattern)
+                 sections.forEach(section => {
+                     if (section.id !== 'transactions' && section.id !== 'public-info' && section.id !== 'business-pattern') {
+                         createSection(section.id);
+                     }
+                 });
                 
                 // Initialize features
                 initEventListeners();
                 
-                // Show company info as default
-                showSection('public-info');
+                                 // Show business pattern as default
+                 showSection('business-pattern');
                 
                 // Set up scroll sync
                 setupScrollSync();
@@ -1610,12 +1482,14 @@
                     return;
                 }
 
-                // Create table from the data
-                const tableHtml = createTransactionUsageDictTable(data);
-                document.getElementById('trans-usage-dict-table').innerHTML = tableHtml;
-                
-                // Recreate icons for the new content
-                createIcons();
+                                     // Create table from the data
+                     const tableHtml = createTransactionUsageDictTable(data);
+                     document.getElementById('trans-usage-dict-table').innerHTML = tableHtml;
+                     
+
+                     
+                     // Recreate icons for the new content
+                     createIcons();
                 
                 console.log('Transaction usage dictionary table created successfully');
             } catch (error) {
@@ -1652,17 +1526,28 @@
                         `;
                     }
 
-                    // Get the keys from the first item to create column headers
-                    const firstItem = data[0];
-                    if (!firstItem || typeof firstItem !== 'object') {
-                        return `
-                            <div class="text-center py-8 text-gray-500">
-                                <p>Invalid item format in transaction usage dictionary</p>
-                            </div>
-                        `;
-                    }
+                                         // Get the keys from the first item to create column headers
+                     const firstItem = data[0];
+                     if (!firstItem || typeof firstItem !== 'object') {
+                         return `
+                             <div class="text-center py-8 text-gray-500">
+                                 <p>Invalid item format in transaction usage dictionary</p>
+                             </div>
+                         `;
+                     }
 
-                    const keys = Object.keys(firstItem);
+                     // Define the desired column order
+                     const desiredOrder = ['direction', 'amount', 'category', 'usage_category'];
+                     const availableKeys = Object.keys(firstItem);
+                     
+                     // Filter and reorder keys based on desired order
+                     const keys = desiredOrder.filter(key => availableKeys.includes(key));
+                     // Add any remaining keys that weren't in the desired order
+                     availableKeys.forEach(key => {
+                         if (!keys.includes(key)) {
+                             keys.push(key);
+                         }
+                     });
                     
                                          // Create table rows from the list items
                      const tableRows = data.map((item, index) => {
@@ -1685,10 +1570,10 @@
                                  formattedValue = String(value);
                              }
 
-                             return `
-                                                                 <td class="px-2 py-1 text-xs text-gray-700 align-top border-r border-gray-200 last:border-r-0 hover:bg-gray-50 transition-colors">
-                                    <div class="max-w-xs ${key.toLowerCase().includes('amount') ? 'font-mono text-right' : ''}">${formattedValue}</div>
-                                </td>
+                                                          return `
+                                 <td class="px-2 py-1 text-xs text-gray-700 align-top border-r border-gray-200 last:border-r-0 hover:bg-gray-50 transition-colors">
+                                     <div class="max-w-xs ${key.toLowerCase().includes('amount') ? 'font-mono text-right' : ''}">${formattedValue}</div>
+                                 </td>
                              `;
                          }).join('');
 
@@ -1850,27 +1735,27 @@
             headerElement.dataset.sort = newSort;
             headerElement.classList.add(newSort === 'asc' ? 'bg-green-50' : 'bg-blue-50');
             
-            // Sort rows
-            rows.sort((a, b) => {
-                const aValue = a.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
-                const bValue = b.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
-                
-                let aNum = parseFloat(aValue.replace(/[$,]/g, ''));
-                let bNum = parseFloat(bValue.replace(/[$,]/g, ''));
-                
-                // Check if both values are numbers
-                if (!isNaN(aNum) && !isNaN(bNum)) {
-                    // Numeric sorting
-                    return newSort === 'asc' ? aNum - bNum : bNum - aNum;
-                } else {
-                    // String sorting
-                    if (newSort === 'asc') {
-                        return aValue.localeCompare(bValue);
-                    } else {
-                        return bValue.localeCompare(aValue);
-                    }
-                }
-            });
+                         // Sort rows
+             rows.sort((a, b) => {
+                 const aValue = a.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
+                 const bValue = b.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
+                 
+                 let aNum = parseFloat(aValue.replace(/[$,]/g, ''));
+                 let bNum = parseFloat(bValue.replace(/[$,]/g, ''));
+                 
+                 // Check if both values are numbers
+                 if (!isNaN(aNum) && !isNaN(bNum)) {
+                     // Numeric sorting
+                     return newSort === 'asc' ? aNum - bNum : bNum - aNum;
+                 } else {
+                     // String sorting
+                     if (newSort === 'asc') {
+                         return aValue.localeCompare(bValue);
+                     } else {
+                         return bValue.localeCompare(bValue);
+                     }
+                 }
+             });
             
             // Reorder rows in DOM
             rows.forEach(row => tbody.appendChild(row));

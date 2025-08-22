@@ -237,10 +237,20 @@ def get_wire_money_usage():
 
 @app.route('/api/transactions_usage_dict')
 def get_trans_usage_dict():
-    """Get transaction usage dictionary data from JSON"""
+    """Get transaction usage dictionary data from JSON, sorted by direction (asc) and amount (desc)"""
     try:
-        print("Received request for /api/trans_usage_dict")
+        print("Received request for /api/transactions_usage_dict")
         result, status_code = get_key_data('transactions_usage_dict')
+        
+        # Sort the data if it's a list
+        if isinstance(result, list) and len(result) > 0:
+            # Sort by direction (ascending) first, then by amount (descending)
+            result = sorted(result, key=lambda x: (
+                str(x.get('direction', '')).lower(),  # direction ascending
+                -float(x.get('amount', 0))  # amount descending (negative for reverse sort)
+            ))
+            print(f"Sorted {len(result)} items by direction (asc) and amount (desc)")
+        
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_trans_usage_dict: {str(e)}")
