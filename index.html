@@ -165,14 +165,14 @@
         .section-content {
             opacity: 1;
             transform: translateY(0);
-            margin-bottom: 2rem;
+            margin-bottom: 0.5rem;
         }
 
         /* Make main content scrollable */
         main {
             max-height: calc(100vh - 6rem);
             overflow-y: auto;
-            padding: 1.5rem;
+            padding: 0.5rem;
         }
 
         /* Sidebar scroll sync */
@@ -261,66 +261,110 @@
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Compact card styling */
+        /* Ultra-compact card styling for 80% explorer width */
         .card-elevated {
-            padding: 1.5rem !important;
-            margin-bottom: 1.5rem !important;
+            padding: 0.5rem !important;
+            margin-bottom: 0.5rem !important;
         }
 
-        /* Compact section headers */
+        /* Ultra-compact section headers */
         .section-header {
-            margin-bottom: 1rem !important;
+            margin-bottom: 0.375rem !important;
         }
 
         .section-header h2 {
             font-size: 1.25rem !important;
-            line-height: 1.5 !important;
-            margin-bottom: 0.25rem !important;
+            line-height: 1.3 !important;
+            margin-bottom: 0.125rem !important;
         }
 
         .section-header p {
-            font-size: 0.875rem !important;
-            line-height: 1.25 !important;
+            font-size: 0.7rem !important;
+            line-height: 1.1 !important;
         }
 
-        /* Compact content spacing */
+        /* Ultra-compact content spacing */
         .compact-content {
-            margin-bottom: 0.75rem !important;
+            margin-bottom: 0.25rem !important;
         }
 
         .compact-content:last-child {
             margin-bottom: 0 !important;
         }
 
-        /* Compact prose content */
+        /* Ultra-compact prose content */
         .prose {
-            font-size: 0.875rem !important;
-            line-height: 1.5 !important;
+            font-size: 0.7rem !important;
+            line-height: 1.3 !important;
         }
 
         .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-            margin-top: 1rem !important;
-            margin-bottom: 0.5rem !important;
+            margin-top: 0.5rem !important;
+            margin-bottom: 0.25rem !important;
         }
 
         .prose p {
-            margin-bottom: 0.5rem !important;
+            margin-bottom: 0.25rem !important;
         }
 
-        /* Compact card content */
+        /* Ultra-compact card content */
         .card-content {
-            padding: 1rem !important;
+            padding: 0.5rem !important;
         }
 
         /* Reduce spacing in data formatting */
         .data-item {
-            margin-bottom: 0.75rem !important;
-            padding-bottom: 0.75rem !important;
+            margin-bottom: 0.25rem !important;
+            padding-bottom: 0.25rem !important;
         }
 
         .data-item:last-child {
             margin-bottom: 0 !important;
             padding-bottom: 0 !important;
+        }
+
+        /* Optimize for 80% explorer width */
+        @media (max-width: 1400px) {
+            .section-content {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            main {
+                padding: 0.5rem !important;
+            }
+            
+            .card-elevated {
+                padding: 0.375rem !important;
+                margin-bottom: 0.375rem !important;
+            }
+            
+            .section-header {
+                margin-bottom: 0.25rem !important;
+            }
+            
+            .section-header h2 {
+                font-size: 0.8rem !important;
+            }
+            
+            .section-header p {
+                font-size: 0.65rem !important;
+            }
+        }
+
+        /* Ultra-compact for very small viewports */
+        @media (max-width: 1200px) {
+            .card-elevated {
+                padding: 0.25rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+            
+            .section-content {
+                margin-bottom: 0.375rem !important;
+            }
+            
+            main {
+                padding: 0.375rem !important;
+            }
         }
 
         ::-webkit-scrollbar {
@@ -348,47 +392,47 @@
     <div class="scroll-indicator" id="scroll-indicator"></div>
 
     <!-- Header -->
-    <header class="glass fixed top-1 left-4 right-4 z-40 rounded-2xl">
-        <div class="px-6 py-4">
+    <header class="glass fixed top-1 left-2 right-2 z-40 rounded-xl">
+        <div class="px-4 py-2">
             <div class="flex items-center justify-between">
-                <!-- Brand -->
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-                        <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-900">Risk Agent</h1>
-                        <p class="text-sm text-gray-500">Advanced Financial Analysis</p>
-                    </div>
-                </div>
+                                 <!-- Brand -->
+                 <div class="flex items-center space-x-2">
+                     <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+                         <i data-lucide="shield-check" class="w-4 h-4 text-white"></i>
+                     </div>
+                     <div>
+                         <h1 class="text-lg font-bold text-gray-900">Risk Agent</h1>
+                         <p class="text-xs text-gray-500">Advanced Financial Analysis</p>
+                     </div>
+                 </div>
 
-                <!-- Search & Actions -->
-                <div class="flex items-center space-x-4">
-                    <!-- Search -->
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            id="global-search"
-                            placeholder="Search analysis..." 
-                            class="w-64 pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                        >
-                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            </div>
+                                 <!-- Search & Actions -->
+                 <div class="flex items-center space-x-2">
+                     <!-- Search -->
+                     <div class="relative">
+                         <input 
+                             type="text" 
+                             id="global-search"
+                             placeholder="Search analysis..." 
+                             class="w-48 pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm"
+                         >
+                         <i data-lucide="search" class="w-3 h-3 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                     </div>
 
-                    <!-- Actions -->
-                    <button class="p-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors" id="refresh-btn">
-                        <i data-lucide="refresh-cw" class="w-4 h-4 text-gray-600"></i>
-                </button>
-                    
-                    <button class="p-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors" id="export-btn">
-                        <i data-lucide="download" class="w-4 h-4 text-gray-600"></i>
-                </button>
+                     <!-- Actions -->
+                     <button class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" id="refresh-btn">
+                         <i data-lucide="refresh-cw" class="w-3 h-3 text-gray-600"></i>
+                     </button>
+                     
+                     <button class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" id="export-btn">
+                         <i data-lucide="download" class="w-3 h-3 text-gray-600"></i>
+                     </button>
 
-                    <!-- Mobile Menu -->
-                    <button class="lg:hidden p-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors" id="mobile-menu-toggle">
-                        <i data-lucide="menu" class="w-4 h-4 text-gray-600"></i>
-                </button>
-                </div>
+                     <!-- Mobile Menu -->
+                     <button class="lg:hidden p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" id="mobile-menu-toggle">
+                         <i data-lucide="menu" class="w-3 h-3 text-gray-600"></i>
+                     </button>
+                 </div>
             </div>
         </div>
     </header>
@@ -396,15 +440,15 @@
     <!-- Main Layout -->
     <div class="flex pt-20">
         <!-- Sidebar -->
-        <aside class="fixed left-4 top-24 bottom-4 w-72 glass rounded-2xl p-6 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar">
+        <aside class="fixed left-2 top-20 bottom-2 w-1/6 glass rounded-xl p-3 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar">
             <!-- Navigation -->
-            <nav class="space-y-2" id="navigation">
+            <nav class="space-y-1" id="navigation">
                 <!-- Will be populated dynamically -->
             </nav>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 lg:ml-80 p-6">
+        <main class="flex-1 lg:ml-[calc(100vw/6+1rem)] p-6">
             <!-- Loading State -->
             <div class="loading-container hidden" id="loading-container">
                 <div class="flex items-center justify-center h-64">
@@ -420,20 +464,20 @@
 
                         <!-- Content Sections -->
             <div id="content-container">
-                <!-- Company Info Section -->
-                <section id="public-info" class="section-content">
-                    <div class="section-header">
-                        <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
-                        <p class="text-gray-600">Public information</p>
-                        <button onclick="refreshCompanyInfo()" class="ml-4 px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors">
-                            <i data-lucide="refresh-cw" class="w-3 h-3 inline mr-1"></i>
-                            Refresh
-                        </button>
-                    </div>
-                    <div class="card-elevated" id="public-info-content">
-                        <!-- Will be populated dynamically -->
-                    </div>
-                </section>
+                                 <!-- Company Info Section -->
+                 <section id="public-info" class="section-content">
+                     <div class="section-header">
+                         <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
+                         <p class="text-gray-600">Public information</p>
+                         <button onclick="refreshCompanyInfo()" class="ml-4 px-2 py-0.5 text-xs bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors">
+                             <i data-lucide="refresh-cw" class="w-2.5 h-2.5 inline mr-1"></i>
+                             Refresh
+                         </button>
+                     </div>
+                     <div class="card-elevated" id="public-info-content">
+                         <!-- Will be populated dynamically -->
+                     </div>
+                 </section>
 
                 <!-- Transactions Section -->
                 <section id="transactions" class="section-content">
@@ -516,18 +560,18 @@
             const nav = document.getElementById('navigation');
             nav.innerHTML = sections.map(section => `
                 <button 
-                    class="nav-item w-full flex items-center p-4 rounded-xl text-left transition-all group"
+                    class="nav-item w-full flex items-center p-2 rounded-lg text-left transition-all group"
                     data-section="${section.id}"
                     onclick="showSection('${section.id}')"
                 >
-                    <div class="w-10 h-10 bg-gray-100 group-hover:bg-primary-100 rounded-lg flex items-center justify-center mr-3 transition-colors">
-                        <i data-lucide="${section.icon}" class="w-5 h-5 text-gray-600 group-hover:text-primary-600"></i>
+                    <div class="w-6 h-6 bg-gray-100 group-hover:bg-primary-100 rounded-md flex items-center justify-center mr-2 transition-colors">
+                        <i data-lucide="${section.icon}" class="w-3 h-3 text-gray-600 group-hover:text-primary-600"></i>
                     </div>
                     <div class="flex-1">
-                        <div class="font-medium text-gray-900 group-hover:text-white">${section.name}</div>
-                        <div class="text-sm text-gray-500 group-hover:text-gray-200">${section.description}</div>
+                        <div class="font-medium text-gray-900 group-hover:text-white text-xs">${section.name}</div>
+                        <div class="text-xs text-gray-500 group-hover:text-gray-200">${section.description}</div>
                     </div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all"></i>
+                    <i data-lucide="chevron-right" class="w-3 h-3 text-gray-400 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all"></i>
                 </button>
             `).join('');
             
@@ -630,108 +674,108 @@
             sectionElement.id = sectionId;
             sectionElement.className = 'section-content';
             
-            // Special handling for high-cash section
-            if (sectionId === 'high-cash') {
-                sectionElement.innerHTML = `
-                    <div class="section-header">
-                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                        <p class="text-gray-600">${sectionConfig.description}</p>
-                    </div>
-                    <div class="card-elevated" id="${sectionId}-content">
-                        ${createHighCashContent()}
-                    </div>
-                `;
-            } else if (sectionId === 'business-pattern') {
-                sectionElement.innerHTML = `
-                    <div class="section-header">
-                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                        <p class="text-gray-600">${sectionConfig.description}</p>
-                    </div>
-                    <div class="card-elevated" id="${sectionId}-content">
-                        ${createBusinessPatternContent()}
-                    </div>
-                `;
-            } else if (sectionId === 'money-usage') {
-                sectionElement.innerHTML = `
-                    <div class="section-header">
-                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                        <p class="text-gray-600">${sectionConfig.description}</p>
-                    </div>
-                    <div class="card-elevated" id="${sectionId}-content">
-                    ${createMoneyUsageContent()}
-                    </div>
-                `;
-            } else {
-                sectionElement.innerHTML = `
-                    <div class="section-header">
-                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                        <p class="text-gray-600">${sectionConfig.description}</p>
-                    </div>
-                    <div class="card-elevated" id="${sectionId}-content">
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                <i data-lucide="${sectionConfig.icon}" class="w-8 h-8 text-primary-600"></i>
-                            </div>
-                            <p class="text-sm text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
-                        </div>
-                    </div>
-                `;
-            }
+                         // Special handling for high-cash section
+             if (sectionId === 'high-cash') {
+                 sectionElement.innerHTML = `
+                     <div class="section-header">
+                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                         <p class="text-gray-600">${sectionConfig.description}</p>
+                     </div>
+                     <div class="card-elevated" id="${sectionId}-content">
+                         ${createHighCashContent()}
+                     </div>
+                 `;
+             } else if (sectionId === 'business-pattern') {
+                 sectionElement.innerHTML = `
+                     <div class="section-header">
+                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                         <p class="text-gray-600">${sectionConfig.description}</p>
+                     </div>
+                     <div class="card-elevated" id="${sectionId}-content">
+                         ${createBusinessPatternContent()}
+                     </div>
+                 `;
+             } else if (sectionId === 'money-usage') {
+                 sectionElement.innerHTML = `
+                     <div class="section-header">
+                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                         <p class="text-gray-600">${sectionConfig.description}</p>
+                     </div>
+                     <div class="card-elevated" id="${sectionId}-content">
+                     ${createMoneyUsageContent()}
+                     </div>
+                 `;
+             } else {
+                 sectionElement.innerHTML = `
+                     <div class="section-header">
+                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                         <p class="text-gray-600">${sectionConfig.description}</p>
+                     </div>
+                     <div class="card-elevated" id="${sectionId}-content">
+                         <div class="text-center">
+                             <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                 <i data-lucide="${sectionConfig.icon}" class="w-6 h-6 text-primary-600"></i>
+                             </div>
+                             <p class="text-xs text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
+                         </div>
+                     </div>
+                 `;
+             }
             
             container.appendChild(sectionElement);
             createIcons();
         }
 
-        // Create high cash content
-        function createHighCashContent() {
-            if (!apiData.highCash) {
-                return `
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                            <i data-lucide="dollar-sign" class="w-8 h-8 text-primary-600"></i>
-                        </div>
-                        <p class="text-sm text-gray-600">Loading cash analysis data...</p>
-                    </div>
-                `;
-            }
+                 // Create high cash content
+         function createHighCashContent() {
+             if (!apiData.highCash) {
+                 return `
+                     <div class="text-center">
+                         <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                             <i data-lucide="dollar-sign" class="w-6 h-6 text-primary-600"></i>
+                         </div>
+                         <p class="text-xs text-gray-600">Loading cash analysis data...</p>
+                     </div>
+                 `;
+             }
 
-            return `
-                <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl p-4">
-                    <div class="prose prose-primary max-w-none">
-                        <div class="bg-white rounded-lg p-4 shadow-sm">
-                            <div class="text-sm text-gray-700 leading-relaxed">${formatText(apiData.highCash.raw_analysis)}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+             return `
+                 <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-2">
+                     <div class="prose prose-primary max-w-none">
+                         <div class="bg-white rounded-lg p-2 shadow-sm">
+                             <div class="text-xs text-gray-700 leading-relaxed">${formatText(apiData.highCash.raw_analysis)}</div>
+                         </div>
+                     </div>
+                 </div>
+             `;
+         }
 
-        // Create money usage content
-        function createMoneyUsageContent() {
-            if (!apiData.moneyUsage) {
-                return `
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                            <i data-lucide="pie-chart" class="w-8 h-8 text-primary-600"></i>
-                        </div>
-                        <p class="text-sm text-gray-600">Loading money usage analysis data...</p>
-                    </div>
-                `;
-            }
+                 // Create money usage content
+         function createMoneyUsageContent() {
+             if (!apiData.moneyUsage) {
+                 return `
+                     <div class="text-center">
+                         <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                             <i data-lucide="pie-chart" class="w-6 h-6 text-primary-600"></i>
+                         </div>
+                         <p class="text-xs text-gray-600">Loading money usage analysis data...</p>
+                     </div>
+                 `;
+             }
 
             // Check if dict_analysis exists, otherwise use raw_analysis
             let contentHtml = '';
             if (apiData.moneyUsage && apiData.moneyUsage.dict_analysis) {
-                // Add Summary at the top if it exists
-                let summaryHtml = '';
-                if (apiData.moneyUsage.dict_analysis.Summary) {
-                    summaryHtml = `
-                        <div class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                            <h4 class="text-base font-semibold text-blue-900 mb-2">Summary</h4>
-                            <div class="text-sm text-blue-800 leading-relaxed">${formatText(apiData.moneyUsage.dict_analysis.Summary)}</div>
-                        </div>
-                    `;
-                }
+                                 // Add Summary at the top if it exists
+                 let summaryHtml = '';
+                 if (apiData.moneyUsage.dict_analysis.Summary) {
+                     summaryHtml = `
+                         <div class="mb-2 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                             <h4 class="text-sm font-semibold text-blue-900 mb-1">Summary</h4>
+                             <div class="text-xs text-blue-800 leading-relaxed">${formatText(apiData.moneyUsage.dict_analysis.Summary)}</div>
+                         </div>
+                     `;
+                 }
                 
                 // Special handling for Description key - show credit/debit layout
                 if (apiData.moneyUsage.dict_analysis.Description) {
@@ -765,15 +809,15 @@
                 contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">No money usage data available</div>`;
             }
 
-            return `
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4">
-                    <div class="prose prose-green max-w-none">
-                        <div class="bg-white rounded-lg p-4 shadow-sm">
-                            ${contentHtml}
-                        </div>
-                    </div>
-                </div>
-            `;
+                         return `
+                 <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-2">
+                     <div class="prose prose-green max-w-none">
+                         <div class="bg-white rounded-lg p-2 shadow-sm">
+                             ${contentHtml}
+                         </div>
+                     </div>
+                 </div>
+             `;
         }
 
         // Create special layout for Description with credit/debit columns
@@ -807,60 +851,60 @@
                 }
             });
 
-            // Create credit column
-            const creditHtml = Object.entries(creditData).map(([key, value]) => {
-                const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                const colorClass = getTransactionColor(key, transactionColors);
-                
-                return `
-                    <div class="mb-2 p-2 rounded border ${colorClass}">
-                        <div class="text-xs font-semibold mb-1">${formattedKey}</div>
-                        <div class="text-xs">${formatDictValue(value, 0)}</div>
-                    </div>
-                `;
-            }).join('');
+                         // Create credit column
+             const creditHtml = Object.entries(creditData).map(([key, value]) => {
+                 const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                 const colorClass = getTransactionColor(key, transactionColors);
+                 
+                 return `
+                     <div class="mb-1 p-1 rounded border ${colorClass}">
+                         <div class="text-xs font-semibold mb-0.5">${formattedKey}</div>
+                         <div class="text-xs">${formatDictValue(value, 0)}</div>
+                     </div>
+                 `;
+             }).join('');
 
-            // Create debit column
-            const debitHtml = Object.entries(debitData).map(([key, value]) => {
-                const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                const colorClass = getTransactionColor(key, transactionColors);
-                
-                return `
-                    <div class="mb-2 p-2 rounded border ${colorClass}">
-                        <div class="text-xs font-semibold mb-1">${formattedKey}</div>
-                        <div class="text-xs">${formatDictValue(value, 0)}</div>
-                    </div>
-                `;
-            }).join('');
+             // Create debit column
+             const debitHtml = Object.entries(debitData).map(([key, value]) => {
+                 const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                 const colorClass = getTransactionColor(key, transactionColors);
+                 
+                 return `
+                     <div class="mb-1 p-1 rounded border ${colorClass}">
+                         <div class="text-xs font-semibold mb-0.5">${formattedKey}</div>
+                         <div class="text-xs">${formatDictValue(value, 0)}</div>
+                     </div>
+                 `;
+             }).join('');
 
-            return `
-                <div class="mb-4">
-                    <h4 class="text-base font-semibold text-gray-900 mb-3">Description</h4>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <!-- Credit Column -->
-                        <div>
-                            <h5 class="text-sm font-semibold text-green-700 mb-2 flex items-center">
-                                <i data-lucide="arrow-down-right" class="w-3 h-3 mr-1"></i>
-                                Credit/Inflow
-                            </h5>
-                            <div class="space-y-2">
-                                ${creditHtml || '<div class="text-gray-500 text-xs">No credit data available</div>'}
-                            </div>
-                        </div>
-                        
-                        <!-- Debit Column -->
-                        <div>
-                            <h5 class="text-sm font-semibold text-red-700 mb-2 flex items-center">
-                                <i data-lucide="arrow-up-right" class="w-3 h-3 mr-1"></i>
-                                Debit/Outflow
-                            </h5>
-                            <div class="space-y-2">
-                                ${debitHtml || '<div class="text-gray-500 text-xs">No debit data available</div>'}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
+                             return `
+                     <div class="mb-2">
+                         <h4 class="text-sm font-semibold text-gray-900 mb-2">Description</h4>
+                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                             <!-- Credit Column -->
+                             <div>
+                                 <h5 class="text-xs font-semibold text-green-700 mb-1 flex items-center">
+                                     <i data-lucide="arrow-down-right" class="w-2.5 h-2.5 mr-1"></i>
+                                     Credit/Inflow
+                                 </h5>
+                                 <div class="space-y-1">
+                                     ${creditHtml || '<div class="text-gray-500 text-xs">No credit data available</div>'}
+                                 </div>
+                             </div>
+                             
+                             <!-- Debit Column -->
+                             <div>
+                                 <h5 class="text-xs font-semibold text-red-700 mb-1 flex items-center">
+                                     <i data-lucide="arrow-up-right" class="w-2.5 h-2.5 mr-1"></i>
+                                     Debit/Outflow
+                                 </h5>
+                                 <div class="space-y-1">
+                                     ${debitHtml || '<div class="text-gray-500 text-xs">No debit data available</div>'}
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 `;
         }
 
         // Helper function to determine transaction color
@@ -884,51 +928,51 @@
             const hasPublicInfo = apiData.publicInfo && Object.keys(apiData.publicInfo).length > 0;
             const hasPublicAddress = apiData.publicAddress && Object.keys(apiData.publicAddress).length > 0;
             
-            if (!hasPublicInfo && !hasPublicAddress) {
-                return `
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                            <i data-lucide="building" class="w-8 h-8 text-primary-600"></i>
-                        </div>
-                        <p class="text-sm text-gray-600">No company information available</p>
-                        <p class="text-xs text-gray-500 mt-2">Check if the API endpoints are working correctly</p>
-                    </div>
-                `;
-            }
+                         if (!hasPublicInfo && !hasPublicAddress) {
+                 return `
+                     <div class="text-center">
+                         <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                             <i data-lucide="building" class="w-6 h-6 text-primary-600"></i>
+                         </div>
+                         <p class="text-xs text-gray-600">No company information available</p>
+                         <p class="text-xs text-gray-500 mt-1">Check if the API endpoints are working correctly</p>
+                     </div>
+                 `;
+             }
 
             let contentHtml = '';
 
-            // Add public info section
-            if (apiData.publicInfo) {
-                contentHtml += `
-                    <div class="mb-6">
-                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Company Information</h4>
-                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-sm">
-                            <div class="prose prose-blue max-w-none">
-                                <div class="bg-white rounded-xl p-4 shadow-sm">
-                                    ${formatPublicInfoData(apiData.publicInfo)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
+                         // Add public info section
+             if (apiData.publicInfo) {
+                 contentHtml += `
+                     <div class="mb-3">
+                         <h4 class="text-base font-semibold text-gray-900 mb-2">Company Information</h4>
+                         <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 shadow-sm">
+                             <div class="prose prose-blue max-w-none">
+                                 <div class="bg-white rounded-lg p-2 shadow-sm">
+                                     ${formatPublicInfoData(apiData.publicInfo)}
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 `;
+             }
 
-            // Add public address section
-            if (apiData.publicAddress) {
-                contentHtml += `
-                    <div class="mb-6">
-                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Address Information</h4>
-                        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 shadow-sm">
-                            <div class="prose prose-green max-w-none">
-                                <div class="bg-white rounded-xl p-4 shadow-sm">
-                                    ${formatPublicAddressData(apiData.publicAddress)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
+                         // Add public address section
+             if (apiData.publicAddress) {
+                 contentHtml += `
+                     <div class="mb-3">
+                         <h4 class="text-base font-semibold text-gray-900 mb-2">Address Information</h4>
+                         <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-3 shadow-sm">
+                             <div class="prose prose-green max-w-none">
+                                 <div class="bg-white rounded-lg p-2 shadow-sm">
+                                     ${formatPublicAddressData(apiData.publicAddress)}
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 `;
+             }
 
             return contentHtml;
         }
@@ -936,11 +980,11 @@
         // Format public info data
         function formatPublicInfoData(data) {
             if (typeof data === 'string') {
-                return `<div class="text-sm text-gray-700 leading-relaxed">${formatText(data)}</div>`;
+                return `<div class="text-xs text-gray-700 leading-relaxed">${formatText(data)}</div>`;
             } else if (typeof data === 'object' && data !== null) {
                 const entries = Object.entries(data);
                 if (entries.length === 0) {
-                    return '<div class="text-sm text-gray-700">No company information available</div>';
+                    return '<div class="text-xs text-gray-700">No company information available</div>';
                 }
 
                 return entries.map(([key, value]) => {
@@ -956,25 +1000,25 @@
                     }
 
                     return `
-                        <div class="mb-4 border-b border-gray-200 pb-3 last:border-b-0">
-                            <h5 class="text-base font-semibold text-gray-900 mb-2">${formattedKey}</h5>
-                            <div class="text-sm text-gray-700 leading-relaxed">${formattedValue}</div>
+                        <div class="mb-2 border-b border-gray-200 pb-2 last:border-b-0">
+                            <h5 class="text-sm font-semibold text-gray-900 mb-1">${formattedKey}</h5>
+                            <div class="text-xs text-gray-700 leading-relaxed">${formattedValue}</div>
                         </div>
                     `;
                 }).join('');
             } else {
-                return '<div class="text-sm text-gray-700">No company information available</div>';
+                return '<div class="text-xs text-gray-700">No company information available</div>';
             }
         }
 
         // Format public address data
         function formatPublicAddressData(data) {
             if (typeof data === 'string') {
-                return `<div class="text-sm text-gray-700 leading-relaxed">${formatText(data)}</div>`;
+                return `<div class="text-xs text-gray-700 leading-relaxed">${formatText(data)}</div>`;
             } else if (typeof data === 'object' && data !== null) {
                 const entries = Object.entries(data);
                 if (entries.length === 0) {
-                    return '<div class="text-sm text-gray-700">No address information available</div>';
+                    return '<div class="text-xs text-gray-700">No address information available</div>';
                 }
 
                 return entries.map(([key, value]) => {
@@ -990,14 +1034,14 @@
                     }
 
                     return `
-                        <div class="mb-4 border-b border-gray-200 pb-3 last:border-b-0">
-                            <h5 class="text-base font-semibold text-gray-900 mb-2">${formattedKey}</h5>
-                            <div class="text-sm text-gray-700 leading-relaxed">${formattedValue}</div>
+                        <div class="mb-2 border-b border-gray-200 pb-2 last:border-b-0">
+                            <h5 class="text-sm font-semibold text-gray-900 mb-1">${formattedKey}</h5>
+                            <div class="text-xs text-gray-700 leading-relaxed">${formattedValue}</div>
                         </div>
                     `;
                 }).join('');
             } else {
-                return '<div class="text-sm text-gray-700">No address information available</div>';
+                return '<div class="text-xs text-gray-700">No address information available</div>';
             }
         }
 
@@ -1082,41 +1126,41 @@
         }
 
 
-        // Create business pattern content
-        function createBusinessPatternContent() {
-            if (!apiData.businessPattern) {
-                return `
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                        <i data-lucide="bar-chart-3" class="w-8 h-8 text-primary-600"></i>
-                    </div>
-                    <p class="text-sm text-gray-600">Loading business pattern analysis data...</p>
-                `;
-            }
+                 // Create business pattern content
+         function createBusinessPatternContent() {
+             if (!apiData.businessPattern) {
+                 return `
+                     <div class="text-center">
+                         <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                         <i data-lucide="bar-chart-3" class="w-6 h-6 text-primary-600"></i>
+                     </div>
+                     <p class="text-xs text-gray-600">Loading business pattern analysis data...</p>
+                 `;
+             }
 
             // Check if dict_analysis exists, otherwise use raw_analysis
             let contentHtml = '';
             if (apiData.businessPattern && apiData.businessPattern.dict_analysis) {
                 // Handle dict_analysis - display key-value pairs
-                contentHtml = Object.entries(apiData.businessPattern.dict_analysis).map(([key, value]) => {
-                    // Format the key to be more readable
-                    const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    
-                    // Format the value with text formatting
-                    let formattedValue;
-                    if (typeof value === 'string') {
-                        formattedValue = formatText(value);
-                    } else {
-                        formattedValue = JSON.stringify(value, null, 2);
-                    }
-                    
-                    return `
-                        <div class="mb-6 border-b border-gray-200 pb-4 last:border-b-0">
-                            <h4 class="text-lg font-semibold text-gray-900 mb-3">${formattedKey}</h4>
-                            <div class="text-sm text-gray-700 leading-relaxed">${formattedValue}</div>
-                        </div>
-                    `;
-                }).join('');
+                                 contentHtml = Object.entries(apiData.businessPattern.dict_analysis).map(([key, value]) => {
+                     // Format the key to be more readable
+                     const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                     
+                     // Format the value with text formatting
+                     let formattedValue;
+                     if (typeof value === 'string') {
+                         formattedValue = formatText(value);
+                     } else {
+                         formattedValue = JSON.stringify(value, null, 2);
+                     }
+                     
+                     return `
+                         <div class="mb-3 border-b border-gray-200 pb-2 last:border-b-0">
+                             <h4 class="text-sm font-semibold text-gray-900 mb-1">${formattedKey}</h4>
+                             <div class="text-xs text-gray-700 leading-relaxed">${formattedValue}</div>
+                         </div>
+                     `;
+                 }).join('');
             } else if (apiData.businessPattern && apiData.businessPattern.raw_analysis) {
                 // Handle raw_analysis with consolidated text formatting
                 const formattedText = formatText(apiData.businessPattern.raw_analysis);
@@ -1126,15 +1170,15 @@
                 contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">No business pattern data available</div>`;
             }
 
-            return `
-                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4">
-                    <div class="prose prose-gray max-w-none">
-                        <div class="bg-white rounded-lg p-4 shadow-sm">
-                            ${contentHtml}
-                        </div>
-                    </div>
-                </div>
-            `;
+                         return `
+                 <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-2">
+                     <div class="prose prose-gray max-w-none">
+                         <div class="bg-white rounded-lg p-2 shadow-sm">
+                             ${contentHtml}
+                         </div>
+                     </div>
+                 </div>
+             `;
         }
 
         // Update progress bar
@@ -1186,21 +1230,21 @@
                 }
             ];
             
-                     const container = document.getElementById('key-metrics');
-         container.innerHTML = metrics.map(metric => `
-             <div class="metric-card p-4 rounded-xl">
-                             <div class="flex items-center justify-between mb-3">
-                     <div class="w-10 h-10 bg-${metric.color}-100 rounded-lg flex items-center justify-center">
-                         <i data-lucide="${metric.icon}" class="w-5 h-5 text-${metric.color}-600"></i>
-                             </div>
-                     <span class="text-xs font-medium text-${metric.color}-600 bg-${metric.color}-50 px-2 py-1 rounded-full">
-                         ${metric.change}
-                     </span>
+                                  const container = document.getElementById('key-metrics');
+             container.innerHTML = metrics.map(metric => `
+                 <div class="metric-card p-2 rounded-lg">
+                     <div class="flex items-center justify-between mb-1">
+                         <div class="w-6 h-6 bg-${metric.color}-100 rounded-md flex items-center justify-center">
+                             <i data-lucide="${metric.icon}" class="w-3 h-3 text-${metric.color}-600"></i>
+                         </div>
+                         <span class="text-xs font-medium text-${metric.color}-600 bg-${metric.color}-50 px-1 py-0.5 rounded-full">
+                             ${metric.change}
+                         </span>
+                     </div>
+                     <h3 class="text-xs font-medium text-gray-600 mb-1">${metric.label}</h3>
+                     <p class="text-sm font-bold text-gray-900 font-mono">${metric.value}</p>
                  </div>
-                 <h3 class="text-xs font-medium text-gray-600 mb-1">${metric.label}</h3>
-                 <p class="text-xl font-bold text-gray-900 font-mono">${metric.value}</p>
-             </div>
-         `).join('');
+             `).join('');
             
             createIcons();
         }
@@ -1211,27 +1255,27 @@
             
             // Create container with key metrics and Sankey diagram
             container.innerHTML = `
-                <!-- Key Metrics -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="key-metrics">
-                    <!-- Will be populated by createKeyMetrics -->
-                </div>
+                                 <!-- Key Metrics -->
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-2" id="key-metrics">
+                     <!-- Will be populated by createKeyMetrics -->
+                 </div>
                 
                 <!-- Sankey Diagram -->
                 <div class="bg-white rounded-xl shadow-sm">
                     <div id="sankey-chart" style="height: 300px; width: 100%;"></div>
                 </div>
                 
-                <!-- Transaction Summaries -->
-                <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-green-50 rounded-xl p-4">
-                        <h4 class="font-semibold text-green-800 mb-2">Credit Flows (Inflows)</h4>
-                        <div id="credit-summary" class="text-sm text-green-700"></div>
-                                </div>
-                    <div class="bg-red-50 rounded-xl p-4">
-                        <h4 class="font-semibold text-red-800 mb-2">Debit Flows (Outflows)</h4>
-                        <div id="debit-summary" class="text-sm text-red-700"></div>
-                            </div>
-                    </div>
+                
+                </div>
+                
+                                 <!-- Transaction Usage Dictionary Table -->
+                 <div class="mt-2">
+                     <div class="bg-white rounded-xl shadow-sm p-2">
+                         <div id="trans-usage-dict-table" class="overflow-x-auto">
+                             <!-- Will be populated dynamically -->
+                         </div>
+                     </div>
+                 </div>
                 `;
 
             // Prepare data for Sankey diagram
@@ -1374,25 +1418,12 @@
                 Plotly.Plots.resize('sankey-chart');
             });
 
-            // Create summaries
-            const creditSummary = document.getElementById('credit-summary');
-            const debitSummary = document.getElementById('debit-summary');
+            
 
-            creditSummary.innerHTML = credits.map(t => 
-                `<div class="flex justify-between py-1">
-                    <span>${t.category}:</span>
-                    <span class="font-semibold">${formatCurrency(t.amount)} (${t.pct})</span>
-                </div>`
-            ).join('');
+            // Load transaction usage dictionary data
+            loadTransactionUsageDict();
 
-            debitSummary.innerHTML = debits.map(t => 
-                `<div class="flex justify-between py-1">
-                    <span>${t.category}:</span>
-                    <span class="font-semibold">${formatCurrency(t.amount)} (${t.pct})</span>
-                </div>`
-            ).join('');
-
-                createIcons();
+            createIcons();
         }
 
         // Mobile menu functionality
@@ -1560,6 +1591,323 @@
             } catch (error) {
                 console.error('Error refreshing company info:', error);
                 alert('Failed to refresh company info. Check console for details.');
+            }
+        }
+
+        // Load transaction usage dictionary data
+        async function loadTransactionUsageDict() {
+            try {
+                console.log('Loading transaction usage dictionary data...');
+                const data = await fetchApiData('transactions_usage_dict');
+                
+                if (!data || Object.keys(data).length === 0) {
+                    document.getElementById('trans-usage-dict-table').innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i data-lucide="database" class="w-12 h-12 mx-auto mb-3 text-gray-300"></i>
+                            <p>No transaction usage dictionary data available</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Create table from the data
+                const tableHtml = createTransactionUsageDictTable(data);
+                document.getElementById('trans-usage-dict-table').innerHTML = tableHtml;
+                
+                // Recreate icons for the new content
+                createIcons();
+                
+                console.log('Transaction usage dictionary table created successfully');
+            } catch (error) {
+                console.error('Error loading transaction usage dictionary:', error);
+                document.getElementById('trans-usage-dict-table').innerHTML = `
+                    <div class="text-center py-8 text-red-500">
+                        <i data-lucide="alert-circle" class="w-12 h-12 mx-auto mb-3 text-red-300"></i>
+                        <p>Error loading transaction usage dictionary data</p>
+                        <p class="text-sm text-gray-500 mt-2">${error.message}</p>
+                    </div>
+                `;
+                createIcons();
+            }
+        }
+
+        // Create transaction usage dictionary table
+        function createTransactionUsageDictTable(data) {
+            if (typeof data === 'string') {
+                return `
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="text-sm text-gray-700 leading-relaxed">${formatText(data)}</div>
+                    </div>
+                `;
+            }
+
+            if (typeof data === 'object' && data !== null) {
+                // Check if data is an array (list of items)
+                if (Array.isArray(data)) {
+                    if (data.length === 0) {
+                        return `
+                            <div class="text-center py-8 text-gray-500">
+                                <p>No items available in transaction usage dictionary</p>
+                            </div>
+                        `;
+                    }
+
+                    // Get the keys from the first item to create column headers
+                    const firstItem = data[0];
+                    if (!firstItem || typeof firstItem !== 'object') {
+                        return `
+                            <div class="text-center py-8 text-gray-500">
+                                <p>Invalid item format in transaction usage dictionary</p>
+                            </div>
+                        `;
+                    }
+
+                    const keys = Object.keys(firstItem);
+                    
+                                         // Create table rows from the list items
+                     const tableRows = data.map((item, index) => {
+                         const rowCells = keys.map(key => {
+                             const value = item[key];
+                             let formattedValue;
+                             
+                             if (typeof value === 'string') {
+                                 formattedValue = formatText(value);
+                             } else if (typeof value === 'number') {
+                                 // Special formatting for Amount fields
+                                 if (key.toLowerCase().includes('amount')) {
+                                     formattedValue = formatCurrency(value);
+                                 } else {
+                                     formattedValue = formatNumber(value);
+                                 }
+                             } else if (typeof value === 'object' && value !== null) {
+                                 formattedValue = formatDictValue(value, 0);
+                             } else {
+                                 formattedValue = String(value);
+                             }
+
+                             return `
+                                                                 <td class="px-2 py-1 text-xs text-gray-700 align-top border-r border-gray-200 last:border-r-0 hover:bg-gray-50 transition-colors">
+                                    <div class="max-w-xs ${key.toLowerCase().includes('amount') ? 'font-mono text-right' : ''}">${formattedValue}</div>
+                                </td>
+                             `;
+                         }).join('');
+
+                         // Determine row color based on credit/debit values
+                         let rowColorClass = 'bg-white';
+                         const amountKey = keys.find(k => k.toLowerCase().includes('amount'));
+                         const directionKey = keys.find(k => k.toLowerCase().includes('direction') || k.toLowerCase().includes('type') || k.toLowerCase().includes('flow'));
+                         
+                         if (amountKey && directionKey) {
+                             const amount = item[amountKey];
+                             const direction = String(item[directionKey]).toLowerCase();
+                             
+                             if (typeof amount === 'number') {
+                                 if (direction.includes('credit') || direction.includes('inflow') || direction.includes('positive')) {
+                                     rowColorClass = 'bg-green-50 hover:bg-green-100';
+                                 } else if (direction.includes('debit') || direction.includes('outflow') || direction.includes('negative')) {
+                                     rowColorClass = 'bg-red-50 hover:bg-red-100';
+                                 }
+                             }
+                         }
+
+                         return `
+                             <tr class="border-b border-gray-200 transition-colors ${rowColorClass}">
+                                 ${rowCells}
+                             </tr>
+                         `;
+                     }).join('');
+
+                    // Create column headers with sort functionality
+                    const tableHeaders = keys.map(key => {
+                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        const isAmount = key.toLowerCase().includes('amount');
+                        
+                        return `
+                            <th class="px-2 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 last:border-r-0 cursor-pointer hover:bg-gray-100 transition-colors" 
+                                onclick="sortTable('${key}', this)" 
+                                data-key="${key}"
+                                data-sort="none">
+                                <div class="flex items-center justify-between">
+                                    <span>${formattedKey}</span>
+                                    <div class="flex flex-col ml-1">
+                                        <i data-lucide="chevron-up" class="w-2 h-2 text-gray-400 sort-icon-up"></i>
+                                        <i data-lucide="chevron-down" class="w-2 h-2 text-gray-400 sort-icon-down"></i>
+                                    </div>
+                                </div>
+                            </th>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200" id="trans-usage-table">
+                                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                                        <tr>
+                                            ${tableHeaders}
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        ${tableRows}
+                                    </tbody>
+                                </table>
+                            </div>
+                                                         <div class="bg-gray-50 px-2 py-1 text-xs text-gray-500 border-t border-gray-200">
+                                 <div class="flex items-center justify-between">
+                                     <span>Total: ${data.length} items</span>
+                                     <span class="text-gray-400">Click column headers to sort</span>
+                                 </div>
+                             </div>
+                        </div>
+                    `;
+                } else {
+                    // Handle non-array objects (fallback to key-value format)
+                    const entries = Object.entries(data);
+                    
+                    if (entries.length === 0) {
+                        return `
+                            <div class="text-center py-8 text-gray-500">
+                                <p>No data available in transaction usage dictionary</p>
+                            </div>
+                        `;
+                    }
+
+                    // Create a structured table
+                    const tableRows = entries.map(([key, value]) => {
+                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        let formattedValue;
+                        
+                        if (typeof value === 'string') {
+                            formattedValue = formatText(value);
+                            formattedValue = `<div class="max-w-md">${formattedValue}</div>`;
+                        } else if (typeof value === 'number') {
+                            formattedValue = `<div class="max-w-md font-mono">${formatNumber(value)}</div>`;
+                        } else if (typeof value === 'object' && value !== null) {
+                            formattedValue = `<div class="max-w-md">${formatDictValue(value, 0)}</div>`;
+                        } else {
+                            formattedValue = `<div class="max-w-md">${String(value)}</div>`;
+                        }
+
+                        return `
+                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900 align-top">
+                                    <div class="flex items-center">
+                                        <i data-lucide="key" class="w-4 h-4 mr-2 text-primary-500"></i>
+                                        ${formattedKey}
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 align-top">
+                                    ${formattedValue}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    return `
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Key
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Value
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    `;
+                }
+            }
+
+            return `
+                <div class="text-center py-8 text-gray-500">
+                    <p>Invalid data format for transaction usage dictionary</p>
+                </div>
+            `;
+        }
+
+        // Sort table function
+        function sortTable(key, headerElement) {
+            const table = document.getElementById('trans-usage-table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // Get current sort direction
+            const currentSort = headerElement.dataset.sort;
+            const newSort = currentSort === 'asc' ? 'desc' : 'asc';
+            
+            // Reset all headers
+            table.querySelectorAll('th').forEach(th => {
+                th.dataset.sort = 'none';
+                th.classList.remove('bg-blue-50', 'bg-green-50');
+            });
+            
+            // Update current header
+            headerElement.dataset.sort = newSort;
+            headerElement.classList.add(newSort === 'asc' ? 'bg-green-50' : 'bg-blue-50');
+            
+            // Sort rows
+            rows.sort((a, b) => {
+                const aValue = a.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
+                const bValue = b.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
+                
+                let aNum = parseFloat(aValue.replace(/[$,]/g, ''));
+                let bNum = parseFloat(bValue.replace(/[$,]/g, ''));
+                
+                // Check if both values are numbers
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    // Numeric sorting
+                    return newSort === 'asc' ? aNum - bNum : bNum - aNum;
+                } else {
+                    // String sorting
+                    if (newSort === 'asc') {
+                        return aValue.localeCompare(bValue);
+                    } else {
+                        return bValue.localeCompare(aValue);
+                    }
+                }
+            });
+            
+            // Reorder rows in DOM
+            rows.forEach(row => tbody.appendChild(row));
+            
+            // Update sort icons
+            updateSortIcons(headerElement, newSort);
+        }
+        
+        // Get column index for a given key
+        function getColumnIndex(key) {
+            const table = document.getElementById('trans-usage-table');
+            const headerRow = table.querySelector('thead tr');
+            const headers = Array.from(headerRow.querySelectorAll('th'));
+            
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].dataset.key === key) {
+                    return i + 1; // nth-child is 1-indexed
+                }
+            }
+            return 1; // fallback
+        }
+        
+        // Update sort icons
+        function updateSortIcons(headerElement, sortDirection) {
+            const upIcon = headerElement.querySelector('.sort-icon-up');
+            const downIcon = headerElement.querySelector('.sort-icon-down');
+            
+            if (sortDirection === 'asc') {
+                upIcon.classList.remove('text-gray-400');
+                upIcon.classList.add('text-green-600');
+                downIcon.classList.remove('text-green-600');
+                downIcon.classList.add('text-gray-400');
+            } else {
+                downIcon.classList.remove('text-gray-400');
+                downIcon.classList.add('text-blue-600');
+                upIcon.classList.remove('text-blue-600');
+                upIcon.classList.add('text-gray-400');
             }
         }
 
