@@ -1,0 +1,248 @@
+{
+    "transactions_data": {
+        "transactions": [
+            {
+                "category": "ACH",
+                "direction": "Credit",
+                "count": 6701,
+                "amount": 937774757.76,
+                "pct": "90.23%"
+            },
+            {
+                "category": "Wire Transfer",
+                "direction": "Credit",
+                "count": 628,
+                "amount": 66222336.31,
+                "pct": "6.37%"
+            },
+            {
+                "category": "Check or Cash",
+                "direction": "Credit",
+                "count": 230,
+                "amount": 32804062.64,
+                "pct": "3.16%"
+            },
+            {
+                "category": "Back Office",
+                "direction": "Credit",
+                "count": 96,
+                "amount": 1828186.16,
+                "pct": "0.18%"
+            },
+            {
+                "category": "FundsTransfer",
+                "direction": "Credit",
+                "count": 2,
+                "amount": 712165.94,
+                "pct": "0.07%"
+            },
+            {
+                "category": "Wire Transfer",
+                "direction": "Debit",
+                "count": 5907,
+                "amount": 741522860.66,
+                "pct": "71.51%"
+            },
+            {
+                "category": "ACH",
+                "direction": "Debit",
+                "count": 1793,
+                "amount": 198162654.60999998,
+                "pct": "19.11%"
+            },
+            {
+                "category": "Check or Cash",
+                "direction": "Debit",
+                "count": 6870,
+                "amount": 96407384.83,
+                "pct": "9.3%"
+            },
+            {
+                "category": "FundsTransfer",
+                "direction": "Debit",
+                "count": 3,
+                "amount": 687818.4,
+                "pct": "0.07%"
+            },
+            {
+                "category": "Back Office",
+                "direction": "Debit",
+                "count": 22,
+                "amount": 122607.74,
+                "pct": "0.01%"
+            }
+        ]
+    },
+    "money_flow_analysis": {
+        "raw_analysis": "<output>\n{\n\"MONEY FLOW ANALYSIS\": \"Funds primarily enter through ACH credits ($937,774,757.76), followed by Wire Transfer credits ($66,222,336.31), Check or Cash credits ($32,804,062.64), and minor contributions from Back Office and FundsTransfer credits. Outflows are dominated by Wire Transfer debits ($741,522,860.66), followed by ACH debits ($198,162,654.61), Check or Cash debits ($96,407,384.83), and minor outflows from FundsTransfer and Back Office debits.\",\n\"MONEY FLOW Structure\": \"ACH (Credit) → primary, Wire Transfer (Credit) → secondary, Check or Cash (Credit) → tertiary, Back Office (Credit) → minor, FundsTransfer (Credit) → minor; Wire Transfer (Debit) → dominated, ACH (Debit) → secondary, Check or Cash (Debit) → tertiary, FundsTransfer (Debit) → minor, Back Office (Debit) → minor\",\n\"Total Inflow\": \"$1,040,917,458.81\",\n\"Total Outflow\": \"$1,036,181,821.60\",\n\"Net Flow\": \"$4,735,637.21\",\n\"Percentage Difference\": \"0.46%\",\n\"Status\": \"BALANCED\"\n}\n</output>",
+        "parsing_error": "Could not parse structured data from response"
+    },
+    "transactions_usage": "Out of total inflow $1036903326.24, in category ACH, $132051933.92 money flow out (Debit) is in category 'no description', $42001360.05 money flow out (Debit) is in category 'transfer to itself', $14962058.81 money flow out (Debit) is in category 'payroll', $6600000.00 money flow out (Debit) is in category 'tax', $2496018.96 money flow out (Debit) is in category 'retail', $42017.87 money flow out (Debit) is in category 'health_care', $6290.00 money flow out (Debit) is in category 'professional_services', $2975.00 money flow out (Debit) is in category 'unknown'. \nOut of total inflow $1039341508.81, in category ACH, $820678700.08 money flow in (Credit) is in category 'retail', $93897864.55 money flow in (Credit) is in category 'no description', $21605889.04 money flow in (Credit) is in category 'logistics', $1494163.59 money flow in (Credit) is in category 'unknown', $97703.00 money flow in (Credit) is in category 'food_delivery', $437.50 money flow in (Credit) is in category 'professional_services'. \nOut of total inflow $1036903326.24, in category Back Office, $122607.74 money flow out (Debit) is in category 'no description'. \nOut of total inflow $1039341508.81, in category Back Office, $1828186.16 money flow in (Credit) is in category 'no description'. \nOut of total inflow $1036903326.24, in category Check or Cash, $96407384.83 money flow out (Debit) is in category 'no description'. \nOut of total inflow $1039341508.81, in category Check or Cash, $32804062.64 money flow in (Credit) is in category 'no description'. \nOut of total inflow $1036903326.24, in category FundsTransfer, $687818.40 money flow out (Debit) is in category 'no description'. \nOut of total inflow $1039341508.81, in category FundsTransfer, $712165.94 money flow in (Credit) is in category 'no description'. \nOut of total inflow $1036903326.24, in category Wire Transfer, $369638777.97 money flow out (Debit) is in category 'food_and_beverage', $206844340.25 money flow out (Debit) is in category 'unknown', $52055990.98 money flow out (Debit) is in category 'financial_services', $48066384.57 money flow out (Debit) is in category 'construction_and_maintenance', $23984266.37 money flow out (Debit) is in category 'no description', $17912200.37 money flow out (Debit) is in category 'transportation', $13485508.32 money flow out (Debit) is in category 'professional_services', $9287907.71 money flow out (Debit) is in category 'retail', $207009.31 money flow out (Debit) is in category 'government', $25000.00 money flow out (Debit) is in category 'legal', $14474.80 money flow out (Debit) is in category 'education', $1000.00 money flow out (Debit) is in category 'transfer to itself'. \nOut of total inflow $1039341508.81, in category Wire Transfer, $20032768.82 money flow in (Credit) is in category 'unknown', $16963263.88 money flow in (Credit) is in category 'retail', $11186955.33 money flow in (Credit) is in category 'food_and_beverage', $10737636.31 money flow in (Credit) is in category 'no description', $5378773.90 money flow in (Credit) is in category 'transportation', $1718374.50 money flow in (Credit) is in category 'construction_and_maintenance', $204563.57 money flow in (Credit) is in category 'transfer to itself'. \n",
+    "money_usage_summary": {
+        "flow_analysis": {
+            "Description": {
+                "ACH Debit no description": "Neutral: No description available for these transactions.",
+                "ACH Debit transfer to itself": "Neutral: Internal transfers within the same account, low risk.",
+                "ACH Debit payroll": "High volume, regular payments to employees, essential for business operations.",
+                "ACH Debit tax": "Regular payments to government agencies for taxes, critical for compliance.",
+                "ACH Debit retail": "Payments made to retail businesses, indicative of consumer spending.",
+                "ACH Debit health_care": "Healthcare provider payments, essential for employee benefits.",
+                "ACH Debit professional_services": "Fees paid to legal, accounting, etc., necessary for business functions.",
+                "ACH Debit unknown": "Neutral: Transactions without a clear category, requires further investigation.",
+                "ACH Credit retail": "Revenue from retail sales, key indicator of consumer spending patterns.",
+                "ACH Credit no description": "Neutral: No description available for these transactions.",
+                "ACH Credit logistics": "Income from shipping and transportation services, vital for supply chain.",
+                "ACH Credit unknown": "Neutral: Transactions without a clear category, requires further investigation.",
+                "ACH Credit food_delivery": "Income from food delivery services, part of consumer spending.",
+                "ACH Credit professional_services": "Revenue from professional services, important for business income.",
+                "Back Office Debit no description": "Neutral: No description available for these transactions.",
+                "Back Office Credit no description": "Neutral: No description available for these transactions.",
+                "Check or Cash Debit no description": "Neutral: No description available for these transactions.",
+                "Check or Cash Credit no description": "Neutral: No description available for these transactions.",
+                "FundsTransfer Debit no description": "Neutral: No description available for these transactions.",
+                "FundsTransfer Credit no description": "Neutral: No description available for these transactions.",
+                "Wire Transfer Debit food_and_beverage": "Large payments to food and beverage suppliers, critical for business operations.",
+                "Wire Transfer Debit unknown": "Neutral: Transactions without a clear category, requires further investigation.",
+                "Wire Transfer Debit financial_services": "Fees paid to financial institutions, important for maintaining financial health.",
+                "Wire Transfer Debit construction_and_maintenance": "Payments for building and maintenance projects, crucial for infrastructure.",
+                "Wire Transfer Debit no description": "Neutral: No description available for these transactions.",
+                "Wire Transfer Debit transportation": "Payments for transportation services, essential for logistics.",
+                "Wire Transfer Debit professional_services": "Fees paid to professional service providers, necessary for business operations.",
+                "Wire Transfer Debit retail": "Payments to retail businesses, indicative of business expenses.",
+                "Wire Transfer Debit government": "Payments to government entities, often for regulatory compliance.",
+                "Wire Transfer Debit legal": "Legal fees, important for legal compliance and business protection.",
+                "Wire Transfer Debit education": "Payments for educational services, potentially for employee training.",
+                "Wire Transfer Debit transfer to itself": "Neutral: Internal transfers within the same account, low risk.",
+                "Wire Transfer Credit unknown": "Neutral: Transactions without a clear category, requires further investigation.",
+                "Wire Transfer Credit retail": "Revenue from retail sales, key indicator of consumer spending patterns.",
+                "Wire Transfer Credit food_and_beverage": "Income from food and beverage sales, part of consumer spending.",
+                "Wire Transfer Credit no description": "Neutral: No description available for these transactions.",
+                "Wire Transfer Credit transportation": "Revenue from transportation services, important for business income.",
+                "Wire Transfer Credit construction_and_maintenance": "Income from construction and maintenance projects, vital for infrastructure.",
+                "Wire Transfer Credit transfer to itself": "Neutral: Internal transfers within the same account, low risk."
+            },
+            "Summary": "The analysis reveals significant flows in payroll, retail, and logistics categories, indicating substantial business activity. High volumes in wire transfers suggest extensive external transactions, with notable payments to suppliers and service providers. The presence of 'unknown' transactions highlights areas needing further scrutiny to ensure transparency and risk management."
+        },
+        "raw_analysis": "{\"Description\": {\"ACH Debit no description\": \"Neutral: No description available for these transactions.\",\n\"ACH Debit transfer to itself\": \"Neutral: Internal transfers within the same account, low risk.\",\n\"ACH Debit payroll\": \"High volume, regular payments to employees, essential for business operations.\",\n\"ACH Debit tax\": \"Regular payments to government agencies for taxes, critical for compliance.\",\n\"ACH Debit retail\": \"Payments made to retail businesses, indicative of consumer spending.\",\n\"ACH Debit health_care\": \"Healthcare provider payments, essential for employee benefits.\",\n\"ACH Debit professional_services\": \"Fees paid to legal, accounting, etc., necessary for business functions.\",\n\"ACH Debit unknown\": \"Neutral: Transactions without a clear category, requires further investigation.\",\n\"ACH Credit retail\": \"Revenue from retail sales, key indicator of consumer spending patterns.\",\n\"ACH Credit no description\": \"Neutral: No description available for these transactions.\",\n\"ACH Credit logistics\": \"Income from shipping and transportation services, vital for supply chain.\",\n\"ACH Credit unknown\": \"Neutral: Transactions without a clear category, requires further investigation.\",\n\"ACH Credit food_delivery\": \"Income from food delivery services, part of consumer spending.\",\n\"ACH Credit professional_services\": \"Revenue from professional services, important for business income.\",\n\"Back Office Debit no description\": \"Neutral: No description available for these transactions.\",\n\"Back Office Credit no description\": \"Neutral: No description available for these transactions.\",\n\"Check or Cash Debit no description\": \"Neutral: No description available for these transactions.\",\n\"Check or Cash Credit no description\": \"Neutral: No description available for these transactions.\",\n\"FundsTransfer Debit no description\": \"Neutral: No description available for these transactions.\",\n\"FundsTransfer Credit no description\": \"Neutral: No description available for these transactions.\",\n\"Wire Transfer Debit food_and_beverage\": \"Large payments to food and beverage suppliers, critical for business operations.\",\n\"Wire Transfer Debit unknown\": \"Neutral: Transactions without a clear category, requires further investigation.\",\n\"Wire Transfer Debit financial_services\": \"Fees paid to financial institutions, important for maintaining financial health.\",\n\"Wire Transfer Debit construction_and_maintenance\": \"Payments for building and maintenance projects, crucial for infrastructure.\",\n\"Wire Transfer Debit no description\": \"Neutral: No description available for these transactions.\",\n\"Wire Transfer Debit transportation\": \"Payments for transportation services, essential for logistics.\",\n\"Wire Transfer Debit professional_services\": \"Fees paid to professional service providers, necessary for business operations.\",\n\"Wire Transfer Debit retail\": \"Payments to retail businesses, indicative of business expenses.\",\n\"Wire Transfer Debit government\": \"Payments to government entities, often for regulatory compliance.\",\n\"Wire Transfer Debit legal\": \"Legal fees, important for legal compliance and business protection.\",\n\"Wire Transfer Debit education\": \"Payments for educational services, potentially for employee training.\",\n\"Wire Transfer Debit transfer to itself\": \"Neutral: Internal transfers within the same account, low risk.\",\n\"Wire Transfer Credit unknown\": \"Neutral: Transactions without a clear category, requires further investigation.\",\n\"Wire Transfer Credit retail\": \"Revenue from retail sales, key indicator of consumer spending patterns.\",\n\"Wire Transfer Credit food_and_beverage\": \"Income from food and beverage sales, part of consumer spending.\",\n\"Wire Transfer Credit no description\": \"Neutral: No description available for these transactions.\",\n\"Wire Transfer Credit transportation\": \"Revenue from transportation services, important for business income.\",\n\"Wire Transfer Credit construction_and_maintenance\": \"Income from construction and maintenance projects, vital for infrastructure.\",\n\"Wire Transfer Credit transfer to itself\": \"Neutral: Internal transfers within the same account, low risk.\"},\n\"Summary\": \"The analysis reveals significant flows in payroll, retail, and logistics categories, indicating substantial business activity. High volumes in wire transfers suggest extensive external transactions, with notable payments to suppliers and service providers. The presence of 'unknown' transactions highlights areas needing further scrutiny to ensure transparency and risk management.\"}"
+    },
+    "wire_money_usage": {
+        "raw_analysis": "{\n    \"GRUPO ALPINE FRESH S.A. DE C.V.\": \"unknown\",\n    \"COSTCO WHOLESALE UK LIMITED\": \"retail\",\n    \"ALPINE FARMS HOLDINGS INC\": \"unknown\",\n    \"INTERNATIONAL PROCUREMENT + LOGISTI\": \"transportation\",\n    \"COSTCO WHOLESALE JAPAN, LTD.\": \"retail\",\n    \"1/COSTCO DE MEXICO SA DE CV\": \"retail\",\n    \"1/SANLUCAR FRUIT S L\": \"food_and_beverage\",\n    \"FRESH GO LIMITED\": \"food_and_beverage\",\n    \"SHENZHEN SHENGCHUANXIAN TRADING\": \"retail\",\n    \"RON JIUN ENTERPRISE CO., LTD.\": \"unknown\",\n    \"SHANGHAI CHENGUAN IMPORT AND EXPORT\": \"retail\",\n    \"1/AARTSEN BREDA B.V.\": \"unknown\",\n    \"TERRAFLUX AGROTECH S. DE R.L. DE C.\": \"construction_and_maintenance\",\n    \"COSTCO DE MEXICO SA DE CV\": \"retail\",\n    \"SHENZHEN LULUDA INTERNATIONAL FREIG\": \"transportation\",\n    \"ITALIAN PRODUCE CO. LIMITED\": \"food_and_beverage\",\n    \"1/GLOBAL FRUIT POINT GMBH\": \"food_and_beverage\",\n    \"MESA VIEW FARMS MEXICO HOLDCO LTD\": \"unknown\",\n    \"ASIA GLOBAL LOGISTICS (H.K.)\": \"transportation\",\n    \"FARM DIRECT SUPPLY LLC\": \"food_and_beverage\",\n    \"1/SHANGHAI CHENGUAN IMPORT AND\": \"retail\",\n    \"COSTCO DE MEXICO S.A. DE C.V.\": \"retail\",\n    \"GRUPO AGRIBEANS SA DE CV\": \"unknown\",\n    \"COSTCO DE MEXICO S A DE C V\": \"retail\",\n    \"1/SHANGHAI HOLDFRESH TRADING CO LTD\": \"retail\",\n    \"ALPINE FRESH INC\": \"unknown\",\n    \"1/INVER AMERICAN AGRICONSTRUCTION\": \"construction_and_maintenance\",\n    \"FALL CREEK PERU SRL\": \"unknown\",\n    \"FRESH GO LIMITED ADD.UNIT 5 AND 6 1\": \"food_and_beverage\",\n    \"AGRICOLA SUN BERRIES SA DE CV\": \"food_and_beverage\",\n    \"1/UNION AGRICOLA M F SPR DE RL D\": \"food_and_beverage\",\n    \"MACADU FRESH LLC\": \"food_and_beverage\",\n    \"1/AV FARMS SA DE CV\": \"food_and_beverage\",\n    \"1/EMPAQUE N 1 S DE RL DE CV\": \"food_and_beverage\",\n    \"COSTA DE VERACRUZ SA DE CV\": \"food_and_beverage\",\n    \"1/ESPACEITE S.L.\": \"unknown\",\n    \"FRESH GO LIMITED ADD RM 5 N 6 16/F\": \"food_and_beverage\",\n    \"FRESH GO LIMITED ADD.RM 5 N 6 16\\\\F\": \"food_and_beverage\",\n    \"MACADU FRESH LLC\": \"food_and_beverage\",\n    \"1/JOY LIN CO LTD\": \"unknown\",\n    \"SHENZHEN OHENG IMPORT AND EXPORT CO\": \"retail\",\n    \"FRESH GO LIMITED UNIT 1605-6 GLOBAL\": \"food_and_beverage\",\n    \"CELULOSA Y CORRUGADOS DE SONOR\": \"construction_and_maintenance\",\n    \"ALPINE FRESH LLC\": \"transfer to itself\",\n    \"1/ROVEG FRUIT B.V.\": \"food_and_beverage\",\n    \"1/SANLUCAR FRUIT S L\": \"food_and_beverage\",\n    \"FINEST FRUIT TRADING LIMITED ADD UN\": \"food_and_beverage\",\n    \"FRESH GO LIMITED\": \"food_and_beverage\",\n    \"SHANGHAI HUI ZHAN INTERNATIONAL TRA\": \"retail\",\n    \"SHENZHEN OHENG IMPORT AND EXPORT\": \"retail\",\n    \"ZHEJIANG OHENG IMPORT AND EXPORT\": \"retail\",\n    \"M.V.M.SHOJI CO.,LTD. 0320-07304098\": \"retail\",\n    \"DALIAN YIDU GROUP CO.,LTD\": \"retail\",\n    \"AV EMPRESARIOS 135 P 8 BPS PUERTA\": \"unknown\",\n    \"FRESH GO LIMITED ADD UNIT 5 AND 6 1\": \"food_and_beverage\",\n    \"POMINA ENTERPRISE CO., LTD.\": \"unknown\",\n    \"1/AGRICOLA LOS ENCINOS S DE PR D\": \"food_and_beverage\",\n    \"1/JOY LIN CO LTD\": \"unknown\",\n    \"INCASOURCE TRADING USA LLC\": \"retail\",\n    \"SL AGRICOLA SA DE CV\": \"food_and_beverage\",\n    \"1/MARCELO VANEGAS SANTINI\": \"unknown\",\n    \"1/BYBLUE B.V.\": \"unknown\",\n    \"JWM ASIA (HONG KONG) LIMITED ADD UN\": \"transportation\",\n    \"1/SANLUCAR FRUIT,SL\": \"food_and_beverage\",\n    \"FRUIT GO ENTERPRISE CO., LTD.\": \"food_and_beverage\",\n    \"MESA VIEW FARMS LP\": \"unknown\",\n    \"SOUTH FLORIDA PRODUCE LLC\": \"food_and_beverage\",\n    \"1/FRUTAS E SANCHEZ S L\": \"food_and_beverage\",\n    \"1/JOY LIN CO LTD\": \"unknown\",\n    \"FRESH GO LIMITED ADD RM 5 N 6 16/F\": \"food_and_beverage\",\n    \"JWM ASIA (SINGAPORE) PTE LTD\": \"transportation\",\n    \"1/GARCIA MATEO   SINOVA S.L.\": \"food_and_beverage\",\n    \"SHENZHEN OHENG IMPORT AND EXPORT CO\": \"retail\",\n    \"JWM ASIA (HONG KONG) LIMITED ADD.UN\": \"transportation\",\n    \"INTEGRITY SA\": \"unknown\",\n    \"1/GARCIA MATEO   SINOVA SL\": \"food_and_beverage\",\n    \"BOMAREA SRL\": \"unknown\",\n    \"ALPINE FRESH HOLDING CORPORATION\": \"unknown\",\n    \"BETA BEST PRODUCE LTD\": \"food_and_beverage\",\n    \"TAMBO SUR LLC\": \"unknown\",\n    \"M.V.M.SHOJI CO.,LTD.\": \"retail\",\n    \"1/JWM ASIA (SINGAPORE) PTE. LTD.\": \"transportation\",\n    \"1/HNOS MORA TAMAYO SL\": \"unknown\",\n    \"ALPINE FARMS HOLDINGS INC\": \"unknown\",\n    \"1/FRUTAS NIQUI MADRIMPORT, S.L.\": \"food_and_beverage\",\n    \"JRE LICENSING INC\": \"unknown\",\n    \"THE PRODUCE SPOT LLC\": \"food_and_beverage\",\n    \"DOUG SPECIALTIES LLC\": \"unknown\",\n    \"BOMAREA S R L\": \"unknown\",\n    \"ALP16TH LLC\": \"unknown\",\n    \"1/HERMANOS MORA TAMAYO SL\": \"unknown\",\n    \"ESTUDIO MUNIZ SOCIEDAD CIVIL DE RES\": \"unknown\",\n    \"ALPINE FRESH LLC\": \"transfer to itself\",\n    \"ENERGAGE LLC\": \"unknown\",\n    \"TRANSPOR TA CONGELADOS S  DE RL  DE\": \"transportation\",\n    \"Bomarea S.R.L.\": \"unknown\",\n    \"Complejo Agroindustrial Beta\": \"construction_and_maintenance\",\n    \"Gold Fruit Farm, S.A. de CV\": \"food_and_beverage\",\n    \"Alpine Fresh Holding Corporation\": \"unknown\",\n    \"Banco Monex SA\": \"financial_services\",\n    \"Exportadora Green Vegano S.A. de CV\": \"food_and_beverage\",\n    \"Melissa Y Mia LLC\": \"unknown\",\n    \"Agricola Sun Berries II SA De CV\": \"food_and_beverage\",\n    \"Exportadora Fruticola Del Sur\": \"food_and_beverage\",\n    \"Banco Monex, S.A. Institucion\": \"financial_services\",\n    \"Peak Quality Del Peru S.A.\": \"food_and_beverage\",\n    \"Bluefield Chile LTDA\": \"food_and_beverage\",\n    \"ADP TotalSource, Inc\": \"professional_services\",\n    \"Morava SAC\": \"unknown\",\n    \"Appling Blueberry Farm LLC\": \"food_and_beverage\",\n    \"Agrocasagrande\": \"unknown\",\n    \"Global Growers Marketing S.A.\": \"food_and_beverage\",\n    \"Seaboard Marine, LTD\": \"transportation\",\n    \"Optimal Brightness Solutions S De R\": \"unknown\",\n    \"Cascade Fruit Growers LLC\": \"food_and_beverage\",\n    \"A &R Berries Avocados SPR De RL\": \"food_and_beverage\",\n    \"Inversiones Agricolas Expoberries S\": \"food_and_beverage\",\n    \"Agrocumbre S.A.\": \"food_and_beverage\",\n    \"Agricola Los Titanes Sa De CV\": \"food_and_beverage\",\n    \"Blueberry Warehouse Inc.\": \"food_and_beverage\",\n    \"Abigail Produce LLC\": \"food_and_beverage\",\n    \"Mesa View Farms Mexico Holding CO\": \"unknown\",\n    \"SL Agricola SA De CV\": \"food_and_beverage\",\n    \"AV Farms SA De CV\": \"food_and_beverage\",\n    \"Agroemprendedora Mexicana del Pacif\": \"food_and_beverage\",\n    \"Agricola Sun Berries SA de CV\": \"food_and_beverage\",\n    \"Azzurro LP\": \"unknown\",\n    \"Faex Trading SAC\": \"food_and_beverage\",\n    \"Lewis Nursery and Farms/American\": \"food_and_beverage\",\n    \"Sonoran Specialities SA de CV\": \"food_and_beverage\",\n    \"Pinebloom Farms, LLC\": \"food_and_beverage\",\n    \"Agrofutura Company SAC\": \"food_and_beverage\",\n    \"Mega Fresco Del Bajio\": \"food_and_beverage\",\n    \"Mesa View Farms LP\": \"unknown\",\n    \"ATOB Trade Company Inc\": \"retail\",\n    \"Elva Fresh Produce SA De CV\": \"food_and_beverage\",\n    \"Pi Berries, S.A.\": \"food_and_beverage\",\n    \"JRE Licensing Inc\": \"unknown\",\n    \"Level-Berries, SA De CV\": \"food_and_beverage\",\n    \"Inversiones Agricola Expoberries SA\": \"food_and_beverage\",\n    \"VO Produce LLC\": \"food_and_beverage\",\n    \"Expoberries S.A.\": \"food_and_beverage\",\n    \"Atob Trade Company Inc\": \"retail\",\n    \"Valley Pride Sales LLC\": \"food_and_beverage\",\n    \"Banco Monex S.A.\": \"financial_services\",\n    \"Productora Agricola Cabson S De RL\": \"food_and_beverage\",\n    \"Agrovision US HoldCo LLC\": \"unknown\",\n    \"Banco Monex, S.A.\": \"financial_services\",\n    \"Agricola Berry Real SA De CV\": \"food_and_beverage\",\n    \"Biomoras Produce SPR De RL de CV\": \"food_and_beverage\",\n    \"Level Berries\": \"food_and_beverage\",\n    \"Agroberries Peru S.A.C.\": \"food_and_beverage\",\n    \"Terraflux Agrotech, S de RL\": \"construction_and_maintenance\",\n    \"Frutera San Fernando SA\": \"food_and_beverage\",\n    \"Sol Y Pampa S.A.C\": \"food_and_beverage\",\n    \"Agro Campo Bafi S.P.R De R.L\": \"food_and_beverage\",\n    \"Fall Creek Mexico S De RL De CV\": \"food_and_beverage\",\n    \"Grupo Agricola El Laurel, S.A. De C\": \"food_and_beverage\",\n    \"Agro Exportaciones Peru Foods S.A.C\": \"food_and_beverage\",\n    \"Diamond Berries SA De CV\": \"food_and_beverage\",\n    \"New Transport S.A.\": \"transportation\",\n    \"FD Berries Trading SA De CV\": \"food_and_beverage\",\n    \"Sulken SA De CV\": \"food_and_beverage\",\n    \"Exportadora San Rafael LTDA\": \"food_and_beverage\",\n    \"Expoberries SA de CV\": \"food_and_beverage\",\n    \"Exportadora San Esteban Limitada\": \"food_and_beverage\",\n    \"Rancho Girolando, SA De CV\": \"food_and_beverage\",\n    \"Sanlucar Fruits S.L.\": \"food_and_beverage\",\n    \"H52 MEXICO SAPI DE CV\": \"unknown\",\n    \"Agroinper Foods SAC\": \"food_and_beverage\",\n    \"IPS Holding Group Corp\": \"unknown\",\n    \"Agropecuaria El Sagrado SPR\": \"food_and_beverage\",\n    \"Complejo Agroindustrias Beta\": \"construction_and_maintenance\",\n    \"Bluedrop Produce LLC\": \"food_and_beverage\",\n    \"Marcelo Vanegas Santini\": \"unknown\",\n    \"Actinver Casa De Bolsa, SA Grupo\": \"financial_services\",\n    \"Campo Agricola El Socorro SPR de RL\": \"food_and_beverage\",\n    \"Costa de Veracruz SA de CV\": \"food_and_beverage\",\n    \"Exportadora E Inversiones Agroberri\": \"food_and_beverage\",\n    \"Agrocir SA De CV\": \"food_and_beverage\",\n    \"FD Berries Trading SA de CV\": \"food_and_beverage\",\n    \"Agricola Tiago SA De CV\": \"food_and_beverage\",\n    \"Cibanco SA\": \"financial_services\",\n    \"BQ Fruits S de RL de CV\": \"food_and_beverage\",\n    \"Level Berries New\": \"food_and_beverage\",\n    \"Intercam Banco SA Institucion\": \"financial_services\",\n    \"Greenstone Farm Credit Services Agr\": \"financial_services\",\n    \"Bridges Produce Inc\": \"food_and_beverage\",\n    \"Selman Tachna Felix\": \"unknown\",\n    \"Melissa Y Mia, LLC\": \"unknown\",\n    \"Fruitberries SPR de RL\": \"food_and_beverage\",\n    \"Banco Del Bajio SA\": \"financial_services\",\n    \"Cibanco SA Institucion De Banca\": \"financial_services\",\n    \"Comercializadora Agricola Baja Sur\": \"food_and_beverage\",\n    \"Jorge Angulo Cota\": \"unknown\",\n    \"Si Fresh SA De CV\": \"food_and_beverage\",\n    \"Meadow Berry Farms LTD\": \"food_and_beverage\",\n    \"Rey Produce S De RL De CV\": \"food_and_beverage\",\n    \"Cross Logistics\": \"transportation\",\n    \"Rancho Santa Cristina SPR De RL\": \"food_and_beverage\",\n    \"Empaque No 1\": \"food_and_beverage\",\n    \"Cross Partners Cold Storage, Inc.\": \"food_and_beverage\",\n    \"Rebecca Pesquera Lemus\": \"unknown\",\n    \"TA Export SAC\": \"food_and_beverage\",\n    \"Dr. B\"s Inc\": \"unknown\",\n    \"Corerepe Agricultural SPR de RL\": \"food_and_beverage\",\n    \"Ippolito Transportation Inc\": \"transportation\",\n    \"Agricola El Encuentro SA De CV\": \"food_and_beverage\",\n    \"SMG Carriers, Inc\": \"transportation\",\n    \"Fall Creek Farm & Nursery, Inc.\": \"food_and_beverage\",\n    \"Garces Berries S De RL de CV\": \"food_and_beverage\",\n    \"Valle Maule, S.A.\": \"food_and_beverage\",\n    \"Vegkiss Products Inc\": \"food_and_beverage\",\n    \"Agrosanjacinto SAC\": \"food_and_beverage\",\n    \"Talayote Group, Inc\": \"unknown\",\n    \"Smartco De Mexico S de RL\": \"food_and_beverage\",\n    \"Banco De America Central, S.A.\": \"financial_services\",\n    \"Berries Bafi, S.P.R.\": \"food_and_beverage\",\n    \"Agricola Cerro Prieto S.A.\": \"food_and_beverage\",\n    \"Mavir Fruits S de RL de CV\": \"food_and_beverage\",\n    \"Helix Packaging, Inc\": \"construction_and_maintenance\",\n    \"Celulosa Y Corrugados De Sonora\": \"construction_and_maintenance\",\n    \"Jose Labastida Vargas\": \"unknown\",\n    \"Kuehne n Nagle SA\": \"transportation\",\n    \"Agricola Tres Torres, S.C. De RL\": \"food_and_beverage\",\n    \"A P Fruit Growers LTD\": \"food_and_beverage\",\n    \"Rodolfo Quezada Urruela\": \"unknown\",\n    \"Frutico Legacy SA De CV\": \"food_and_beverage\",\n    \"Brown & Brown of FL Miami Dade\": \"professional_services\",\n    \"Zalar F V\": \"unknown\",\n    \"Transportes Refrigerados TRL SA\": \"transportation\",\n    \"Insurance Office of America\": \"professional_services\",\n    \"Intercam Banco SA IBM\": \"financial_services\",\n    \"Morgan Stanley\": \"financial_services\",\n    \"Globopak, LLC\": \"construction_and_maintenance\",\n    \"Banco Base SA, IBM\": \"financial_services\",\n    \"Agricola Mezcu SAC\": \"food_and_beverage\",\n    \"Grupo Alpine Fresh, S.A.\": \"unknown\",\n    \"Crowley Latin America Services LLC\": \"transportation\",\n    \"Lucas Rosello Hinrichs\": \"unknown\",\n    \"Worldwide Investment SAC\": \"unknown\",\n    \"Humberto Daniel Jimenez Ruiz\": \"unknown\",\n    \"Agriexport SA De CV\": \"food_and_beverage\",\n    \"Cultivos Selectos Del Norte\": \"food_and_beverage\",\n    \"Translogistics SAC\": \"transportation\",\n    \"Agricola La Fragua LTDA\": \"food_and_beverage\",\n    \"Grupo Exportador De Frutas SA\": \"food_and_beverage\",\n    \"Planasa Mexico/Alpine Acct\": \"food_and_beverage\",\n    \"Growers Club\": \"unknown\",\n    \"Jorge Alejandro Bustos Oyanedel\": \"unknown\",\n    \"Alberto Vanegas Burque\": \"unknown\",\n    \"Berries El Sendero SPR de RL\": \"food_and_beverage\",\n    \"Hellmann Perishable Logistics Peru\": \"transportation\",\n    \"Exponents Insta USA, Inc\": \"unknown\",\n    \"Davila Y Curillo CIA LTDA\": \"food_and_beverage\",\n    \"Banco Ve Por Mas S.A.\": \"financial_services\",\n    \"Miami Dade County BOCC\": \"government\",\n    \"Sheridan House Inc\": \"unknown\",\n    \"Grupo Avotarascas S.A. De CV\": \"unknown\",\n    \"AG Point Consulting Inc.\": \"professional_services\",\n    \"Skandinaviska Enskilda Banken, NY\": \"financial_services\",\n    \"Lineth Arce Rios\": \"unknown\",\n    \"Sustainable Frontier, LLC\": \"unknown\",\n    \"Agricole Center\": \"unknown\",\n    \"JW Nexgen Plants De RL de CV\": \"food_and_beverage\",\n    \"Agrovision Peru SAC\": \"food_and_beverage\",\n    \"Martin Ruben Zepeda Parra\": \"unknown\",\n    \"Perishable Movements LTD\": \"transportation\",\n    \"Luis E Elias\": \"unknown\",\n    \"Spivey-Braddy Farms\": \"food_and_beverage\",\n    \"Agricola Edber S.A. de CV\": \"food_and_beverage\",\n    \"Altamura Produce SA De CV\": \"food_and_beverage\",\n    \"Mattivi Mexico S De RL de CV\": \"food_and_beverage\",\n    \"P.I. Berries SPA\": \"food_and_beverage\",\n    \"Smart Global Logistics SAC\": \"transportation\",\n    \"Lewis Nursery and Farms Inc.\": \"food_and_beverage\",\n    \"Alpagri\": \"unknown\",\n    \"Integrity S.A.\": \"unknown\",\n    \"Maria Guadalupe Armenta Zavala\": \"unknown\",\n    \"Cobalt Hills Farms\": \"food_and_beverage\",\n    \"Fall Creek Farm Nursery Mexico S De\": \"food_and_beverage\",\n    \"Josue Lazcon\": \"unknown\",\n    \"Pomina Enterprise Co, LTD\": \"food_and_beverage\",\n    \"Carlos Murrieta Navarro\": \"unknown\",\n    \"American Express TRS/TMS Depository\": \"financial_services\",\n    \"NorPac S de RL de CV\": \"food_and_beverage\",\n    \"Mas Campo BDP Sapi\": \"food_and_beverage\",\n    \"International Cargo Logistics Limit\": \"transportation\",\n    \"Spindle Cooling & Warehouse LLC\": \"food_and_beverage\",\n    \"Fletes Internacionales\": \"transportation\",\n    \"Fall Creek Chile SPA\": \"food_and_beverage\",\n    \"Bertha Julia Lemas Perez\": \"unknown\",\n    \"TJB Super Yachts Limited\": \"unknown\",\n    \"Jose Centurion Leon\": \"unknown\",\n    \"A. Hartrodt Peru\": \"food_and_beverage\",\n    \"Congelados La Hacienda SA de CV\": \"food_and_beverage\",\n    \"Pacific International Cold Storage\": \"food_and_beverage\",\n    \"Sergio Francisco Rubio Novoa\": \"unknown\",\n    \"DGL Distribucion SA DE CV\": \"food_and_beverage\",\n    \"Rolando Davila Paladines\": \"unknown\",\n    \"Agrex Pro SAC\": \"food_and_beverage\",\n    \"Exportadora E Importadora LLF S.A.\": \"retail\",\n    \"Control Cargo Logistics\": \"transportation\",\n    \"Berrymore Farms LLC\": \"food_and_beverage\",\n    \"Andes Logistics Del Peru\": \"transportation\",\n    \"Homebank\": \"financial_services\",\n    \"Carlos Aparcana\": \"unknown\",\n    \"Cristobal Gonzalez\": \"unknown\",\n    \"Corrugados De Baja California S De\": \"construction_and_maintenance\",\n    \"Maquinados Y Equipos Industriales\": \"construction_and_maintenance\",\n    \"Amore Fruits Produce S De RL\": \"food_and_beverage\",\n    \"Picaler Exportacion E Importacion\": \"retail\",\n    \"Jose Abelardo Centurion Leon\": \"unknown\",\n    \"Maria De Jesus Robles Perez\": \"unknown\",\n    \"EC Legal Mexico, S.C,\": \"legal\",\n    \"Bank of New York Mellon\": \"financial_services\",\n    \"Walker Brothers, Inc.\": \"unknown\",\n    \"Shanghai Fruitful\": \"retail\",\n    \"Ceva Logistics Peru S.R.L\": \"transportation\",\n    \"Henry Deza Hinojosa\": \"unknown\",\n    \"United Brokers, LLC\": \"retail\",\n    \"CXP Pallets\": \"construction_and_maintenance\",\n    \"Elsa Natalia Waltters Alvarado\": \"unknown\",\n    \"Olympic Berries SA De CV\": \"food_and_beverage\",\n    \"Walker Brothers, LLC\": \"unknown\",\n    \"Crawford Packaging Inc\": \"construction_and_maintenance\",\n    \"IPS Holding Group Corp Liquidations\": \"unknown\",\n    \"PWC\": \"professional_services\",\n    \"MMLC Pty LTD\": \"unknown\",\n    \"Gurpa SA De CV\": \"food_and_beverage\",\n    \"Asociacion de Gremios Productores A\": \"unknown\",\n    \"University of Florida Foundation, I\": \"education\",\n    \"Parsonage Lane Advisors, LLC\": \"professional_services\",\n    \"Correcaminos Intercontinentales SA\": \"transportation\",\n    \"Aneberries, AC\": \"unknown\",\n    \"Seatrade\": \"transportation\",\n    \"Costco Wholesa Canada LTD\": \"retail\",\n    \"G-Berries S.R.L.\": \"food_and_beverage\",\n    \"Melkor SAC\": \"food_and_beverage\",\n    \"DUE TO OTHER - WIRES\": \"unknown\",\n    \"Leonardo Lizardi Gonzalez\": \"unknown\",\n    \"Acciona Forwarding Peru SA\": \"transportation\",\n    \"Blueberry Farms De Mexico S de RL\": \"food_and_beverage\",\n    \"Luka Peruzovic Yacht Support\": \"unknown\",\n    \"University of Guelph Direct Payment\": \"education\",\n    \"Juan Sebastian Orgeta Vallejo\": \"unknown\",\n    \"VMA Logistics and Distribution\": \"transportation\",\n    \"Luis Martin Gonzalez Gonzalez\": \"unknown\",\n    \"Service Cold Storage\": \"food_and_beverage\",\n    \"Eduardo Manuel Cordova Hurtado\": \"unknown\",\n    \"QC Fresh Fruit LLC\": \"food_and_beverage\",\n    \"Estudio Rubio Leguia Normand Y Asoc\": \"professional_services\",\n    \"Husch Blackwell LLP\": \"professional_services\",\n    \"Arroyos Transport\": \"transportation\",\n    \"Operadora DGL Consulting, SA DE CV\": \"professional_services\",\n    \"Davila Y Currillo\": \"food_and_beverage\",\n    \"Miguel Angel De Los Santos Vasquez\": \"unknown\",\n    \"Biolaf Agronegocios\": \"unknown\",\n    \"Fernando Leal Campas\": \"unknown\",\n    \"G-Berries S.R.L\": \"food_and_beverage\",\n    \"Belmark Inc\": \"unknown\",\n    \"Altatec De Occidente\": \"construction_and_maintenance\",\n    \"Qeneto Iberia SL\": \"unknown\",\n    \"Qeneto S.A,C\": \"unknown\",\n    \"E&W SPR de RL de CV\": \"food_and_beverage\",\n    \"Nissi Blue SPR DE RL DE CV\": \"food_and_beverage\",\n    \"Alpine Fresh LLC\": \"transfer to itself\",\n    \"Grupo Bursatil Mexicano SA De CV\": \"financial_services\",\n    \"JW Nexgen Plants S De RL\": \"food_and_beverage\",\n    \"Juan Sebastian Ortega Vallejo\": \"unknown\",\n    \"TA Export S.A.C\": \"food_and_beverage\",\n    \"Expoberries SA De CV\": \"food_and_beverage\",\n    \"Yapu Solutions SAC\": \"unknown\",\n    \"FD Berries\": \"food_and_beverage\",\n    \"Selmex Logistic\": \"transportation\",\n    \"Am-Mex International\": \"retail\",\n    \"Sedex Information Exchange LTD\": \"unknown\"\n}",
+        "wire_money_usage_summary": [
+            {
+                "direction": "Credit",
+                "category": "Wire Transfer",
+                "usage_category": "construction_and_maintenance",
+                "trans_am": "1718374.5"
+            },
+            {
+                "direction": "Credit",
+                "category": "Wire Transfer",
+                "usage_category": "food_and_beverage",
+                "trans_am": "11186955.33"
+            },
+            {
+                "direction": "Credit",
+                "category": "Wire Transfer",
+                "usage_category": "retail",
+                "trans_am": "16963263.88"
+            },
+            {
+                "direction": "Credit",
+                "category": "Wire Transfer",
+                "usage_category": "transfer to itself",
+                "trans_am": "204563.57"
+            },
+            {
+                "direction": "Credit",
+                "category": "Wire Transfer",
+                "usage_category": "transportation",
+                "trans_am": "5378773.9"
+            },
+            {
+                "direction": "Credit",
+                "category": "Wire Transfer",
+                "usage_category": "unknown",
+                "trans_am": "20032768.82"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "construction_and_maintenance",
+                "trans_am": "48066384.57"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "education",
+                "trans_am": "14474.8"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "financial_services",
+                "trans_am": "52055990.98"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "food_and_beverage",
+                "trans_am": "369638777.972784"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "government",
+                "trans_am": "207009.31"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "legal",
+                "trans_am": "25000.0"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "professional_services",
+                "trans_am": "13485508.32"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "retail",
+                "trans_am": "9287907.714268"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "transfer to itself",
+                "trans_am": "1000.0"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "transportation",
+                "trans_am": "17912200.370632"
+            },
+            {
+                "direction": "Debit",
+                "category": "Wire Transfer",
+                "usage_category": "unknown",
+                "trans_am": "206844340.24752325"
+            }
+        ]
+    },
+    "cash_information": "\n        Total Cash In: 1476.0, Percentage: 0.74\n        Total Cash Out: 0, Percentage: 0.0\n    ",
+    "high_cash_summary": {
+        "raw_analysis": "**Cash Flow In Analysis:** The company's cash inflow of $1476.0 is above average, at the 74th percentile compared to its peers.\n\n**Cash Flow Out Analysis:** The company has no recorded cash outflows, indicating a unique position or potential data anomaly."
+    },
+    "business_pattern": {
+        "raw_analysis": "<industry_alignment>The transaction types [PARTIALLY MATCH] the expected patterns for a fresh fruit and vegetable merchant wholesaler.  **Alignment Points:**  - **Payroll, Tax, and Logistics (ACH Debit):** Regular payroll, tax payments, and logistics transactions align with a wholesaler’s need for employee compensation, regulatory compliance, and supply chain operations.  - **Food and Beverage (Wire Transfer):** Large wire debit transactions to food_and_beverage suppliers ($369.6M) and credit transactions from food_and_beverage clients ($11.2M) directly support procurement and sales of inventory, consistent with the industry.  - **Retail and Transportation:** Payments to retail businesses (ACH Debit retail) and transportation services (wire debit/credit) reflect typical supplier and customer relationships in wholesaling.  **Discrepancies:**  - **High Financial Services and Construction Costs (Wire Debit):** Debits totaling $52M to financial services and $48M to construction_and_maintenance may exceed typical expenses for a produce wholesaler unless the company is undergoing major infrastructure expansion or has unusual financial arrangements.  - **Unknown Transactions:** Significant wire debit ($206.8M) and credit ($20M) transactions categorized as \"unknown\" suggest unexplained flows, which could indicate unrelated activities or data gaps.  - **Education Payments:** Wire debit payments for education ($14K) are plausible but uncommon unless tied to employee training programs.  </industry_alignment>  <conclusion>  The company **appears to be conducting legitimate business within its stated industry**, but **requires further scrutiny** due to:  1. Large, unexplained \"unknown\" transactions.  2. Unusually high expenditures on financial services and construction.  3. Potential overemphasis on non-core activities (e.g., wire debits to professional services, legal fees).  Verify these discrepancies to confirm alignment with standard wholesaler operations.  </conclusion>"
+    },
+    "public_info": {
+        "raw_analysis": "### Summary of ALPINE FRESH LLC\n\n**Overview:**\nAlpine Fresh LLC is a leading grower, packer, and shipper of fresh fruits and vegetables, specializing in commodities like blueberries, raspberries, and French beans. Headquartered in Doral, Florida, the company was founded in 1988 and is known for its commitment to high-quality produce and excellent customer service.\n\n**Products:**\n- **Blueberries:** One of the largest importers of fresh blueberries.\n- **Raspberries:** Fresh raspberries.\n- **French Beans:** Grown, packed, and shipped fresh.\n- **Asparagus:** Specializes in green asparagus.\n\n**Contact Information:**\n- Phone: 305-594-9117\n- Email: info@alpinefresh.com\n\n**Online Presence:**\n- Website: [www.alpinefresh.com](https://www.alpinefresh.com)\n- LinkedIn: Over 6.2K followers\n\n**Financials:**\n- Revenue: $1.7 billion\n- Employees: 123\n\n**Additional Services:**\n- Alpine Fresh Cleaning LLC offers residential and commercial cleaning services.\n\n**Recent News:**\n- Latest updates available on Reuters.\n\n**Customer Queries:**\nCommon queries include ownership details, genetic modification status of blueberries, and calorie counts.\n\nFor more detailed information, visit their official website or LinkedIn page."
+    },
+    "public_address_info": {
+        "raw_analysis": "<address>\n9300 NW 58th St, Doral, FL 33178, United States\n</address>\n\n<location_details>\nImporter\n</location_details>\n\n<reviews_details>\nThe reviews for ALPINE FRESH INC are mixed, with an overall rating of 2.8 out of 5 based on 98 reviews. Some positive comments highlight the hardworking and kind staff. However, many reviews express dissatisfaction, citing issues such as poor customer service, language barriers, and extremely long loading times. For example, one reviewer noted difficulties with all worker cars obstructing truck access, while another mentioned the need for workers to learn English to better communicate with drivers.\n</reviews_details>"
+    }
+}

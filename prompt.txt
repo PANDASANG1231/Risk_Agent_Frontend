@@ -1,0 +1,130 @@
+<project_requirements>
+  <framework>React with TypeScript</framework>
+  <styling>Tailwind CSS</styling>
+  <icons>Lucide React</icons>
+  <state_management>React hooks (useState, useEffect)</state_management>
+  <file_structure>Single HTML file with embedded React</file_structure>
+</project_requirements>
+
+<design_specifications>
+  <layout>
+    <header>Clean navigation with risk agent branding</header>
+    <sidebar>Risk category navigation with progress indicators</sidebar>
+    <main_content>Dynamic content area with smooth transitions</main_content>
+    <footer>Action buttons and summary statistics</footer>
+  </layout>
+  
+  <visual_design>
+    <color_scheme>
+      <primary>Deep blue (#1e40af) for trust and stability</primary>
+      <secondary>Orange (#f97316) for attention and warnings</secondary>
+      <success>Green (#10b981) for low risk indicators</success>
+      <warning>Yellow (#f59e0b) for medium risk</warning>
+      <danger>Red (#ef4444) for high risk alerts</danger>
+      <background>Light gray (#f8fafc) with white cards</background>
+    </color_scheme>
+    
+    <typography>
+      <headings>Bold, hierarchical font sizing</headings>
+      <body_text>Readable, accessible font choices</body_text>
+      <data_display>Monospace for numerical values</data_display>
+    </typography>
+    
+    <components>
+      <cards>Elevated cards with subtle shadows</cards>
+      <buttons>Rounded corners with hover effects</buttons>
+      <forms>Clean input fields with validation states</forms>
+      <charts>Animated, interactive visualizations</charts>
+    </components>
+  </visual_design>
+  
+  <animations>
+    <transitions>Smooth page transitions (300ms ease)</transitions>
+    <loading_states>Skeleton loaders and progress indicators</loading_states>
+    <micro_interactions>Button hover effects, form feedback</micro_interactions>
+    <data_visualization>Animated chart rendering</data_visualization>
+  </animations>
+</design_specifications>
+
+<interaction_patterns>
+  <navigation>
+    <progress_bar>Visual completion indicator across top</progress_bar>
+    <step_navigation>Click to jump between completed sections</step_navigation>
+    <breadcrumbs>Clear location indicators</breadcrumbs>
+  </navigation>
+  
+  <form_interactions>
+    <smart_validation>Real-time field validation with helpful messages</smart_validation>
+    <conditional_logic>Show/hide questions based on previous answers</conditional_logic>
+    <save_progress>Auto-save with manual save confirmation</save_progress>
+  </form_interactions>
+  
+  <data_visualization>
+    <hover_effects>Detailed tooltips on chart hover</hover_effects>
+    <drill_down>Click chart segments for detailed breakdowns</drill_down>
+    <comparison_mode>Toggle between different time periods or scenarios</comparison_mode>
+  </data_visualization>
+</interaction_patterns>
+
+<deliverables>
+  <single_file>Complete HTML file with embedded React, CSS, and JavaScript</single_file>
+  <responsive_design>Mobile-first design that works on all screen sizes</responsive_design>
+  <accessibility>WCAG 2.1 AA compliance with proper ARIA labels</accessibility>
+  <performance>Optimized for fast loading and smooth interactions</performance>
+  <browser_support>Works in Chrome, Firefox, Safari, and Edge</browser_support>
+  <documentation>Inline comments explaining key functionality</documentation>
+</deliverables>
+
+<data>
+  data_file_path: analysis_result.json
+</data>
+
+
+==================================
+
+<step 1> 
+Build a Python API, and update all HTML code to fetch data via API requests instead of reading JSON files directly. 
+Focus on keys transaction_data, money_flow_analysis, money_usage_summary,high_cash_summary, business_pattern, public_info, public_address_info
+</step 1>
+
+<step 2>
+Based on json file and api structure, build a HTML
+</ step 2>
+
+
+<follow up 2> 
+I want the transaction step a sankey flow.
+I wish the sankey flow has three layer, all inflow type, pool, all outflow type 
+Note that in the code distinguish inflow's type and outflow's type. merge "direction" and "category" together as source and target
+</follow up 2>
+
+===================================
+in business pattern while display, have two try except flow
+
+Try:
+If xml language is there, <a> </a>, change line and have a
+also try to remove '/n'
+except:
+keep the original one 
+
+Try:
+if "**" somthing "**" is there, remove all "-", make the something bold, and change line  every time we have that.
+except:
+keep the original one
+
+Overall Make the font smaller, remove all "-" if the two try except works at try, remove all 
+
+In conclusion of business_pattern section, remove all /n
+====================================
+
+in api, have two try except piece
+ - first try except:
+      - regex xml language, the patter will be <a>...</a>, remove <a> and </a>, take a as a key, and the stuff between <a> and </a> as value. do this on the whole text
+      for everykey except the last one:
+      -- second try except:
+              if "-" in text, split by "-"
+
+      for the last key:
+      -- last try except:
+               remove all '/n'
+      - if not successful, return the original text

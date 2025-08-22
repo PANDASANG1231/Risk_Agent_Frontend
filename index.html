@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Agent - Advanced Financial Analysis</title>
+    
+    <!-- External Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e40af'
+                        },
+                        secondary: {
+                            500: '#f97316',
+                            600: '#ea580c'
+                        },
+                        success: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669'
+                        },
+                        warning: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            600: '#d97706'
+                        },
+                        danger: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            500: '#ef4444',
+                            600: '#dc2626'
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'Fira Code', 'monospace']
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.3s ease-out forwards',
+                        'glow': 'glow 2s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5)' },
+                            '100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-elevated {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-elevated:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #10b981 0%, #3b82f6 50%, #f59e0b 100%);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-indicator {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            transition: all 0.5s ease;
+        }
+
+        .nav-item {
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-item.active::before,
+        .nav-item:hover::before {
+            width: 100%;
+        }
+
+        .nav-item.active,
+        .nav-item:hover {
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .section-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .section-content.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen antialiased">
+    <!-- Progress Bar -->
+    <div class="progress-bar fixed top-0 left-0 w-full z-50">
+        <div class="progress-indicator w-0" id="progress-indicator"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass fixed top-1 left-4 right-4 z-40 rounded-2xl">
+        <div class="px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Risk Agent</h1>
+                        <p class="text-sm text-gray-500">Advanced Financial Analysis</p>
+                    </div>
+                </div>
+
+                <!-- Search & Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Search -->
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="global-search"
+                            placeholder="Search analysis..." 
+                            class="w-64 pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                        >
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+
+                    <!-- Actions -->
+                    <button class="p-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors" id="refresh-btn">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 text-gray-600"></i>
+                </button>
+                    
+                    <button class="p-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors" id="export-btn">
+                        <i data-lucide="download" class="w-4 h-4 text-gray-600"></i>
+                </button>
+
+                    <!-- Mobile Menu -->
+                    <button class="lg:hidden p-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors" id="mobile-menu-toggle">
+                        <i data-lucide="menu" class="w-4 h-4 text-gray-600"></i>
+                </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex pt-20">
+        <!-- Sidebar -->
+        <aside class="fixed left-4 top-24 bottom-4 w-72 glass rounded-2xl p-6 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar">
+            <!-- Navigation -->
+            <nav class="space-y-2" id="navigation">
+                <!-- Will be populated dynamically -->
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-80 p-6">
+            <!-- Loading State -->
+            <div class="loading-container hidden" id="loading-container">
+                <div class="flex items-center justify-center h-64">
+                    <div class="relative">
+                        <div class="w-16 h-16 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i data-lucide="activity" class="w-6 h-6 text-primary-500"></i>
+                    </div>
+                            </div>
+                        </div>
+                <p class="text-center text-gray-600 mt-4">Loading risk analysis data...</p>
+                        </div>
+
+                        <!-- Content Sections -->
+            <div id="content-container">
+                <!-- Transactions Section -->
+                <section id="transactions" class="section-content">
+                    <div class="card-elevated p-6" id="transactions-content">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </section>
+
+                <!-- Other sections will be added dynamically -->
+                    </div>
+            </main>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden lg:hidden"></div>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        const { createIcons } = window.lucide;
+        createIcons();
+
+        // Global state
+        let currentSection = 'transactions';
+        let apiData = {};
+        
+        // Navigation configuration
+        const sections = [
+            { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
+            { id: 'money-usage', name: 'Usage Patterns', icon: 'pie-chart', description: 'Spending analysis' },
+            { id: 'high-cash', name: 'Cash Analysis', icon: 'dollar-sign', description: 'Cash flow insights' },
+            { id: 'business-pattern', name: 'Business Pattern', icon: 'bar-chart-3', description: 'Industry alignment' },
+            { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' }
+        ];
+
+        // Utility functions
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+
+        // API functions
+        async function fetchApiData(endpoint) {
+            try {
+                const response = await fetch(`/api/${endpoint}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch ${endpoint}: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching ${endpoint}:`, error);
+                throw error;
+            }
+        }
+
+
+
+        // Create navigation
+        function createNavigation() {
+            const nav = document.getElementById('navigation');
+            nav.innerHTML = sections.map(section => `
+                <button 
+                    class="nav-item w-full flex items-center p-4 rounded-xl text-left transition-all group"
+                    data-section="${section.id}"
+                    onclick="showSection('${section.id}')"
+                >
+                    <div class="w-10 h-10 bg-gray-100 group-hover:bg-primary-100 rounded-lg flex items-center justify-center mr-3 transition-colors">
+                        <i data-lucide="${section.icon}" class="w-5 h-5 text-gray-600 group-hover:text-primary-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900 group-hover:text-white">${section.name}</div>
+                        <div class="text-sm text-gray-500 group-hover:text-gray-200">${section.description}</div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all"></i>
+                </button>
+            `).join('');
+            
+            createIcons();
+        }
+
+        // Show section
+        function showSection(sectionId) {
+            currentSection = sectionId;
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.section === sectionId);
+            });
+
+            // Create section if it doesn't exist
+            if (!document.getElementById(sectionId) && sectionId !== 'transactions') {
+                createSection(sectionId);
+            }
+            
+            // Update content
+            document.querySelectorAll('.section-content').forEach(section => {
+                if (section.id === sectionId) {
+                    section.classList.remove('hidden');
+                    setTimeout(() => {
+                        section.classList.add('active');
+                        
+                        // Resize Sankey chart when transactions section becomes visible
+                        if (sectionId === 'transactions' && document.getElementById('sankey-chart')) {
+                            setTimeout(() => {
+                                Plotly.Plots.resize('sankey-chart');
+                            }, 100);
+                        }
+                    }, 50);
+                } else {
+                    section.classList.remove('active');
+                    section.classList.add('hidden');
+                }
+            });
+            
+            // Update progress
+            updateProgress();
+            
+            // Close mobile menu
+            if (window.innerWidth < 1024) {
+                toggleMobileMenu(false);
+            }
+        }
+
+        // Create section dynamically
+        function createSection(sectionId) {
+            const container = document.getElementById('content-container');
+            const sectionConfig = sections.find(s => s.id === sectionId);
+            
+            const sectionElement = document.createElement('section');
+            sectionElement.id = sectionId;
+            sectionElement.className = 'section-content hidden';
+            
+            // Special handling for high-cash section
+            if (sectionId === 'high-cash') {
+                sectionElement.innerHTML = `
+                    <div class="card-elevated p-8" id="${sectionId}-content">
+                        ${createHighCashContent()}
+                    </div>
+                `;
+            } else if (sectionId === 'business-pattern') {
+                sectionElement.innerHTML = `
+                    <div class="card-elevated p-8" id="${sectionId}-content">
+                        ${createBusinessPatternContent()}
+                    </div>
+                `;
+            } else if (sectionId === 'money-usage') {
+                sectionElement.innerHTML = `
+                    <div class="card-elevated p-8" id="${sectionId}-content">
+                        ${createMoneyUsageContent()}
+                    </div>
+                `;
+            } else if (sectionId === 'public-info') {
+                sectionElement.innerHTML = `
+                    <div class="card-elevated p-8" id="${sectionId}-content">
+                        ${createPublicInfoContent()}
+                    </div>
+                `;
+            } else {
+                sectionElement.innerHTML = `
+                    <div class="card-elevated p-8" id="${sectionId}-content">
+                        <div class="text-center">
+                            <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <i data-lucide="${sectionConfig.icon}" class="w-10 h-10 text-primary-600"></i>
+                            </div>
+                            <p class="text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.appendChild(sectionElement);
+            createIcons();
+        }
+
+        // Create high cash content
+        function createHighCashContent() {
+            if (!apiData.highCash) {
+                return `
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="dollar-sign" class="w-10 h-10 text-primary-600"></i>
+                        </div>
+                        <p class="text-gray-600">Loading cash analysis data...</p>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl p-8">
+                    <div class="prose prose-primary max-w-none">
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            <div class="text-gray-700 leading-relaxed">${formatText(apiData.highCash.raw_analysis)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Create money usage content
+        function createMoneyUsageContent() {
+            if (!apiData.moneyUsage) {
+                return `
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="pie-chart" class="w-10 h-10 text-primary-600"></i>
+                        </div>
+                        <p class="text-gray-600">Loading money usage analysis data...</p>
+                    </div>
+                `;
+            }
+
+            // Check if dict_analysis exists, otherwise use raw_analysis
+            let contentHtml = '';
+            if (apiData.moneyUsage && apiData.moneyUsage.dict_analysis) {
+                // Add Summary at the top if it exists
+                let summaryHtml = '';
+                if (apiData.moneyUsage.dict_analysis.Summary) {
+                    summaryHtml = `
+                        <div class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                            <h4 class="text-base font-semibold text-blue-900 mb-2">Summary</h4>
+                            <div class="text-sm text-blue-800 leading-relaxed">${formatText(apiData.moneyUsage.dict_analysis.Summary)}</div>
+                        </div>
+                    `;
+                }
+                
+                // Special handling for Description key - show credit/debit layout
+                if (apiData.moneyUsage.dict_analysis.Description) {
+                    contentHtml = summaryHtml + createDescriptionLayout(apiData.moneyUsage.dict_analysis.Description);
+                } else {
+                    // Handle other dict_analysis keys normally
+                    const entries = Object.entries(apiData.moneyUsage.dict_analysis);
+                    const reversedEntries = [...entries].reverse(); // Reverse to show last first
+                    
+                    contentHtml = summaryHtml + reversedEntries.map(([key, value]) => {
+                        // Format the key to be more readable
+                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        
+                        // Recursively format the value
+                        const formattedValue = formatDictValue(value, 0);
+                        
+                        return `
+                            <div class="mb-6 border-b border-gray-200 pb-4 last:border-b-0">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-3">${formattedKey}</h4>
+                                <div class="text-sm text-gray-700 leading-relaxed">${formattedValue}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } else if (apiData.moneyUsage && apiData.moneyUsage.raw_analysis) {
+                // Handle raw_analysis with consolidated text formatting
+                const formattedText = formatText(apiData.moneyUsage.raw_analysis);
+                contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">${formattedText}</div>`;
+            } else {
+                // Fallback for other data types
+                contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">No money usage data available</div>`;
+            }
+
+            return `
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8">
+                    <div class="prose prose-green max-w-none">
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            ${contentHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Create special layout for Description with credit/debit columns
+        function createDescriptionLayout(descriptionData) {
+            if (!descriptionData || typeof descriptionData !== 'object') {
+                return `<div class="text-sm text-gray-700 leading-relaxed">${formatText(descriptionData)}</div>`;
+            }
+
+            // Define colors for different transaction types
+            const transactionColors = {
+                'wire_transfer': 'bg-blue-100 text-blue-800 border-blue-200',
+                'ach_debit': 'bg-red-100 text-red-800 border-red-200',
+                'ach_credit': 'bg-green-100 text-green-800 border-green-200',
+                'check': 'bg-purple-100 text-purple-800 border-purple-200',
+                'cash': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                'default': 'bg-gray-100 text-gray-800 border-gray-200'
+            };
+
+            // Separate credit and debit data
+            const creditData = {};
+            const debitData = {};
+            
+            Object.entries(descriptionData).forEach(([key, value]) => {
+                if (key.toLowerCase().includes('credit') || key.toLowerCase().includes('inflow')) {
+                    creditData[key] = value;
+                } else if (key.toLowerCase().includes('debit') || key.toLowerCase().includes('outflow')) {
+                    debitData[key] = value;
+                } else {
+                    // Default to credit if unclear
+                    creditData[key] = value;
+                }
+            });
+
+            // Create credit column
+            const creditHtml = Object.entries(creditData).map(([key, value]) => {
+                const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const colorClass = getTransactionColor(key, transactionColors);
+                
+                return `
+                    <div class="mb-2 p-2 rounded border ${colorClass}">
+                        <div class="text-xs font-semibold mb-1">${formattedKey}</div>
+                        <div class="text-xs">${formatDictValue(value, 0)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Create debit column
+            const debitHtml = Object.entries(debitData).map(([key, value]) => {
+                const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const colorClass = getTransactionColor(key, transactionColors);
+                
+                return `
+                    <div class="mb-2 p-2 rounded border ${colorClass}">
+                        <div class="text-xs font-semibold mb-1">${formattedKey}</div>
+                        <div class="text-xs">${formatDictValue(value, 0)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="mb-4">
+                    <h4 class="text-base font-semibold text-gray-900 mb-3">Description</h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- Credit Column -->
+                        <div>
+                            <h5 class="text-sm font-semibold text-green-700 mb-2 flex items-center">
+                                <i data-lucide="arrow-down-right" class="w-3 h-3 mr-1"></i>
+                                Credit/Inflow
+                            </h5>
+                            <div class="space-y-2">
+                                ${creditHtml || '<div class="text-gray-500 text-xs">No credit data available</div>'}
+                            </div>
+                        </div>
+                        
+                        <!-- Debit Column -->
+                        <div>
+                            <h5 class="text-sm font-semibold text-red-700 mb-2 flex items-center">
+                                <i data-lucide="arrow-up-right" class="w-3 h-3 mr-1"></i>
+                                Debit/Outflow
+                            </h5>
+                            <div class="space-y-2">
+                                ${debitHtml || '<div class="text-gray-500 text-xs">No debit data available</div>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper function to determine transaction color
+        function getTransactionColor(key, colorMap) {
+            const lowerKey = key.toLowerCase();
+            
+            for (const [pattern, colorClass] of Object.entries(colorMap)) {
+                if (lowerKey.includes(pattern)) {
+                    return colorClass;
+                }
+            }
+            
+            return colorMap.default;
+        }
+
+        // Create public info content with both public-info and public-address
+        function createPublicInfoContent() {
+            if (!apiData.publicInfo && !apiData.publicAddress) {
+                return `
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="building" class="w-10 h-10 text-primary-600"></i>
+                        </div>
+                        <p class="text-gray-600">Loading company information...</p>
+                    </div>
+                `;
+            }
+
+            let contentHtml = '';
+
+            // Add public info section
+            if (apiData.publicInfo) {
+                contentHtml += `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Company Information</h4>
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-sm">
+                            <div class="prose prose-blue max-w-none">
+                                <div class="bg-white rounded-xl p-4 shadow-sm">
+                                    ${formatPublicInfoData(apiData.publicInfo)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Add public address section
+            if (apiData.publicAddress) {
+                contentHtml += `
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Address Information</h4>
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 shadow-sm">
+                            <div class="prose prose-green max-w-none">
+                                <div class="bg-white rounded-xl p-4 shadow-sm">
+                                    ${formatPublicAddressData(apiData.publicAddress)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return contentHtml;
+        }
+
+        // Format public info data
+        function formatPublicInfoData(data) {
+            if (typeof data === 'string') {
+                return `<div class="text-sm text-gray-700 leading-relaxed">${formatText(data)}</div>`;
+            } else if (typeof data === 'object' && data !== null) {
+                const entries = Object.entries(data);
+                if (entries.length === 0) {
+                    return '<div class="text-sm text-gray-700">No company information available</div>';
+                }
+
+                return entries.map(([key, value]) => {
+                    const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    let formattedValue;
+                    
+                    if (typeof value === 'string') {
+                        formattedValue = formatText(value);
+                    } else if (typeof value === 'object' && value !== null) {
+                        formattedValue = formatDictValue(value, 0);
+                    } else {
+                        formattedValue = String(value);
+                    }
+
+                    return `
+                        <div class="mb-4 border-b border-gray-200 pb-3 last:border-b-0">
+                            <h5 class="text-base font-semibold text-gray-900 mb-2">${formattedKey}</h5>
+                            <div class="text-sm text-gray-700 leading-relaxed">${formattedValue}</div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                return '<div class="text-sm text-gray-700">No company information available</div>';
+            }
+        }
+
+        // Format public address data
+        function formatPublicAddressData(data) {
+            if (typeof data === 'string') {
+                return `<div class="text-sm text-gray-700 leading-relaxed">${formatText(data)}</div>`;
+            } else if (typeof data === 'object' && data !== null) {
+                const entries = Object.entries(data);
+                if (entries.length === 0) {
+                    return '<div class="text-sm text-gray-700">No address information available</div>';
+                }
+
+                return entries.map(([key, value]) => {
+                    const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    let formattedValue;
+                    
+                    if (typeof value === 'string') {
+                        formattedValue = formatText(value);
+                    } else if (typeof value === 'object' && value !== null) {
+                        formattedValue = formatDictValue(value, 0);
+                    } else {
+                        formattedValue = String(value);
+                    }
+
+                    return `
+                        <div class="mb-4 border-b border-gray-200 pb-3 last:border-b-0">
+                            <h5 class="text-base font-semibold text-gray-900 mb-2">${formattedKey}</h5>
+                            <div class="text-sm text-gray-700 leading-relaxed">${formattedValue}</div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                return '<div class="text-sm text-gray-700">No address information available</div>';
+            }
+        }
+
+        // Recursive function to format dictionary values
+        function formatDictValue(value, depth = 0) {
+            if (typeof value === 'string') {
+                return formatText(value);
+            } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                // Handle nested dictionaries
+                const indent = '  '.repeat(depth);
+                const entries = Object.entries(value);
+                
+                if (entries.length === 0) {
+                    return '{}';
+                }
+                
+                const formattedEntries = entries.map(([nestedKey, nestedValue]) => {
+                    const formattedNestedKey = nestedKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    const formattedNestedValue = formatDictValue(nestedValue, depth + 1);
+                    
+                    if (typeof nestedValue === 'object' && nestedValue !== null && !Array.isArray(nestedValue)) {
+                        // For nested objects, create a structured display
+                        return `
+                            <div class="ml-${Math.min(depth * 4, 16)} mb-3">
+                                <div class="font-medium text-gray-800 mb-2">${formattedNestedKey}</div>
+                                <div class="ml-4">${formattedNestedValue}</div>
+                            </div>
+                        `;
+                    } else {
+                        // For simple values, display inline
+                        return `
+                            <div class="ml-${Math.min(depth * 4, 16)} mb-2">
+                                <span class="font-medium text-gray-800">${formattedNestedKey}:</span>
+                                <span class="ml-2">${formattedNestedValue}</span>
+                            </div>
+                        `;
+                    }
+                }).join('');
+                
+                return `<div class="border-l-2 border-gray-200 pl-4">${formattedEntries}</div>`;
+            } else if (Array.isArray(value)) {
+                // Handle arrays
+                if (value.length === 0) {
+                    return '[]';
+                }
+                
+                const formattedItems = value.map((item, index) => {
+                    const formattedItem = formatDictValue(item, depth + 1);
+                    return `
+                        <div class="ml-${Math.min(depth * 4, 16)} mb-2">
+                            <span class="text-gray-600">[${index}]:</span>
+                            <span class="ml-2">${formattedItem}</span>
+                        </div>
+                    `;
+                }).join('');
+                
+                return `<div class="border-l-2 border-gray-200 pl-4">${formattedItems}</div>`;
+            } else {
+                // Handle other types (numbers, booleans, null, undefined)
+                return String(value);
+            }
+        }
+
+        // Consolidated text formatting function for reuse across different sections
+        function formatText(text) {
+            if (!text || typeof text !== 'string') {
+                return text;
+            }
+            
+            let formattedText = text;
+            
+            // Rule 1: Convert /n to line breaks
+            formattedText = formattedText.replace(/\/n/g, '<br/>');
+            
+            // Rule 2: Handle . **text** - convert to period + two line breaks + bold
+            formattedText = formattedText.replace(/\.\s+\*\*([^*]+)\*\*/g, '.<br/><br/><strong>$1</strong>');
+            
+            // Rule 3: Convert remaining **text** to bold (for regular cases)
+            formattedText = formattedText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            
+            return formattedText;
+        }
+
+
+        // Create business pattern content
+        function createBusinessPatternContent() {
+            if (!apiData.businessPattern) {
+                return `
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="bar-chart-3" class="w-10 h-10 text-primary-600"></i>
+                        </div>
+                        <p class="text-gray-600">Loading business pattern analysis data...</p>
+                    </div>
+                `;
+            }
+
+            // Check if dict_analysis exists, otherwise use raw_analysis
+            let contentHtml = '';
+            if (apiData.businessPattern && apiData.businessPattern.dict_analysis) {
+                // Handle dict_analysis - display key-value pairs
+                contentHtml = Object.entries(apiData.businessPattern.dict_analysis).map(([key, value]) => {
+                    // Format the key to be more readable
+                    const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    
+                    // Format the value with text formatting
+                    let formattedValue;
+                    if (typeof value === 'string') {
+                        formattedValue = formatText(value);
+                    } else {
+                        formattedValue = JSON.stringify(value, null, 2);
+                    }
+                    
+                    return `
+                        <div class="mb-6 border-b border-gray-200 pb-4 last:border-b-0">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-3">${formattedKey}</h4>
+                            <div class="text-sm text-gray-700 leading-relaxed">${formattedValue}</div>
+                        </div>
+                    `;
+                }).join('');
+            } else if (apiData.businessPattern && apiData.businessPattern.raw_analysis) {
+                // Handle raw_analysis with consolidated text formatting
+                const formattedText = formatText(apiData.businessPattern.raw_analysis);
+                contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">${formattedText}</div>`;
+            } else {
+                // Fallback for other data types
+                contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">No business pattern data available</div>`;
+            }
+
+            return `
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8">
+                    <div class="prose prose-gray max-w-none">
+                        <div class="bg-white rounded-xl p-6 shadow-sm">
+                            ${contentHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const currentIndex = sections.findIndex(s => s.id === currentSection);
+            const progress = ((currentIndex + 1) / sections.length) * 100;
+            document.getElementById('progress-indicator').style.width = `${progress}%`;
+        }
+
+        // Create key metrics
+        function createKeyMetrics(transactionsData) {
+            // Calculate metrics from transaction data
+            const credits = transactionsData.transactions.filter(t => t.direction === 'Credit');
+            const debits = transactionsData.transactions.filter(t => t.direction === 'Debit');
+            
+            const totalInflow = credits.reduce((sum, t) => sum + t.amount, 0);
+            const totalOutflow = debits.reduce((sum, t) => sum + t.amount, 0);
+            const netFlow = totalInflow - totalOutflow;
+            const totalTransactions = transactionsData.transactions.reduce((sum, t) => sum + t.count, 0);
+            
+            const metrics = [
+                {
+                    label: 'Total Inflow',
+                    value: formatCurrency(totalInflow),
+                        icon: 'arrow-down-right',
+                    color: 'success',
+                    change: `${credits.length} types`
+                    },
+                    {
+                    label: 'Total Outflow', 
+                    value: formatCurrency(totalOutflow),
+                        icon: 'arrow-up-right',
+                    color: 'danger',
+                    change: `${debits.length} types`
+                    },
+                    {
+                    label: 'Net Flow',
+                    value: formatCurrency(Math.abs(netFlow)),
+                        icon: 'trending-up',
+                    color: netFlow >= 0 ? 'success' : 'danger',
+                    change: netFlow >= 0 ? 'Positive' : 'Negative'
+                },
+                {
+                    label: 'Total Transactions',
+                    value: formatNumber(totalTransactions),
+                    icon: 'hash',
+                    color: 'primary',
+                    change: `${transactionsData.transactions.length} categories`
+                }
+            ];
+            
+                     const container = document.getElementById('key-metrics');
+         container.innerHTML = metrics.map(metric => `
+             <div class="metric-card p-4 rounded-xl">
+                             <div class="flex items-center justify-between mb-3">
+                     <div class="w-10 h-10 bg-${metric.color}-100 rounded-lg flex items-center justify-center">
+                         <i data-lucide="${metric.icon}" class="w-5 h-5 text-${metric.color}-600"></i>
+                             </div>
+                     <span class="text-xs font-medium text-${metric.color}-600 bg-${metric.color}-50 px-2 py-1 rounded-full">
+                         ${metric.change}
+                     </span>
+                 </div>
+                 <h3 class="text-xs font-medium text-gray-600 mb-1">${metric.label}</h3>
+                 <p class="text-xl font-bold text-gray-900 font-mono">${metric.value}</p>
+             </div>
+         `).join('');
+            
+            createIcons();
+        }
+
+        // Create transactions Sankey flow
+        function createTransactionsSankey(data) {
+            const container = document.getElementById('transactions-content');
+            
+            // Create container with key metrics and Sankey diagram
+            container.innerHTML = `
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="key-metrics">
+                    <!-- Will be populated by createKeyMetrics -->
+                </div>
+                
+                <!-- Sankey Diagram -->
+                <div class="bg-white rounded-xl shadow-sm">
+                    <div id="sankey-chart" style="height: 300px; width: 100%;"></div>
+                </div>
+                
+                <!-- Transaction Summaries -->
+                <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-green-50 rounded-xl p-4">
+                        <h4 class="font-semibold text-green-800 mb-2">Credit Flows (Inflows)</h4>
+                        <div id="credit-summary" class="text-sm text-green-700"></div>
+                                </div>
+                    <div class="bg-red-50 rounded-xl p-4">
+                        <h4 class="font-semibold text-red-800 mb-2">Debit Flows (Outflows)</h4>
+                        <div id="debit-summary" class="text-sm text-red-700"></div>
+                            </div>
+                    </div>
+                `;
+
+            // Prepare data for Sankey diagram
+            const nodes = [];
+            const links = [];
+            let nodeIndex = 0;
+            const nodeMap = {};
+
+            // Separate credit and debit transactions
+            const credits = data.transactions.filter(t => t.direction === 'Credit');
+            const debits = data.transactions.filter(t => t.direction === 'Debit');
+
+            // Layer 1: Inflow types (Credits)
+            credits.forEach(transaction => {
+                const sourceName = `${transaction.direction} ${transaction.category}`;
+                if (!nodeMap[sourceName]) {
+                    nodeMap[sourceName] = nodeIndex++;
+                    nodes.push({
+                        node: nodeMap[sourceName],
+                        label: sourceName,
+                        color: 'rgba(34, 197, 94, 0.8)' // Green for inflows
+                    });
+                }
+            });
+
+            // Layer 2: Central Pool
+            const poolName = 'Central Pool';
+            nodeMap[poolName] = nodeIndex++;
+            nodes.push({
+                node: nodeMap[poolName],
+                label: poolName,
+                color: 'rgba(59, 130, 246, 0.8)' // Blue for pool
+            });
+
+            // Layer 3: Outflow types (Debits)
+            debits.forEach(transaction => {
+                const targetName = `${transaction.direction} ${transaction.category}`;
+                if (!nodeMap[targetName]) {
+                    nodeMap[targetName] = nodeIndex++;
+                    nodes.push({
+                        node: nodeMap[targetName],
+                        label: targetName,
+                        color: 'rgba(239, 68, 68, 0.8)' // Red for outflows
+                    });
+                }
+            });
+
+            // Create links: Inflows → Pool
+            credits.forEach(transaction => {
+                const sourceName = `${transaction.direction} ${transaction.category}`;
+                links.push({
+                    source: nodeMap[sourceName],
+                    target: nodeMap[poolName],
+                    value: transaction.amount / 1000000, // Convert to millions for better visualization
+                    label: `${formatCurrency(transaction.amount)} (${transaction.pct})`
+                });
+            });
+
+            // Create links: Pool → Outflows
+            debits.forEach(transaction => {
+                const targetName = `${transaction.direction} ${transaction.category}`;
+                links.push({
+                    source: nodeMap[poolName],
+                    target: nodeMap[targetName],
+                    value: transaction.amount / 1000000, // Convert to millions for better visualization
+                    label: `${formatCurrency(transaction.amount)} (${transaction.pct})`
+                });
+            });
+
+            // Create Plotly Sankey diagram
+            const sankeyData = {
+                type: "sankey",
+                orientation: "h",
+                arrangement: "freeform",
+                node: {
+                    pad: 20,
+                    thickness: 35,
+                    line: {
+                        color: "#374151",
+                        width: 1
+                    },
+                    label: nodes.map(n => n.label === 'Central Pool' ? '' : n.label),
+                    color: nodes.map(n => n.color),
+                    hovertemplate: '<b>%{label}</b><br>Total: %{value:.1f}M<extra></extra>'
+                },
+                link: {
+                    source: links.map(l => l.source),
+                    target: links.map(l => l.target),
+                    value: links.map(l => l.value),
+                    label: links.map(l => l.label),
+                    color: links.map((l, i) => {
+                        // Color links based on whether they're inflow or outflow
+                        const isInflow = l.target === nodeMap[poolName];
+                        return isInflow ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)';
+                    }),
+                    line: {
+                        color: 'rgba(0, 0, 0, 0.3)',
+                        width: 1
+                    },
+                    hovertemplate: '<b>%{label}</b><extra></extra>'
+                }
+            };
+
+            const layout = {
+                font: { size: 12, color: '#374151' },
+                margin: { l: 0, r: 0, t: 10, b: 10 },
+                paper_bgcolor: 'white',
+                plot_bgcolor: 'white',
+                width: null,
+                height: 280,
+                autosize: true
+            };
+
+            const config = {
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['pan2d', 'select2d', 'lasso2d', 'autoScale2d'],
+                responsive: true,
+                toImageButtonOptions: {
+                    format: 'png',
+                    filename: 'transaction_flow',
+                    height: 400,
+                    width: 1400,
+                    scale: 1
+                }
+            };
+
+            // Wait for DOM to be ready, then render the Sankey diagram
+            setTimeout(() => {
+                Plotly.newPlot('sankey-chart', [sankeyData], layout, config).then(() => {
+                    // Force a resize after initial render to ensure proper sizing
+                    setTimeout(() => {
+                        Plotly.Plots.resize('sankey-chart');
+                    }, 50);
+                });
+            }, 50);
+
+            // Add resize handler for responsiveness
+            window.addEventListener('resize', () => {
+                Plotly.Plots.resize('sankey-chart');
+            });
+
+            // Create summaries
+            const creditSummary = document.getElementById('credit-summary');
+            const debitSummary = document.getElementById('debit-summary');
+
+            creditSummary.innerHTML = credits.map(t => 
+                `<div class="flex justify-between py-1">
+                    <span>${t.category}:</span>
+                    <span class="font-semibold">${formatCurrency(t.amount)} (${t.pct})</span>
+                </div>`
+            ).join('');
+
+            debitSummary.innerHTML = debits.map(t => 
+                `<div class="flex justify-between py-1">
+                    <span>${t.category}:</span>
+                    <span class="font-semibold">${formatCurrency(t.amount)} (${t.pct})</span>
+                </div>`
+            ).join('');
+
+                createIcons();
+        }
+
+        // Mobile menu functionality
+        function toggleMobileMenu(show = null) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            const isShown = !sidebar.classList.contains('-translate-x-full');
+            const shouldShow = show !== null ? show : !isShown;
+            
+            if (shouldShow) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Initialize dashboard
+        async function initDashboard() {
+            const loadingContainer = document.getElementById('loading-container');
+            
+            try {
+                loadingContainer.classList.remove('hidden');
+                
+                // Fetch all data
+                console.log('Fetching data from all API endpoints...');
+                const [
+                    transactionsData,
+                    moneyUsageData,
+                    highCashData,
+                    businessPatternData,
+                    publicInfoData,
+                    publicAddressData
+                ] = await Promise.all([
+                    fetchApiData('transactions'),
+                    fetchApiData('money-usage'),
+                    fetchApiData('high-cash'),
+                    fetchApiData('business-pattern'),
+                    fetchApiData('public-info'),
+                    fetchApiData('public-address')
+                ]);
+
+                // Store data globally
+                apiData = {
+                    transactions: transactionsData,
+                    moneyUsage: moneyUsageData,
+                    highCash: highCashData,
+                    businessPattern: businessPatternData,
+                    publicInfo: publicInfoData,
+                    publicAddress: publicAddressData
+                };
+
+                // Create UI components
+                createNavigation();
+                createTransactionsSankey(transactionsData);
+                createKeyMetrics(transactionsData);
+                
+                // Initialize features
+                initEventListeners();
+                
+                // Show transactions as default
+                showSection('transactions');
+                
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                showError(error.message);
+            } finally {
+                loadingContainer.classList.add('hidden');
+            }
+        }
+
+
+
+        // Create quick insights
+        function createQuickInsights() {
+            const container = document.getElementById('quick-insights');
+            container.innerHTML = `
+                <div class="card-elevated p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i data-lucide="trending-up" class="w-5 h-5 mr-2 text-primary-500"></i>
+                        Transaction Summary
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total Categories:</span>
+                            <span class="font-semibold">${apiData.transactions.transactions.length}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total Transactions:</span>
+                            <span class="font-semibold">${formatNumber(apiData.transactions.transactions.reduce((sum, t) => sum + t.count, 0))}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Status:</span>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium bg-success-100 text-success-700">Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-elevated p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i data-lucide="shield-check" class="w-5 h-5 mr-2 text-success-500"></i>
+                        Cash Flow Health
+                    </h3>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-success-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold text-success-600">A+</span>
+                        </div>
+                        <p class="text-sm text-gray-600">${apiData.highCash.raw_analysis.substring(0, 100)}...</p>
+                    </div>
+                </div>
+            `;
+            
+            createIcons();
+        }
+
+        // Event listeners
+        function initEventListeners() {
+            // Mobile menu
+            document.getElementById('mobile-menu-toggle').addEventListener('click', () => toggleMobileMenu());
+            document.getElementById('mobile-overlay').addEventListener('click', () => toggleMobileMenu(false));
+            
+            // Refresh button
+            document.getElementById('refresh-btn').addEventListener('click', initDashboard);
+            
+            // Export button
+            document.getElementById('export-btn').addEventListener('click', () => {
+                const data = { section: currentSection, timestamp: new Date().toISOString(), data: apiData };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `risk-analysis-${currentSection}-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Error handling
+        function showError(message) {
+            const container = document.getElementById('content-container');
+            container.innerHTML = `
+                <div class="text-center py-16">
+                    <div class="w-20 h-20 bg-danger-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i data-lucide="alert-circle" class="w-10 h-10 text-danger-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Error Loading Data</h3>
+                    <p class="text-gray-600 mb-6">${message}</p>
+                    <button onclick="initDashboard()" class="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors">
+                        Try Again
+                            </button>
+                        </div>
+                    `;
+                createIcons();
+        }
+
+        // Initialize the dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
