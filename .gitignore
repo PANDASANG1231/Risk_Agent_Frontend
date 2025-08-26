@@ -1,2 +1,6 @@
+# Exclude all JSON files except package.json
 *.json
+!package.json
+
+# Log files
 *.log

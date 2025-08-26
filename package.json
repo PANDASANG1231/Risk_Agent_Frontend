@@ -1,0 +1,44 @@
+{
+  "name": "risk-agent-frontend",
+  "version": "1.0.0",
+  "description": "Advanced Financial Risk Analysis Dashboard with Python Flask Backend",
+  "main": "index.html",
+  "scripts": {
+    "start": "python api_server.py",
+    "dev": "python api_server.py",
+    "frontend": "python -m http.server 3000",
+    "test": "python -m pytest tests/",
+    "lint": "python -m flake8 api_server.py",
+    "format": "python -m black api_server.py"
+  },
+  "keywords": [
+    "risk-analysis",
+    "financial-analysis",
+    "dashboard",
+    "flask",
+    "python",
+    "html",
+    "tailwindcss",
+    "plotly",
+    "data-visualization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "dependencies": {
+    "tailwindcss": "^3.3.0",
+    "lucide": "^0.263.1",
+    "plotly.js": "^2.27.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
