@@ -4,3 +4,6 @@
 
 # Log files
 *.log
+
+# node modules
+node_modules

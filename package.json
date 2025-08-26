@@ -4,12 +4,13 @@
   "description": "Advanced Financial Risk Analysis Dashboard with Python Flask Backend",
   "main": "index.html",
   "scripts": {
-    "start": "python api_server.py",
-    "dev": "python api_server.py",
-    "frontend": "python -m http.server 3000",
+    "start": "python -m pip install -r requirements.txt && python api_server.py",
+    "dev": "python -m pip install -r requirements.txt && python api_server.py",
     "test": "python -m pytest tests/",
-    "lint": "python -m flake8 api_server.py",
-    "format": "python -m black api_server.py"
+    "build:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --watch",
+    "dev:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --watch",
+    "setup": "bash setup_js_environment.bash && npm run build:css"
   },
   "keywords": [
     "risk-analysis",
@@ -29,11 +30,13 @@
     "url": "."
   },
   "devDependencies": {
-    "live-server": "^1.2.2"
+    "autoprefixer": "^10.4.21",
+    "live-server": "^1.2.2",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
   },
   "dependencies": {
-    "tailwindcss": "^3.3.0",
-    "lucide": "^0.263.1",
+    "lucide": "^0.263.0",
     "plotly.js": "^2.27.0"
   },
   "browserslist": [
