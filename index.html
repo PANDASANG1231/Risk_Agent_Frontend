@@ -503,47 +503,53 @@
             const container = document.getElementById('content-container');
             const sectionConfig = sections.find(s => s.id === sectionId);
             
+            // Check if section already exists and remove it first
+            const existingSection = document.getElementById(sectionId);
+            if (existingSection) {
+                existingSection.remove();
+            }
+            
             const sectionElement = document.createElement('section');
             sectionElement.id = sectionId;
             sectionElement.className = 'section-content';
             
-                         // Special handling for high-cash section
-             if (sectionId === 'high-cash') {
-                 sectionElement.innerHTML = `
-                     <div class="section-header">
-                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                         <p class="text-gray-600">${sectionConfig.description}</p>
-                     </div>
-                     <div class="card-elevated" id="${sectionId}-content">
-                         ${createHighCashContent()}
-                     </div>
-                 `;
-                           } else if (sectionId === 'business-pattern') {
-                  sectionElement.innerHTML = `
-                      <div class="section-header">
-                          <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                          <p class="text-gray-600">${sectionConfig.description}</p>
-                      </div>
-                      <div class="card-elevated" id="${sectionId}-content">
-                          ${createBusinessPatternContent()}
-                      </div>
-                  `;
-              } else {
-                 sectionElement.innerHTML = `
-                     <div class="section-header">
-                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                         <p class="text-gray-600">${sectionConfig.description}</p>
-                     </div>
-                     <div class="card-elevated" id="${sectionId}-content">
-                         <div class="text-center">
-                             <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                                 <i data-lucide="${sectionConfig.icon}" class="w-6 h-6 text-primary-600"></i>
-                             </div>
-                             <p class="text-xs text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
-                         </div>
-                     </div>
-                 `;
-             }
+            // Special handling for high-cash section
+            if (sectionId === 'high-cash') {
+                sectionElement.innerHTML = `
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
+                    </div>
+                    <div class="card-elevated" id="${sectionId}-content">
+                        ${createHighCashContent()}
+                    </div>
+                `;
+            } else if (sectionId === 'business-pattern') {
+                sectionElement.innerHTML = `
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
+                    </div>
+                    <div class="card-elevated" id="${sectionId}-content">
+                        ${createBusinessPatternContent()}
+                    </div>
+                `;
+            } else {
+                sectionElement.innerHTML = `
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
+                    </div>
+                    <div class="card-elevated" id="${sectionId}-content">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                <i data-lucide="${sectionConfig.icon}" class="w-6 h-6 text-primary-600"></i>
+                            </div>
+                            <p class="text-xs text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
+                        </div>
+                    </div>
+                `;
+            }
             
             container.appendChild(sectionElement);
             createIcons();
