@@ -1300,8 +1300,8 @@
                              if (typeof value === 'string') {
                                  formattedValue = formatText(value);
                              } else if (typeof value === 'number') {
-                                 // Special formatting for Amount fields
-                                 if (key.toLowerCase().includes('amount')) {
+                                 // Special formatting for Amount fields and trans_am
+                                 if (key.toLowerCase().includes('amount') || key === 'trans_am') {
                                      formattedValue = formatCurrency(value);
                                  } else {
                                      formattedValue = formatNumber(value);
