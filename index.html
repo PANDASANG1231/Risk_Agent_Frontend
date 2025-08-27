@@ -40,20 +40,24 @@
                      <div>
                          <h1 class="text-lg font-bold text-gray-900">Risk Agent</h1>
                          <p class="text-xs text-gray-500">Advanced Financial Analysis</p>
+                         <div id="account-status" class="text-xs text-gray-400 mt-1">
+                             <!-- Account status will be displayed here -->
+                         </div>
                      </div>
                  </div>
 
                                  <!-- Search & Actions -->
                  <div class="flex items-center space-x-2">
-                     <!-- Search -->
+                     <!-- Account Selector -->
                      <div class="relative">
-                         <input 
-                             type="text" 
-                             id="global-search"
-                             placeholder="Search analysis..." 
-                             class="w-48 pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm"
+                         <select 
+                             id="account-selector"
+                             class="w-48 pl-8 pr-8 py-1.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer"
                          >
-                         <i data-lucide="search" class="w-3 h-3 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                             <option value="">Select Account...</option>
+                         </select>
+                         <i data-lucide="user" class="w-3 h-3 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                         <i data-lucide="chevron-down" class="w-3 h-3 absolute right-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                      </div>
 
                      <!-- Actions -->
@@ -123,20 +127,16 @@
                      </div>
                  </section>
 
-                 <!-- Company Info Section -->
-                 <section id="public-info" class="section-content">
-                     <div class="section-header">
-                         <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
-                         <p class="text-gray-600">Public information</p>
-                         <button onclick="refreshCompanyInfo()" class="ml-4 px-2 py-0.5 text-xs bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors">
-                             <i data-lucide="refresh-cw" class="w-2.5 h-2.5 inline mr-1"></i>
-                             Refresh
-                         </button>
-                     </div>
-                     <div class="card-elevated" id="public-info-content">
-                         <!-- Will be populated dynamically -->
-                     </div>
-                 </section>
+                                   <!-- Company Info Section -->
+                  <section id="public-info" class="section-content">
+                      <div class="section-header">
+                          <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
+                          <p class="text-gray-600">Public information</p>
+                      </div>
+                      <div class="card-elevated" id="public-info-content">
+                          <!-- Will be populated dynamically -->
+                      </div>
+                  </section>
 
                  <!-- Other sections will be added dynamically -->
                      </div>
@@ -155,6 +155,8 @@
                  // Global state
          let currentSection = 'business-pattern';
         let apiData = {};
+        let selectedAccount = null;
+        let availableAccounts = [];
         
                  // Navigation configuration
          const sections = [
@@ -179,10 +181,15 @@
         }
 
         // API functions
-        async function fetchApiData(endpoint) {
+        async function fetchApiData(endpoint, acctno = null) {
             try {
-                console.log(`Fetching data from /api/${endpoint}...`);
-                const response = await fetch(`/api/${endpoint}`);
+                let url = `/api/${endpoint}`;
+                if (acctno) {
+                    url += `?acctno=${encodeURIComponent(acctno)}`;
+                }
+                
+                console.log(`Fetching data from ${url}...`);
+                const response = await fetch(url);
                 
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -198,6 +205,168 @@
                 // Return empty object instead of throwing to prevent dashboard failure
                 return {};
             }
+        }
+
+        // Load available accounts
+        async function loadAvailableAccounts() {
+            try {
+                console.log('Loading available accounts...');
+                const accountsData = await fetchApiData('accounts');
+                
+                if (accountsData && accountsData.accounts) {
+                    availableAccounts = accountsData.accounts;
+                    console.log('Available accounts:', availableAccounts);
+                    
+                    // Populate account selector
+                    const accountSelector = document.getElementById('account-selector');
+                    accountSelector.innerHTML = '<option value="">Select Account...</option>';
+                    
+                    availableAccounts.forEach(acctno => {
+                        const option = document.createElement('option');
+                        option.value = acctno;
+                        option.textContent = `Account ${acctno}`;
+                        accountSelector.appendChild(option);
+                    });
+                    
+                    // If there's only one account, auto-select it
+                    if (availableAccounts.length === 1) {
+                        accountSelector.value = availableAccounts[0];
+                        selectedAccount = availableAccounts[0];
+                        await loadAccountData(selectedAccount);
+                    }
+                } else {
+                    console.warn('No accounts found or invalid response format');
+                }
+            } catch (error) {
+                console.error('Error loading accounts:', error);
+                showError('Failed to load available accounts. Please check if the server is running.');
+            }
+        }
+
+        // Load data for a specific account
+        async function loadAccountData(acctno) {
+            if (!acctno) {
+                console.warn('No account number provided');
+                return;
+            }
+            
+            selectedAccount = acctno;
+            console.log(`Loading data for account: ${acctno}`);
+            
+            // Show loading state
+            const loadingContainer = document.getElementById('loading-container');
+            loadingContainer.classList.remove('hidden');
+            
+            try {
+                // Fetch all data for the selected account
+                console.log('Fetching data from all API endpoints for account:', acctno);
+                const [
+                    transactionsData,
+                    highCashData,
+                    businessPatternData,
+                    publicInfoData,
+                    publicAddressData,
+                    moneyFlowData,
+                    moneyUsageData,
+                    wireUsageData,
+                    transUsageDictData
+                ] = await Promise.all([
+                    fetchApiData('transactions', acctno),
+                    fetchApiData('high-cash', acctno),
+                    fetchApiData('business-pattern', acctno),
+                    fetchApiData('public-info', acctno),
+                    fetchApiData('public-address', acctno),
+                    fetchApiData('money-flow', acctno),
+                    fetchApiData('money-usage', acctno),
+                    fetchApiData('wire-usage', acctno),
+                    fetchApiData('transactions_usage_dict', acctno)
+                ]);
+
+                // Store data globally
+                apiData = {
+                    transactions: transactionsData,
+                    highCash: highCashData,
+                    businessPattern: businessPatternData,
+                    publicInfo: publicInfoData,
+                    publicAddress: publicAddressData,
+                    moneyFlow: moneyFlowData,
+                    moneyUsage: moneyUsageData,
+                    wireUsage: wireUsageData,
+                    transUsageDict: transUsageDictData
+                };
+
+                console.log('Stored apiData for account:', acctno, apiData);
+
+                // Update UI with new data
+                updateDashboardWithAccountData();
+                
+            } catch (error) {
+                console.error('Error loading account data:', error);
+                showError(`Failed to load data for account ${acctno}: ${error.message}`);
+            } finally {
+                loadingContainer.classList.add('hidden');
+            }
+        }
+
+        // Update dashboard with account data
+        function updateDashboardWithAccountData() {
+            // Update account status
+            updateAccountStatus();
+            
+            // Create UI components
+            createNavigation();
+            
+            // Update transactions section if data exists
+            if (apiData.transactions && Object.keys(apiData.transactions).length > 0) {
+                createTransactionsSankey(apiData.transactions);
+                createKeyMetrics(apiData.transactions);
+            }
+            
+            // Update business-pattern section content
+            const businessPatternContainer = document.getElementById('business-pattern-content');
+            if (businessPatternContainer) {
+                businessPatternContainer.innerHTML = createBusinessPatternContent();
+            }
+            
+            // Update public-info section content
+            const publicInfoContainer = document.getElementById('public-info-content');
+            if (publicInfoContainer) {
+                publicInfoContainer.innerHTML = createPublicInfoContent();
+            }
+            
+            // Create other sections
+            sections.forEach(section => {
+                if (section.id !== 'transactions' && section.id !== 'public-info' && section.id !== 'business-pattern') {
+                    createSection(section.id);
+                }
+            });
+            
+            // Show business pattern as default
+            showSection('business-pattern');
+            
+            // Set up scroll sync
+            setupScrollSync();
+        }
+
+        // Update account status display
+        function updateAccountStatus() {
+            const accountStatus = document.getElementById('account-status');
+            if (selectedAccount) {
+                accountStatus.innerHTML = `
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <i data-lucide="check-circle" class="w-3 h-3 mr-1"></i>
+                        Account ${selectedAccount} Selected
+                    </span>
+                `;
+            } else {
+                accountStatus.innerHTML = `
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                        <i data-lucide="user" class="w-3 h-3 mr-1"></i>
+                        No Account Selected
+                    </span>
+                `;
+            }
+            createIcons();
         }
 
 
@@ -935,81 +1104,25 @@
 
         // Initialize dashboard
         async function initDashboard() {
-            const loadingContainer = document.getElementById('loading-container');
-            
             try {
-                loadingContainer.classList.remove('hidden');
+                // First load available accounts
+                await loadAvailableAccounts();
                 
-                                 // Fetch all data
-                 console.log('Fetching data from all API endpoints...');
-                 const [
-                     transactionsData,
-                     highCashData,
-                     businessPatternData,
-                     publicInfoData,
-                     publicAddressData
-                 ] = await Promise.all([
-                     fetchApiData('transactions'),
-                     fetchApiData('high-cash'),
-                     fetchApiData('business-pattern'),
-                     fetchApiData('public-info'),
-                     fetchApiData('public-address')
-                 ]);
-
-                 // Store data globally
-                 apiData = {
-                     transactions: transactionsData,
-                     highCash: highCashData,
-                     businessPattern: businessPatternData,
-                     publicInfo: publicInfoData,
-                     publicAddress: publicAddressData
-                 };
-
-                console.log('Stored apiData:', apiData);
-                console.log('Public Info Data:', publicInfoData);
-                console.log('Public Address Data:', publicAddressData);
-
-                // Create UI components
+                // Create basic UI structure
                 createNavigation();
-                createTransactionsSankey(transactionsData);
-                createKeyMetrics(transactionsData);
-                
-                                 // Populate business-pattern section content
-                 const businessPatternContainer = document.getElementById('business-pattern-content');
-                 if (businessPatternContainer) {
-                     businessPatternContainer.innerHTML = createBusinessPatternContent();
-                 }
-                 
-                 // Populate public-info section content
-                 const publicInfoContainer = document.getElementById('public-info-content');
-                 if (publicInfoContainer) {
-                     publicInfoContainer.innerHTML = createPublicInfoContent();
-                 }
-                 
-                 // Create other sections (excluding transactions, public-info, and business-pattern)
-                 sections.forEach(section => {
-                     if (section.id !== 'transactions' && section.id !== 'public-info' && section.id !== 'business-pattern') {
-                         createSection(section.id);
-                     }
-                 });
                 
                 // Initialize features
                 initEventListeners();
                 
-                                 // Show business pattern as default
-                 showSection('business-pattern');
-                
                 // Set up scroll sync
                 setupScrollSync();
                 
-                // Test API endpoints for debugging
-                testAPIEndpoints();
+                // Update initial account status
+                updateAccountStatus();
                 
             } catch (error) {
                 console.error('Error initializing dashboard:', error);
                 showError(error.message);
-            } finally {
-                loadingContainer.classList.add('hidden');
             }
         }
 
@@ -1061,13 +1174,18 @@
 
         // Refresh company info data
         async function refreshCompanyInfo() {
-            console.log('Refreshing company info...');
+            if (!selectedAccount) {
+                alert('Please select an account first');
+                return;
+            }
+            
+            console.log('Refreshing company info for account:', selectedAccount);
             
             try {
-                // Fetch fresh data
+                // Fetch fresh data for the selected account
                 const [publicInfoData, publicAddressData] = await Promise.all([
-                    fetchApiData('public-info'),
-                    fetchApiData('public-address')
+                    fetchApiData('public-info', selectedAccount),
+                    fetchApiData('public-address', selectedAccount)
                 ]);
                 
                 // Update global data
@@ -1080,7 +1198,7 @@
                     publicInfoContainer.innerHTML = createPublicInfoContent();
                 }
                 
-                console.log('Company info refreshed successfully');
+                console.log('Company info refreshed successfully for account:', selectedAccount);
             } catch (error) {
                 console.error('Error refreshing company info:', error);
                 alert('Failed to refresh company info. Check console for details.');
@@ -1089,36 +1207,39 @@
 
         // Load transaction usage dictionary data
         async function loadTransactionUsageDict() {
+            if (!selectedAccount) {
+                console.warn('No account selected for transaction usage dictionary');
+                return;
+            }
+            
             try {
-                console.log('Loading transaction usage dictionary data...');
-                const data = await fetchApiData('transactions_usage_dict');
+                console.log('Loading transaction usage dictionary data for account:', selectedAccount);
+                const data = await fetchApiData('transactions_usage_dict', selectedAccount);
                 
                 if (!data || Object.keys(data).length === 0) {
                     document.getElementById('trans-usage-dict-table').innerHTML = `
                         <div class="text-center py-8 text-gray-500">
                             <i data-lucide="database" class="w-12 h-12 mx-auto mb-3 text-gray-300"></i>
-                            <p>No transaction usage dictionary data available</p>
+                            <p>No transaction usage dictionary data available for account ${selectedAccount}</p>
                         </div>
                     `;
                     return;
                 }
 
-                                     // Create table from the data
-                     const tableHtml = createTransactionUsageDictTable(data);
-                     document.getElementById('trans-usage-dict-table').innerHTML = tableHtml;
-                     
-
-                     
-                     // Recreate icons for the new content
-                     createIcons();
+                // Create table from the data
+                const tableHtml = createTransactionUsageDictTable(data);
+                document.getElementById('trans-usage-dict-table').innerHTML = tableHtml;
                 
-                console.log('Transaction usage dictionary table created successfully');
+                // Recreate icons for the new content
+                createIcons();
+                
+                console.log('Transaction usage dictionary table created successfully for account:', selectedAccount);
             } catch (error) {
                 console.error('Error loading transaction usage dictionary:', error);
                 document.getElementById('trans-usage-dict-table').innerHTML = `
                     <div class="text-center py-8 text-red-500">
                         <i data-lucide="alert-circle" class="w-12 h-12 mx-auto mb-3 text-red-300"></i>
-                        <p>Error loading transaction usage dictionary data</p>
+                        <p>Error loading transaction usage dictionary data for account ${selectedAccount}</p>
                         <p class="text-sm text-gray-500 mt-2">${error.message}</p>
                     </div>
                 `;
@@ -1461,21 +1582,63 @@
 
         // Event listeners
         function initEventListeners() {
+            // Account selector
+            document.getElementById('account-selector').addEventListener('change', async (event) => {
+                const selectedAcctno = event.target.value;
+                if (selectedAcctno) {
+                    await loadAccountData(selectedAcctno);
+                } else {
+                    // Clear data when no account is selected
+                    apiData = {};
+                    selectedAccount = null;
+                    // Update account status
+                    updateAccountStatus();
+                    // Clear content containers
+                    document.querySelectorAll('.section-content').forEach(section => {
+                        const contentContainer = section.querySelector('[id$="-content"]');
+                        if (contentContainer) {
+                            contentContainer.innerHTML = `
+                                <div class="text-center py-8 text-gray-500">
+                                    <i data-lucide="user" class="w-12 h-12 mx-auto mb-3 text-gray-300"></i>
+                                    <p>Please select an account to view analysis data</p>
+                                </div>
+                            `;
+                        }
+                    });
+                    createIcons();
+                }
+            });
+            
             // Mobile menu
             document.getElementById('mobile-menu-toggle').addEventListener('click', () => toggleMobileMenu());
             document.getElementById('mobile-overlay').addEventListener('click', () => toggleMobileMenu(false));
             
             // Refresh button
-            document.getElementById('refresh-btn').addEventListener('click', initDashboard);
+            document.getElementById('refresh-btn').addEventListener('click', async () => {
+                if (selectedAccount) {
+                    await loadAccountData(selectedAccount);
+                } else {
+                    await initDashboard();
+                }
+            });
             
             // Export button
             document.getElementById('export-btn').addEventListener('click', () => {
-                const data = { section: currentSection, timestamp: new Date().toISOString(), data: apiData };
+                if (!selectedAccount) {
+                    alert('Please select an account first');
+                    return;
+                }
+                const data = { 
+                    account: selectedAccount,
+                    section: currentSection, 
+                    timestamp: new Date().toISOString(), 
+                    data: apiData 
+                };
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `risk-analysis-${currentSection}-${new Date().toISOString().split('T')[0]}.json`;
+                a.download = `risk-analysis-${selectedAccount}-${currentSection}-${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
             });
