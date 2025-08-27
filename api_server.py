@@ -284,12 +284,12 @@ def get_trans_usage_dict():
         
         # Sort the data if it's a list
         if isinstance(result, list) and len(result) > 0:
-            # Sort by direction (ascending) first, then by amount (descending)
+            # Sort by direction (ascending) first, then by trans_am (descending)
             result = sorted(result, key=lambda x: (
                 str(x.get('direction', '')).lower(),  # direction ascending
-                -float(x.get('amount', 0))  # amount descending (negative for reverse sort)
+                -float(x.get('trans_am', 0))  # trans_am descending (negative for reverse sort)
             ))
-            print(f"Sorted {len(result)} items by direction (asc) and amount (desc)")
+            print(f"Sorted {len(result)} items by direction (asc) and trans_am (desc)")
         
         return jsonify(result), status_code
     except Exception as e:
