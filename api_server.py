@@ -273,7 +273,7 @@ def get_wire_money_usage():
 
 @app.route('/api/transactions_usage_dict')
 def get_trans_usage_dict():
-    """Get transaction usage dictionary data from JSON, sorted by direction (asc) and amount (desc)"""
+    """Get transaction usage dictionary data from JSON, sorted by direction (asc) and trans_am (desc)"""
     try:
         acctno = request.args.get('acctno')
         if not acctno:
@@ -396,9 +396,9 @@ def list_endpoints():
                 'parameters': ['acctno (required)']
             },
             {
-                'path': '/api/trans_usage_dict',
+                'path': '/api/transactions_usage_dict',
                 'method': 'GET',
-                'description': 'Get transaction usage dictionary data from JSON',
+                'description': 'Get transaction usage dictionary data from JSON, sorted by direction (asc) and trans_am (desc)',
                 'parameters': ['acctno (required)']
             },
             {
