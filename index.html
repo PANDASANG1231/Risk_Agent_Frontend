@@ -1316,14 +1316,14 @@
                               <td style="padding: 8px 16px; font-size: 12px; color: #374151; vertical-align: top; border-right: 1px solid #e5e7eb; transition: background-color 0.2s;" 
                                   onmouseover="this.style.backgroundColor='#f9fafb'" 
                                   onmouseout="this.style.backgroundColor='transparent'">
-                                  <div style="max-width: 200px; ${key.toLowerCase().includes('amount') ? 'font-family: monospace; text-align: right;' : ''}">${formattedValue}</div>
+                                  <div style="max-width: 200px; ${(key.toLowerCase().includes('amount') || key === 'trans_am') ? 'font-family: monospace; text-align: right;' : ''}">${formattedValue}</div>
                               </td>
                           `;
                          }).join('');
 
                          // Determine row color based on credit/debit values
                          let rowColorClass = 'bg-white';
-                         const amountKey = keys.find(k => k.toLowerCase().includes('amount'));
+                         const amountKey = keys.find(k => k.toLowerCase().includes('amount') || k === 'trans_am');
                          const directionKey = keys.find(k => k.toLowerCase().includes('direction') || k.toLowerCase().includes('type') || k.toLowerCase().includes('flow'));
                          
                          if (amountKey && directionKey) {
@@ -1351,7 +1351,7 @@
                                          // Create column headers with sort functionality
                      const tableHeaders = keys.map(key => {
                          const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                         const isAmount = key.toLowerCase().includes('amount');
+                         const isAmount = key.toLowerCase().includes('amount') || key === 'trans_am';
                          
                          return `
                              <th style="padding: 8px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; border-right: 1px solid #e5e7eb; cursor: pointer; transition: background-color 0.2s;" 
