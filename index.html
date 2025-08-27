@@ -1312,11 +1312,13 @@
                                  formattedValue = String(value);
                              }
 
-                                                          return `
-                                 <td class="px-2 py-1 text-xs text-gray-700 align-top border-r border-gray-200 last:border-r-0 hover:bg-gray-50 transition-colors">
-                                     <div class="max-w-xs ${key.toLowerCase().includes('amount') ? 'font-mono text-right' : ''}">${formattedValue}</div>
-                                 </td>
-                             `;
+                                                                                    return `
+                              <td style="padding: 8px 16px; font-size: 12px; color: #374151; vertical-align: top; border-right: 1px solid #e5e7eb; transition: background-color 0.2s;" 
+                                  onmouseover="this.style.backgroundColor='#f9fafb'" 
+                                  onmouseout="this.style.backgroundColor='transparent'">
+                                  <div style="max-width: 200px; ${key.toLowerCase().includes('amount') ? 'font-family: monospace; text-align: right;' : ''}">${formattedValue}</div>
+                              </td>
+                          `;
                          }).join('');
 
                          // Determine row color based on credit/debit values
@@ -1337,56 +1339,60 @@
                              }
                          }
 
+                                                   return `
+                              <tr style="border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s; ${rowColorClass === 'bg-green-50 hover:bg-green-100' ? 'background-color: #f0fdf4;' : rowColorClass === 'bg-red-50 hover:bg-red-100' ? 'background-color: #fef2f2;' : 'background-color: white;'}" 
+                                  onmouseover="this.style.backgroundColor='${rowColorClass === 'bg-green-50 hover:bg-green-100' ? '#dcfce7' : rowColorClass === 'bg-red-50 hover:bg-red-100' ? '#fee2e2' : '#f9fafb'}'" 
+                                  onmouseout="this.style.backgroundColor='${rowColorClass === 'bg-green-50 hover:bg-green-100' ? '#f0fdf4' : rowColorClass === 'bg-red-50 hover:bg-red-100' ? '#fef2f2' : 'white'}'">
+                                  ${rowCells}
+                              </tr>
+                          `;
+                     }).join('');
+
+                                         // Create column headers with sort functionality
+                     const tableHeaders = keys.map(key => {
+                         const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                         const isAmount = key.toLowerCase().includes('amount');
+                         
                          return `
-                             <tr class="border-b border-gray-200 transition-colors ${rowColorClass}">
-                                 ${rowCells}
-                             </tr>
+                             <th style="padding: 8px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; border-right: 1px solid #e5e7eb; cursor: pointer; transition: background-color 0.2s;" 
+                                 onmouseover="this.style.backgroundColor='#f3f4f6'" 
+                                 onmouseout="this.style.backgroundColor='transparent'"
+                                 onclick="sortTable('${key}', this)" 
+                                 data-key="${key}"
+                                 data-sort="none">
+                                 <div style="display: flex; align-items: center; justify-content: space-between;">
+                                     <span>${formattedKey}</span>
+                                     <div style="display: flex; flex-direction: column; margin-left: 4px;">
+                                         <span style="font-size: 8px; color: #9ca3af; line-height: 1;">▲</span>
+                                         <span style="font-size: 8px; color: #9ca3af; line-height: 1;">▼</span>
+                                     </div>
+                                 </div>
+                             </th>
                          `;
                      }).join('');
 
-                    // Create column headers with sort functionality
-                    const tableHeaders = keys.map(key => {
-                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        const isAmount = key.toLowerCase().includes('amount');
-                        
-                        return `
-                            <th class="px-2 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 last:border-r-0 cursor-pointer hover:bg-gray-100 transition-colors" 
-                                onclick="sortTable('${key}', this)" 
-                                data-key="${key}"
-                                data-sort="none">
-                                <div class="flex items-center justify-between">
-                                    <span>${formattedKey}</span>
-                                    <div class="flex flex-col ml-1">
-                                        <i data-lucide="chevron-up" class="w-2 h-2 text-gray-400 sort-icon-up"></i>
-                                        <i data-lucide="chevron-down" class="w-2 h-2 text-gray-400 sort-icon-down"></i>
-                                    </div>
-                                </div>
-                            </th>
-                        `;
-                    }).join('');
-
-                    return `
-                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200" id="trans-usage-table">
-                                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
-                                        <tr>
-                                            ${tableHeaders}
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        ${tableRows}
-                                    </tbody>
-                                </table>
-                            </div>
-                                                         <div class="bg-gray-50 px-2 py-1 text-xs text-gray-500 border-t border-gray-200">
-                                 <div class="flex items-center justify-between">
+                                         return `
+                         <div style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
+                             <div style="overflow-x: auto;">
+                                 <table style="min-width: 100%; border-collapse: collapse;" id="trans-usage-table">
+                                     <thead style="background: linear-gradient(to right, #f9fafb, #f3f4f6);">
+                                         <tr>
+                                             ${tableHeaders}
+                                         </tr>
+                                     </thead>
+                                     <tbody style="background: white;">
+                                         ${tableRows}
+                                     </tbody>
+                                 </table>
+                             </div>
+                             <div style="background: #f9fafb; padding: 8px 16px; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb;">
+                                 <div style="display: flex; align-items: center; justify-content: space-between;">
                                      <span>Total: ${data.length} items</span>
-                                     <span class="text-gray-400">Click column headers to sort</span>
+                                     <span style="color: #9ca3af;">Click column headers to sort</span>
                                  </div>
                              </div>
-                        </div>
-                    `;
+                         </div>
+                     `;
                 } else {
                     // Handle non-array objects (fallback to key-value format)
                     const entries = Object.entries(data);
@@ -1415,38 +1421,40 @@
                             formattedValue = `<div class="max-w-md">${String(value)}</div>`;
                         }
 
-                        return `
-                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                <td class="px-4 py-3 text-sm font-medium text-gray-900 align-top">
-                                    <div class="flex items-center">
-                                        <i data-lucide="key" class="w-4 h-4 mr-2 text-primary-500"></i>
-                                        ${formattedKey}
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-700 align-top">
-                                    ${formattedValue}
-                                </td>
-                            </tr>
-                        `;
+                                                 return `
+                             <tr style="border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s;" 
+                                 onmouseover="this.style.backgroundColor='#f9fafb'" 
+                                 onmouseout="this.style.backgroundColor='white'">
+                                 <td style="padding: 16px; font-size: 14px; font-weight: 500; color: #111827; vertical-align: top;">
+                                     <div style="display: flex; align-items: center;">
+                                         <span style="color: #3b82f6; margin-right: 8px;">🔑</span>
+                                         ${formattedKey}
+                                     </div>
+                                 </td>
+                                 <td style="padding: 16px; font-size: 14px; color: #374151; vertical-align: top;">
+                                     ${formattedValue}
+                                 </td>
+                             </tr>
+                         `;
                     }).join('');
 
-                    return `
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Key
-                                    </th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Value
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                ${tableRows}
-                            </tbody>
-                        </table>
-                    `;
+                                         return `
+                         <table style="min-width: 100%; border-collapse: collapse;">
+                             <thead style="background-color: #f9fafb;">
+                                 <tr>
+                                     <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb;">
+                                         Key
+                                     </th>
+                                     <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb;">
+                                         Value
+                                     </th>
+                                 </tr>
+                             </thead>
+                             <tbody style="background-color: white;">
+                                 ${tableRows}
+                             </tbody>
+                         </table>
+                     `;
                 }
             }
 
@@ -1457,27 +1465,27 @@
             `;
         }
 
-        // Sort table function
-        function sortTable(key, headerElement) {
-            const table = document.getElementById('trans-usage-table');
-            const tbody = table.querySelector('tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            
-            // Get current sort direction
-            const currentSort = headerElement.dataset.sort;
-            const newSort = currentSort === 'asc' ? 'desc' : 'asc';
-            
-            // Reset all headers
-            table.querySelectorAll('th').forEach(th => {
-                th.dataset.sort = 'none';
-                th.classList.remove('bg-blue-50', 'bg-green-50');
-            });
-            
-            // Update current header
-            headerElement.dataset.sort = newSort;
-            headerElement.classList.add(newSort === 'asc' ? 'bg-green-50' : 'bg-blue-50');
-            
-                         // Sort rows
+                 // Sort table function
+         function sortTable(key, headerElement) {
+             const table = document.getElementById('trans-usage-table');
+             const tbody = table.querySelector('tbody');
+             const rows = Array.from(tbody.querySelectorAll('tr'));
+             
+             // Get current sort direction
+             const currentSort = headerElement.dataset.sort;
+             const newSort = currentSort === 'asc' ? 'desc' : 'asc';
+             
+             // Reset all headers
+             table.querySelectorAll('th').forEach(th => {
+                 th.dataset.sort = 'none';
+                 th.style.backgroundColor = 'transparent';
+             });
+             
+             // Update current header
+             headerElement.dataset.sort = newSort;
+             headerElement.style.backgroundColor = newSort === 'asc' ? '#f0fdf4' : '#eff6ff';
+             
+             // Sort rows
              rows.sort((a, b) => {
                  const aValue = a.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
                  const bValue = b.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
@@ -1494,17 +1502,17 @@
                      if (newSort === 'asc') {
                          return aValue.localeCompare(bValue);
                      } else {
-                         return bValue.localeCompare(bValue);
+                         return bValue.localeCompare(aValue);
                      }
                  }
              });
-            
-            // Reorder rows in DOM
-            rows.forEach(row => tbody.appendChild(row));
-            
-            // Update sort icons
-            updateSortIcons(headerElement, newSort);
-        }
+             
+             // Reorder rows in DOM
+             rows.forEach(row => tbody.appendChild(row));
+             
+             // Update sort indicators
+             updateSortIndicators(headerElement, newSort);
+         }
         
         // Get column index for a given key
         function getColumnIndex(key) {
@@ -1520,23 +1528,20 @@
             return 1; // fallback
         }
         
-        // Update sort icons
-        function updateSortIcons(headerElement, sortDirection) {
-            const upIcon = headerElement.querySelector('.sort-icon-up');
-            const downIcon = headerElement.querySelector('.sort-icon-down');
-            
-            if (sortDirection === 'asc') {
-                upIcon.classList.remove('text-gray-400');
-                upIcon.classList.add('text-green-600');
-                downIcon.classList.remove('text-green-600');
-                downIcon.classList.add('text-gray-400');
-            } else {
-                downIcon.classList.remove('text-gray-400');
-                downIcon.classList.add('text-blue-600');
-                upIcon.classList.remove('text-blue-600');
-                upIcon.classList.add('text-gray-400');
-            }
-        }
+                 // Update sort indicators
+         function updateSortIndicators(headerElement, sortDirection) {
+             const indicators = headerElement.querySelectorAll('span');
+             const upIndicator = indicators[1]; // ▲
+             const downIndicator = indicators[2]; // ▼
+             
+             if (sortDirection === 'asc') {
+                 upIndicator.style.color = '#059669'; // green-600
+                 downIndicator.style.color = '#9ca3af'; // gray-400
+             } else {
+                 downIndicator.style.color = '#2563eb'; // blue-600
+                 upIndicator.style.color = '#9ca3af'; // gray-400
+             }
+         }
 
         // Create quick insights
         function createQuickInsights() {
