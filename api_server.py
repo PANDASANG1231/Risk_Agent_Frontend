@@ -20,9 +20,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Load data from JSON file
-def load_data():
+def load_data(acctno):
     try:
-        file_path = 'analysis_result.json'
+        file_path = os.path.join('cache_data', f'analysis_result_{acctno}.json')
         logger.info(f"Attempting to load data from {os.path.abspath(file_path)}")
         
         if not os.path.exists(file_path):
@@ -38,10 +38,10 @@ def load_data():
         raise
 
 # Helper function to get specific data with error handling
-def get_key_data(key_name):
+def get_key_data(key_name, acctno):
     try:
         logger.info(f"Retrieving data for key: {key_name}")
-        data = load_data()
+        data = load_data(acctno)
         if key_name not in data:
             logger.warning(f'Key "{key_name}" not found in data')
             return {'error': f'Key "{key_name}" not found in data'}, 404
@@ -54,8 +54,12 @@ def get_key_data(key_name):
 @app.route('/api/data')
 def get_data():
     try:
-        logger.info("Received request for /api/data")
-        data = load_data()
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        logger.info(f"Received request for /api/data with acctno: {acctno}")
+        data = load_data(acctno)
         logger.info("Sending response for /api/data")
         return jsonify(data)
     except Exception as e:
@@ -67,8 +71,12 @@ def get_data():
 def get_transactions_data():
     """Get transaction data including counts, amounts, and percentages by category and direction"""
     try:
-        print("Received request for /api/transactions")
-        result, status_code = get_key_data('transactions_data')
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/transactions with acctno: {acctno}")
+        result, status_code = get_key_data('transactions_data', acctno)
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_transactions_data: {str(e)}")
@@ -78,8 +86,12 @@ def get_transactions_data():
 def get_money_flow_analysis():
     """Get money flow analysis including total inflows, outflows, and net flow"""
     try:
-        print("Received request for /api/money-flow")
-        result, status_code = get_key_data('money_flow_analysis')
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/money-flow with acctno: {acctno}")
+        result, status_code = get_key_data('money_flow_analysis', acctno)
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_money_flow_analysis: {str(e)}")
@@ -89,8 +101,12 @@ def get_money_flow_analysis():
 def get_money_usage_summary():
     """Get detailed money usage summary with flow analysis and descriptions"""
     try:
-        print("Received request for /api/money-usage")
-        result, status_code = get_key_data('money_usage_summary')
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/money-usage with acctno: {acctno}")
+        result, status_code = get_key_data('money_usage_summary', acctno)
         result['dict_analysis'] = result['flow_analysis']
         return jsonify(result), status_code
     except Exception as e:
@@ -101,8 +117,12 @@ def get_money_usage_summary():
 def get_high_cash_summary():
     """Get high cash summary analysis"""
     try:
-        print("Received request for /api/high-cash")
-        result, status_code = get_key_data('high_cash_summary')
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/high-cash with acctno: {acctno}")
+        result, status_code = get_key_data('high_cash_summary', acctno)
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_high_cash_summary: {str(e)}")
@@ -187,8 +207,12 @@ def process_business_pattern_text(text):
 def get_business_pattern():
     """Get business pattern analysis for industry alignment"""
     try:
-        logger.info("Received request for /api/business-pattern")
-        result, status_code = get_key_data('business_pattern')
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        logger.info(f"Received request for /api/business-pattern with acctno: {acctno}")
+        result, status_code = get_key_data('business_pattern', acctno)
         
         if status_code == 200 and 'raw_analysis' in result:
             logger.info("Processing raw_analysis text for business pattern")
@@ -206,8 +230,12 @@ def get_business_pattern():
 def get_public_info():
     """Get public information about the company"""
     try:
-        print("Received request for /api/public-info")
-        result, status_code = get_key_data('public_info')
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/public-info with acctno: {acctno}")
+        result, status_code = get_key_data('public_info', acctno)
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_public_info: {str(e)}")
@@ -217,8 +245,12 @@ def get_public_info():
 def get_public_address_info():
     """Get public address information and reviews"""
     try:
-        print("Received request for /api/public-address")
-        result, status_code = get_key_data('public_address_info')
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/public-address with acctno: {acctno}")
+        result, status_code = get_key_data('public_address_info', acctno)
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_public_address_info: {str(e)}")
@@ -228,8 +260,12 @@ def get_public_address_info():
 def get_wire_money_usage():
     """Get wire transfer money usage analysis (bonus endpoint)"""
     try:
-        print("Received request for /api/wire-usage")
-        result, status_code = get_key_data('wire_money_usage')
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/wire-usage with acctno: {acctno}")
+        result, status_code = get_key_data('wire_money_usage', acctno)
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_wire_money_usage: {str(e)}")
@@ -239,8 +275,12 @@ def get_wire_money_usage():
 def get_trans_usage_dict():
     """Get transaction usage dictionary data from JSON, sorted by direction (asc) and amount (desc)"""
     try:
-        print("Received request for /api/transactions_usage_dict")
-        result, status_code = get_key_data('transactions_usage_dict')
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/transactions_usage_dict with acctno: {acctno}")
+        result, status_code = get_key_data('transactions_usage_dict', acctno)
         
         # Sort the data if it's a list
         if isinstance(result, list) and len(result) > 0:
@@ -256,60 +296,110 @@ def get_trans_usage_dict():
         print(f"Error in get_trans_usage_dict: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/accounts')
+def list_accounts():
+    """List all available account numbers from cache_data folder"""
+    try:
+        logger.info("Received request for /api/accounts")
+        
+        if not os.path.exists('cache_data'):
+            logger.warning("cache_data folder not found")
+            return jsonify({'accounts': [], 'message': 'No cache_data folder found'}), 200
+        
+        # Get all JSON files in cache_data folder
+        json_files = [f for f in os.listdir('cache_data') if f.endswith('.json')]
+        
+        # Extract account numbers from filenames
+        accounts = []
+        for filename in json_files:
+            if filename.startswith('analysis_result_') and filename.endswith('.json'):
+                acctno = filename.replace('analysis_result_', '').replace('.json', '')
+                accounts.append(acctno)
+        
+        # Sort account numbers for consistent output
+        accounts.sort()
+        
+        logger.info(f"Found {len(accounts)} accounts: {accounts}")
+        return jsonify({
+            'accounts': accounts,
+            'total_count': len(accounts),
+            'message': f'Found {len(accounts)} account(s) with analysis data'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in list_accounts: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/endpoints')
 def list_endpoints():
     """List all available API endpoints"""
     endpoints = {
         'available_endpoints': [
             {
+                'path': '/api/accounts',
+                'method': 'GET',
+                'description': 'List all available account numbers from cache_data folder',
+                'parameters': []
+            },
+            {
                 'path': '/api/data',
                 'method': 'GET',
-                'description': 'Get all data from analysis_result.json'
+                'description': 'Get all data from cache_data/analysis_result_{acctno}.json',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/transactions',
                 'method': 'GET',
-                'description': 'Get transaction data including counts, amounts, and percentages by category and direction'
+                'description': 'Get transaction data including counts, amounts, and percentages by category and direction',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/money-flow',
                 'method': 'GET',
-                'description': 'Get money flow analysis including total inflows, outflows, and net flow'
+                'description': 'Get money flow analysis including total inflows, outflows, and net flow',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/money-usage',
                 'method': 'GET',
-                'description': 'Get detailed money usage summary with flow analysis and descriptions'
+                'description': 'Get detailed money usage summary with flow analysis and descriptions',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/high-cash',
                 'method': 'GET',
-                'description': 'Get high cash summary analysis'
+                'description': 'Get high cash summary analysis',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/business-pattern',
                 'method': 'GET',
-                'description': 'Get business pattern analysis for industry alignment'
+                'description': 'Get business pattern analysis for industry alignment',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/public-info',
                 'method': 'GET',
-                'description': 'Get public information about the company'
+                'description': 'Get public information about the company',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/public-address',
                 'method': 'GET',
-                'description': 'Get public address information and reviews'
+                'description': 'Get public address information and reviews',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/wire-usage',
                 'method': 'GET',
-                'description': 'Get wire transfer money usage analysis (bonus endpoint)'
+                'description': 'Get wire transfer money usage analysis (bonus endpoint)',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/trans_usage_dict',
                 'method': 'GET',
-                'description': 'Get transaction usage dictionary data from JSON'
+                'description': 'Get transaction usage dictionary data from JSON',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/endpoints',
@@ -318,7 +408,7 @@ def list_endpoints():
             }
         ],
         'base_url': 'http://localhost:5000',
-        'note': 'All endpoints return JSON data. Add ?pretty=true to format JSON output.'
+        'note': 'All endpoints (except /api/endpoints and /api/accounts) require acctno parameter. Example: /api/data?acctno=12345'
     }
     return jsonify(endpoints)
 
