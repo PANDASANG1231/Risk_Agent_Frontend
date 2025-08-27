@@ -1245,214 +1245,89 @@
             }
         }
 
-        // Create transaction usage dictionary table
+        // Create transaction usage dictionary table - Simple and cross-compatible
         function createTransactionUsageDictTable(data) {
-            console.log('Creating table with data:', data);
-            console.log('Data type:', typeof data);
-            console.log('Is array:', Array.isArray(data));
-            
             if (typeof data === 'string') {
-                return `
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <div class="text-sm text-gray-700 leading-relaxed">${formatText(data)}</div>
-                    </div>
-                `;
+                return '<div style="background: #f9fafb; border-radius: 8px; padding: 16px;"><div style="font-size: 14px; color: #374151; line-height: 1.6;">' + formatText(data) + '</div></div>';
             }
 
             if (typeof data === 'object' && data !== null) {
-                // Check if data is an array (list of items)
                 if (Array.isArray(data)) {
                     if (data.length === 0) {
-                        return `
-                            <div class="text-center py-8 text-gray-500">
-                                <p>No items available in transaction usage dictionary</p>
-                            </div>
-                        `;
+                        return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>No items available</p></div>';
                     }
 
-                                                             // Get the keys from the first item to create column headers
                     const firstItem = data[0];
-                    console.log('First item:', firstItem);
-                    
                     if (!firstItem || typeof firstItem !== 'object') {
-                        return `
-                            <div class="text-center py-8 text-gray-500">
-                                <p>Invalid item format in transaction usage dictionary</p>
-                            </div>
-                        `;
+                        return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
                     }
 
-                    // Define the desired column order
-                    const desiredOrder = ['direction', 'trans_am', 'category', 'usage_category'];
-                    const availableKeys = Object.keys(firstItem);
-                    console.log('Available keys:', availableKeys);
+                    // Simple column order - just use available keys
+                    const keys = Object.keys(firstItem);
                     
-                    // Filter and reorder keys based on desired order
-                    const keys = desiredOrder.filter(key => availableKeys.includes(key));
-                    // Add any remaining keys that weren't in the desired order
-                    availableKeys.forEach(key => {
-                        if (!keys.includes(key)) {
-                            keys.push(key);
-                        }
-                    });
-                    console.log('Final keys order:', keys);
-                    
-                                         // Create table rows from the list items
-                     const tableRows = data.map((item, index) => {
-                         const rowCells = keys.map(key => {
-                             const value = item[key];
-                             let formattedValue;
-                             
-                             if (typeof value === 'string') {
-                                 formattedValue = formatText(value);
-                             } else if (typeof value === 'number') {
-                                 // Special formatting for Amount fields
-                                 if (key.toLowerCase().includes('amount') || key.toLowerCase().includes('trans_am')) {
-                                     formattedValue = formatCurrency(value);
-                                 } else {
-                                     formattedValue = formatNumber(value);
-                                 }
-                             } else if (typeof value === 'object' && value !== null) {
-                                 formattedValue = formatDictValue(value, 0);
-                             } else {
-                                 formattedValue = String(value);
-                             }
+                    // Create simple table rows
+                    const tableRows = data.map(function(item) {
+                        const rowCells = keys.map(function(key) {
+                            const value = item[key];
+                            let formattedValue;
+                            
+                            if (typeof value === 'string') {
+                                formattedValue = formatText(value);
+                            } else if (typeof value === 'number') {
+                                // Format trans_am as currency (rounded)
+                                if (key === 'trans_am') {
+                                    formattedValue = '$' + Math.round(value).toLocaleString('en-US');
+                                } else {
+                                    formattedValue = Math.round(value).toLocaleString('en-US');
+                                }
+                            } else if (typeof value === 'object' && value !== null) {
+                                formattedValue = JSON.stringify(value);
+                            } else {
+                                formattedValue = String(value);
+                            }
 
-                                                                                    return `
-                              <td style="padding: 8px 16px; font-size: 12px; color: #374151; vertical-align: top; border-right: 1px solid #e5e7eb; transition: background-color 0.2s;" 
-                                  onmouseover="this.style.backgroundColor='#f9fafb'" 
-                                  onmouseout="this.style.backgroundColor='transparent'">
-                                  <div style="max-width: 200px; text-align: left;">${formattedValue}</div>
-                              </td>
-                          `;
-                         }).join('');
+                            return '<td style="padding: 8px 16px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white;">' + formattedValue + '</td>';
+                        }).join('');
 
-                         // Row styling simplified for consistent white background
+                        return '<tr>' + rowCells + '</tr>';
+                    }).join('');
 
-                                                   return `
-                              <tr style="border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s; background-color: white;" 
-                                  onmouseover="this.style.backgroundColor='#f9fafb'" 
-                                  onmouseout="this.style.backgroundColor='white'">
-                                  ${rowCells}
-                              </tr>
-                          `;
-                     }).join('');
+                    // Create simple headers
+                    const tableHeaders = keys.map(function(key) {
+                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                        return '<th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">' + formattedKey + '</th>';
+                    }).join('');
 
-                                         // Create column headers with sort functionality
-                     const tableHeaders = keys.map(key => {
-                         const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                         const isAmount = key.toLowerCase().includes('amount') || key.toLowerCase().includes('trans_am');
-                         
-                         return `
-                             <th style="padding: 8px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; border-right: 1px solid #e5e7eb; cursor: pointer; transition: background-color 0.2s;" 
-                                 onmouseover="this.style.backgroundColor='#f3f4f6'" 
-                                 onmouseout="this.style.backgroundColor='transparent'"
-                                 onclick="sortTable('${key}', this)" 
-                                 data-key="${key}"
-                                 data-sort="none">
-                                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                                     <span>${formattedKey}</span>
-                                     <div style="display: flex; flex-direction: column; margin-left: 4px;">
-                                         <span style="font-size: 8px; color: #9ca3af; line-height: 1;">▲</span>
-                                         <span style="font-size: 8px; color: #9ca3af; line-height: 1;">▼</span>
-                                     </div>
-                                 </div>
-                             </th>
-                         `;
-                     }).join('');
-
-                                         return `
-                         <div style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
-                             <div style="overflow-x: auto;">
-                                 <table style="min-width: 100%; border-collapse: collapse;" id="trans-usage-table">
-                                     <thead style="background: linear-gradient(to right, #f9fafb, #f3f4f6);">
-                                         <tr>
-                                             ${tableHeaders}
-                                         </tr>
-                                     </thead>
-                                     <tbody style="background-color: white;">
-                                         ${tableRows}
-                                     </tbody>
-                                 </table>
-                             </div>
-                             <div style="background: #f9fafb; padding: 8px 16px; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb;">
-                                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                                     <span>Total: ${data.length} items</span>
-                                     <span style="color: #9ca3af;">Click column headers to sort</span>
-                                 </div>
-                             </div>
-                         </div>
-                     `;
+                    return '<div style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;"><table style="width: 100%; border-collapse: collapse;" id="trans-usage-table"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
                 } else {
-                    // Handle non-array objects (fallback to key-value format)
+                    // Handle non-array objects
                     const entries = Object.entries(data);
-                    
                     if (entries.length === 0) {
-                        return `
-                            <div class="text-center py-8 text-gray-500">
-                                <p>No data available in transaction usage dictionary</p>
-                            </div>
-                        `;
+                        return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>No data available</p></div>';
                     }
 
-                    // Create a structured table
-                    const tableRows = entries.map(([key, value]) => {
-                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    const tableRows = entries.map(function([key, value]) {
+                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                         let formattedValue;
                         
                         if (typeof value === 'string') {
                             formattedValue = formatText(value);
-                            formattedValue = `<div class="max-w-md">${formattedValue}</div>`;
                         } else if (typeof value === 'number') {
-                            formattedValue = `<div class="max-w-md font-mono">${formatNumber(value)}</div>`;
+                            formattedValue = value.toLocaleString('en-US');
                         } else if (typeof value === 'object' && value !== null) {
-                            formattedValue = `<div class="max-w-md">${formatDictValue(value, 0)}</div>`;
+                            formattedValue = JSON.stringify(value);
                         } else {
-                            formattedValue = `<div class="max-w-md">${String(value)}</div>`;
+                            formattedValue = String(value);
                         }
 
-                                                 return `
-                             <tr style="border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s;" 
-                                 onmouseover="this.style.backgroundColor='#f9fafb'" 
-                                 onmouseout="this.style.backgroundColor='white'">
-                                 <td style="padding: 16px; font-size: 14px; font-weight: 500; color: #111827; vertical-align: top;">
-                                     <div style="display: flex; align-items: center;">
-                                         <span style="color: #3b82f6; margin-right: 8px;">🔑</span>
-                                         ${formattedKey}
-                                     </div>
-                                 </td>
-                                 <td style="padding: 16px; font-size: 14px; color: #374151; vertical-align: top;">
-                                     ${formattedValue}
-                                 </td>
-                             </tr>
-                         `;
+                        return '<tr><td style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f9fafb;">' + formattedKey + '</td><td style="padding: 8px 16px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white;">' + formattedValue + '</td></tr>';
                     }).join('');
 
-                                         return `
-                         <table style="min-width: 100%; border-collapse: collapse;">
-                             <thead style="background-color: #f9fafb;">
-                                 <tr>
-                                     <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb;">
-                                         Key
-                                     </th>
-                                     <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb;">
-                                         Value
-                                     </th>
-                                 </tr>
-                             </thead>
-                             <tbody style="background-color: white;">
-                                 ${tableRows}
-                             </tbody>
-                         </table>
-                     `;
+                    return '<table style="width: 100%; border-collapse: collapse;"><thead><tr><th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">Key</th><th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">Value</th></tr></thead><tbody>' + tableRows + '</tbody></table>';
                 }
             }
 
-            return `
-                <div class="text-center py-8 text-gray-500">
-                    <p>Invalid data format for transaction usage dictionary</p>
-                </div>
-            `;
+            return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
         }
 
                  // Sort table function
