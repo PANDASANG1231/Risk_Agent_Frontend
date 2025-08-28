@@ -4,6 +4,7 @@ import json
 import os
 import logging
 from datetime import datetime
+import re
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +19,54 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
+def replace_hyphens_with_spaces(text):
+    """
+    Replace hyphens with spaces when the hyphen is surrounded by non-space characters.
+    Pattern: a-b becomes a b (where a and b are non-space characters)
+    
+    Args:
+        text (str): Input text to process
+        
+    Returns:
+        str: Text with hyphens replaced by spaces
+    """
+    if not isinstance(text, str):
+        return text
+        
+    # Use regex to find hyphens surrounded by non-space characters
+    # Pattern explanation: (\S) = non-space character, - = hyphen, (\S) = non-space character
+    # Replace with: first_group + space + second_group
+    processed_text = re.sub(r'(\S)-(\S)', r'\1 \2', text)
+    
+    logger.debug(f"Hyphen replacement: '{text}' -> '{processed_text}'")
+    return processed_text
+
+def apply_text_processing(data):
+    """
+    Apply text processing (including hyphen replacement and bold formatting) to string values in data structure.
+    Recursively processes dictionaries, lists, and strings.
+    
+    Text processing steps:
+    1. Replace hyphens with spaces (a-b → a b)
+    2. Add \n before **xx**: or **xx** : patterns if not already present
+    
+    Args:
+        data: Input data (can be dict, list, str, or other types)
+        
+    Returns:
+        Processed data with same structure
+    """
+    if isinstance(data, dict):
+        return {key: apply_text_processing(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [apply_text_processing(item) for item in data]
+    elif isinstance(data, str):
+        # Apply both text processing functions in sequence
+        processed_text = replace_hyphens_with_spaces(data)
+        return processed_text
+    else:
+        return data
 
 # Load data from JSON file
 def load_data(acctno):
@@ -123,6 +172,12 @@ def get_high_cash_summary():
             
         print(f"Received request for /api/high-cash with acctno: {acctno}")
         result, status_code = get_key_data('high_cash_summary', acctno)
+        
+        # Apply text processing (hyphen replacement) to result
+        if status_code == 200:
+            logger.info("Applying text processing (hyphen replacement) to high cash data")
+            result = apply_text_processing(result)
+            
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_high_cash_summary: {str(e)}")
@@ -214,11 +269,16 @@ def get_business_pattern():
         logger.info(f"Received request for /api/business-pattern with acctno: {acctno}")
         result, status_code = get_key_data('business_pattern', acctno)
         
-        if status_code == 200 and 'raw_analysis' in result:
-            logger.info("Processing raw_analysis text for business pattern")
-            processed_text = process_business_pattern_text(result['raw_analysis'])
-            result['dict_analysis'] = processed_text
-            logger.info("Business pattern text processing completed")
+        if status_code == 200:
+            # Apply general text processing (hyphen replacement) to all string values
+            logger.info("Applying text processing (hyphen replacement) to business pattern data")
+            result = apply_text_processing(result)
+            
+            if 'raw_analysis' in result:
+                logger.info("Processing raw_analysis text for business pattern")
+                processed_text = process_business_pattern_text(result['raw_analysis'])
+                result['dict_analysis'] = processed_text
+                logger.info("Business pattern text processing completed")
         
         logger.info("Sending business pattern response")
         return jsonify(result), status_code
@@ -236,6 +296,12 @@ def get_public_info():
             
         print(f"Received request for /api/public-info with acctno: {acctno}")
         result, status_code = get_key_data('public_info', acctno)
+        
+        # Apply text processing (hyphen replacement) to result
+        if status_code == 200:
+            logger.info("Applying text processing (hyphen replacement) to public info data")
+            result = apply_text_processing(result)
+            
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_public_info: {str(e)}")
@@ -251,6 +317,12 @@ def get_public_address_info():
             
         print(f"Received request for /api/public-address with acctno: {acctno}")
         result, status_code = get_key_data('public_address_info', acctno)
+        
+        # Apply text processing (hyphen replacement) to result
+        if status_code == 200:
+            logger.info("Applying text processing (hyphen replacement) to public address data")
+            result = apply_text_processing(result)
+            
         return jsonify(result), status_code
     except Exception as e:
         print(f"Error in get_public_address_info: {str(e)}")
@@ -282,14 +354,19 @@ def get_trans_usage_dict():
         print(f"Received request for /api/transactions_usage_dict with acctno: {acctno}")
         result, status_code = get_key_data('transactions_usage_dict', acctno)
         
-        # Sort the data if it's a list
-        if isinstance(result, list) and len(result) > 0:
-            # Sort by direction (ascending) first, then by trans_am (descending)
-            result = sorted(result, key=lambda x: (
-                str(x.get('direction', '')).lower(),  # direction ascending
-                -float(x.get('trans_am', 0))  # trans_am descending (negative for reverse sort)
-            ))
-            print(f"Sorted {len(result)} items by direction (asc) and trans_am (desc)")
+        if status_code == 200:
+            # Apply text processing (hyphen replacement) to result
+            logger.info("Applying text processing (hyphen replacement) to transaction usage dict data")
+            result = apply_text_processing(result)
+            
+            # Sort the data if it's a list
+            if isinstance(result, list) and len(result) > 0:
+                # Sort by direction (ascending) first, then by trans_am (descending)
+                result = sorted(result, key=lambda x: (
+                    str(x.get('direction', '')).lower(),  # direction ascending
+                    -float(x.get('trans_am', 0))  # trans_am descending (negative for reverse sort)
+                ))
+                print(f"Sorted {len(result)} items by direction (asc) and trans_am (desc)")
         
         return jsonify(result), status_code
     except Exception as e:

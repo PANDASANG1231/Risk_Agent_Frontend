@@ -778,10 +778,25 @@
             
             let formattedText = text;
             
+            // Rule 0: Protect compound words by temporarily replacing them
+            const compoundWords = ['non-financial-account', 'self-employed', 'risk-based', 'pre-existing'];
+            const protectedWords = {};
+            
+            compoundWords.forEach((word, index) => {
+                if (formattedText.includes(word)) {
+                    console.log(`Found compound word: ${word} in text`);
+                    const placeholder = `__PROTECTED_${index}__`;
+                    protectedWords[placeholder] = word;
+                    formattedText = formattedText.replace(new RegExp(word, 'g'), placeholder);
+                    console.log(`Replaced ${word} with ${placeholder}`);
+                }
+            });
+            
             // Rule 1: Convert /n to line breaks
             formattedText = formattedText.replace(/\/n/g, '<br/>');
             
             // Rule 2: Handle . **text** - convert to period + two line breaks + bold
+            // Only apply if there are spaces after the period and before the **
             formattedText = formattedText.replace(/\.\s+\*\*([^*]+)\*\*/g, '.<br/><br/><strong>$1</strong>');
             
             // Rule 3: Convert remaining **text** to bold (for regular cases)
@@ -791,10 +806,16 @@
             // This handles cases like "hello - finance:" becoming "hello<br/>finance"
             formattedText = formattedText.replace(/(\w+)\s*-\s*(\w+):/g, '$1<br/>$2');
             
-            // Rule 5: Preserve hyphens that are part of compound words (e.g., "non-finance-related")
-            // This ensures compound words with hyphens are not modified
-            // The regex looks for: letter + hyphen + letter pattern
-            formattedText = formattedText.replace(/(\w)-(\w)/g, '$1-$2');
+            // Rule 5: Restore protected compound words
+            Object.keys(protectedWords).forEach(placeholder => {
+                console.log(`Restoring ${placeholder} back to ${protectedWords[placeholder]}`);
+                formattedText = formattedText.replace(new RegExp(placeholder, 'g'), protectedWords[placeholder]);
+            });
+            
+            // Final debug
+            if (text.includes('non-financial-account')) {
+                console.log('FINAL RESULT:', formattedText.substring(formattedText.indexOf('non') - 20, formattedText.indexOf('non') + 50));
+            }
             
             return formattedText;
         }
@@ -817,8 +838,8 @@
             if (apiData.businessPattern && apiData.businessPattern.dict_analysis) {
                 // Handle dict_analysis - display key-value pairs
                                  contentHtml = Object.entries(apiData.businessPattern.dict_analysis).map(([key, value]) => {
-                     // Format the key to be more readable
-                     const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                     // Format the key to be more readable and apply text formatting
+                     const formattedKey = formatText(key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()));
                      
                      // Format the value with text formatting
                      let formattedValue;
@@ -831,14 +852,14 @@
                      return `
                          <div class="mb-3 border-b border-gray-200 pb-2 last:border-b-0">
                              <h4 class="text-sm font-semibold text-gray-900 mb-1">${formattedKey}</h4>
-                             <div class="text-xs text-gray-700 leading-relaxed">${formattedValue}</div>
+                             <div class="text-xs text-gray-700 leading-relaxed" style="word-break: keep-all; hyphens: none;">${formattedValue}</div>
                          </div>
                      `;
                  }).join('');
             } else if (apiData.businessPattern && apiData.businessPattern.raw_analysis) {
                 // Handle raw_analysis with consolidated text formatting
                 const formattedText = formatText(apiData.businessPattern.raw_analysis);
-                contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">${formattedText}</div>`;
+                contentHtml = `<div class="text-sm text-gray-700 leading-relaxed" style="word-break: keep-all; hyphens: none;">${formattedText}</div>`;
             } else {
                 // Fallback for other data types
                 contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">No business pattern data available</div>`;
