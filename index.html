@@ -787,8 +787,12 @@
             // Rule 3: Convert remaining **text** to bold (for regular cases)
             formattedText = formattedText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
             
-            // Rule 4: Preserve hyphens that have letters both before and after (e.g., "self-employed", "pre-existing")
-            // This rule ensures that compound words with hyphens are not modified
+            // Rule 4: Convert "text - text:" pattern to "text<br/>text" (with line break)
+            // This handles cases like "hello - finance:" becoming "hello<br/>finance"
+            formattedText = formattedText.replace(/(\w+)\s*-\s*(\w+):/g, '$1<br/>$2');
+            
+            // Rule 5: Preserve hyphens that are part of compound words (e.g., "non-finance-related")
+            // This ensures compound words with hyphens are not modified
             // The regex looks for: letter + hyphen + letter pattern
             formattedText = formattedText.replace(/(\w)-(\w)/g, '$1-$2');
             
