@@ -11,3 +11,5 @@ node_modules
 # static folder
 /static/
 
+# python cache files
+__pycache__/

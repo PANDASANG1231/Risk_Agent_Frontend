@@ -787,6 +787,11 @@
             // Rule 3: Convert remaining **text** to bold (for regular cases)
             formattedText = formattedText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
             
+            // Rule 4: Preserve hyphens that have letters both before and after (e.g., "self-employed", "pre-existing")
+            // This rule ensures that compound words with hyphens are not modified
+            // The regex looks for: letter + hyphen + letter pattern
+            formattedText = formattedText.replace(/(\w)-(\w)/g, '$1-$2');
+            
             return formattedText;
         }
 
