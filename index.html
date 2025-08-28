@@ -266,6 +266,7 @@
                     businessPatternData,
                     publicInfoData,
                     publicAddressData,
+                    customerInfoData,
                     moneyFlowData,
                     moneyUsageData,
                     wireUsageData,
@@ -276,6 +277,7 @@
                     fetchApiData('business-pattern', acctno),
                     fetchApiData('public-info', acctno),
                     fetchApiData('public-address', acctno),
+                    fetchApiData('customer-info', acctno),
                     fetchApiData('money-flow', acctno),
                     fetchApiData('money-usage', acctno),
                     fetchApiData('wire-usage', acctno),
@@ -289,6 +291,7 @@
                     businessPattern: businessPatternData,
                     publicInfo: publicInfoData,
                     publicAddress: publicAddressData,
+                    customerInfo: customerInfoData,
                     moneyFlow: moneyFlowData,
                     moneyUsage: moneyUsageData,
                     wireUsage: wireUsageData,
@@ -866,14 +869,163 @@
             }
 
                          return `
+                 <!-- Business Pattern Section with Customer Info Table -->
                  <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-2">
                      <div class="prose prose-gray max-w-none">
                          <div class="bg-white rounded-lg p-2 shadow-sm">
-                             ${contentHtml}
+                             <!-- Customer Info Table First -->
+                             ${createCustomerInfoContent()}
+                             
+                             <!-- Business Pattern Content -->
+                             <div class="mt-4 pt-4 border-t border-gray-200">
+                                 ${contentHtml}
+                             </div>
                          </div>
                      </div>
                  </div>
              `;
+        }
+
+        // Create customer info content
+        function createCustomerInfoContent() {
+            if (!apiData.customerInfo) {
+                return `
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                            <i data-lucide="users" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                        <p class="text-xs text-gray-600">Loading customer information data...</p>
+                    </div>
+                `;
+            }
+
+            // Check if customerInfo has content
+            if (Object.keys(apiData.customerInfo).length === 0) {
+                return `
+                    <div class="text-center py-4 text-gray-500">
+                        <i data-lucide="users" class="w-8 h-8 mx-auto mb-2 text-gray-300"></i>
+                        <p>No customer information available</p>
+                    </div>
+                `;
+            }
+
+            // Handle different data types
+            if (typeof apiData.customerInfo === 'string') {
+                return `<div class="text-xs text-gray-700 leading-relaxed">${formatText(apiData.customerInfo)}</div>`;
+            } else if (typeof apiData.customerInfo === 'object' && apiData.customerInfo !== null) {
+                if (Array.isArray(apiData.customerInfo)) {
+                    // Handle array data
+                    if (apiData.customerInfo.length === 0) {
+                        return '<div class="text-xs text-gray-700">No customer data available</div>';
+                    }
+                    
+                    return createCustomerInfoTable(apiData.customerInfo);
+                } else {
+                    // Handle object data
+                    return createCustomerInfoTable([apiData.customerInfo]);
+                }
+            } else {
+                return `<div class="text-xs text-gray-700">${String(apiData.customerInfo)}</div>`;
+            }
+        }
+
+        // Create customer info table
+        function createCustomerInfoTable(data) {
+            if (!data || data.length === 0) {
+                return '<div class="text-xs text-gray-700">No customer data available</div>';
+            }
+
+            const firstItem = data[0];
+            if (!firstItem || typeof firstItem !== 'object') {
+                return '<div class="text-xs text-gray-700">Invalid customer data format</div>';
+            }
+
+            // Get all unique keys from all items
+            const allKeys = new Set();
+            data.forEach(item => {
+                if (item && typeof item === 'object') {
+                    Object.keys(item).forEach(key => allKeys.add(key));
+                }
+            });
+            const keys = Array.from(allKeys);
+
+            if (keys.length === 0) {
+                return '<div class="text-xs text-gray-700">No customer data available</div>';
+            }
+
+            // Create table headers
+            const tableHeaders = keys.map(key => {
+                const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                return `<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; text-align: left;">${formattedKey}</th>`;
+            }).join('');
+
+            // Create table rows
+            const tableRows = data.map((item, rowIndex) => {
+                const rowCells = keys.map(key => {
+                    const value = item[key];
+                    let formattedValue;
+                    
+                    if (typeof value === 'string') {
+                        formattedValue = formatText(value);
+                    } else if (typeof value === 'number') {
+                        formattedValue = value.toLocaleString('en-US');
+                    } else if (typeof value === 'object' && value !== null) {
+                        formattedValue = JSON.stringify(value);
+                    } else {
+                        formattedValue = String(value);
+                    }
+
+                    // Alternate row colors for better readability
+                    const bgColor = rowIndex % 2 === 0 ? 'white' : '#f9fafb';
+                    
+                    return `<td style="padding: 8px 12px; font-size: 11px; color: #374151; border: 1px solid #e5e7eb; background-color: ${bgColor}; text-align: left; vertical-align: top;">${formattedValue}</td>`;
+                }).join('');
+
+                return `<tr>${rowCells}</tr>`;
+            }).join('');
+
+            return `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <thead>
+                            <tr>${tableHeaders}</tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Format customer info object data (kept for compatibility)
+        function formatCustomerInfoObject(data, prefix = '') {
+            const entries = Object.entries(data);
+            if (entries.length === 0) {
+                return '<div class="text-xs text-gray-700">No customer information available</div>';
+            }
+
+            return entries.map(([key, value]) => {
+                const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                let formattedValue;
+                
+                if (typeof value === 'string') {
+                    formattedValue = formatText(value);
+                } else if (typeof value === 'object' && value !== null) {
+                    formattedValue = formatDictValue(value, 0);
+                } else {
+                    formattedValue = String(value);
+                }
+
+                const keyId = prefix ? `${prefix}_${key}` : key;
+                
+                return `
+                    <div class="mb-2 border-b border-gray-200 pb-2 last:border-b-0">
+                        <h5 class="text-sm font-semibold text-gray-900 mb-1">${formattedKey}</h5>
+                        <div class="text-xs text-gray-700 leading-relaxed" style="word-break: keep-all; hyphens: none;">${formattedValue}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Update progress bar

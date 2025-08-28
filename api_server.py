@@ -328,6 +328,27 @@ def get_public_address_info():
         print(f"Error in get_public_address_info: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/customer-info')
+def get_customer_info():
+    """Get customer information and details"""
+    try:
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/customer-info with acctno: {acctno}")
+        result, status_code = get_key_data('customer_info', acctno)
+        
+        # Apply text processing (hyphen replacement) to result
+        if status_code == 200:
+            logger.info("Applying text processing (hyphen replacement) to customer info data")
+            result = apply_text_processing(result)
+            
+        return jsonify(result), status_code
+    except Exception as e:
+        print(f"Error in get_customer_info: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/wire-usage')
 def get_wire_money_usage():
     """Get wire transfer money usage analysis (bonus endpoint)"""
@@ -464,6 +485,12 @@ def list_endpoints():
                 'path': '/api/public-address',
                 'method': 'GET',
                 'description': 'Get public address information and reviews',
+                'parameters': ['acctno (required)']
+            },
+            {
+                'path': '/api/customer-info',
+                'method': 'GET',
+                'description': 'Get customer information and details',
                 'parameters': ['acctno (required)']
             },
             {
