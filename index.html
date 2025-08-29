@@ -272,7 +272,9 @@
                     moneyUsageData,
                     wireUsageData,
                     transUsageDictData,
-                    graphData
+                    graphData,
+                    utrInfoData,
+                    ctrInfoData
                 ] = await Promise.all([
                     fetchApiData('transactions', acctno),
                     fetchApiData('high-cash', acctno),
@@ -284,7 +286,9 @@
                     fetchApiData('money-usage', acctno),
                     fetchApiData('wire-usage', acctno),
                     fetchApiData('transactions_usage_dict', acctno),
-                    fetchApiData('graph', acctno)
+                    fetchApiData('graph', acctno),
+                    fetchApiData('utr-info', acctno),
+                    fetchApiData('ctr-info', acctno)
                 ]);
 
                 // Store data globally
@@ -299,7 +303,9 @@
                     moneyUsage: moneyUsageData,
                     wireUsage: wireUsageData,
                     transUsageDict: transUsageDictData,
-                    graph: graphData
+                    graph: graphData,
+                    utrInfo: utrInfoData,
+                    ctrInfo: ctrInfoData
                 };
 
                 console.log('Stored apiData for account:', acctno, apiData);
@@ -353,7 +359,14 @@
                 console.log('Graph data available, scheduling render:', apiData.graph);
                 setTimeout(() => {
                     console.log('Attempting to render network graph...');
-                    renderNetworkGraph();
+                    // Check if container exists and has dimensions before rendering
+                    const container = document.getElementById('network-graph');
+                    if (container && container.offsetWidth > 0 && container.offsetHeight > 0) {
+                        renderNetworkGraph();
+                    } else {
+                        console.log('Container not ready, retrying in 100ms...');
+                        setTimeout(() => renderNetworkGraph(), 100);
+                    }
                 }, 500); // Increased timeout to ensure DOM is ready
             } else {
                 console.log('No graph data available:', apiData.graph);
@@ -587,21 +600,46 @@
              }
 
              return `
-                 <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-2">
-                     <div class="prose prose-primary max-w-none">
-                         <div class="bg-white rounded-lg p-2 shadow-sm">
-                             <div class="text-xs text-gray-700 leading-relaxed">${formatText(apiData.highCash.raw_analysis)}</div>
-                         </div>
-                     </div>
+                 <h4 class="text-base font-semibold text-gray-900 mb-2">High Cash analysis</h4>
+                 <div class="bg-white rounded-lg p-2 shadow-sm">
+                     <div class="text-xs text-gray-700 leading-relaxed">${formatText(apiData.highCash.raw_analysis)}</div>
                  </div>
                 
-                <!-- Network Visualization Subsection -->
+                <!-- Network Visualization and Transaction Reports Section -->
                 <div class="mt-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Network Visualization</h3>
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-2">
-                        <div class="prose prose-purple max-w-none">
-                            <div class="bg-white rounded-lg p-2 shadow-sm">
-                                ${createNetworkVisualization()}
+                    <h4 class="text-base font-semibold text-gray-900 mb-2">Linkage analysis</h4>
+                    <div class="flex space-x-4 w-full">
+                        <!-- Left side: D3 Network Graph -->
+                        <div class="flex-1" style="height: 600px;">
+                            <div class="bg-white rounded-lg p-2 h-full border border-gray-200">
+                                <div class="h-full">
+                                    ${createNetworkVisualization()}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right side: UTR and CTR Tables -->
+                        <div class="w-80 space-y-4" style="height: 600px;">
+                            <!-- UTR Table -->
+                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="height: calc(50% - 8px);">
+                                <div class="h-full">
+                                    <h4 class="text-base font-semibold text-gray-900 mb-2">UTR Information</h4>
+                                    <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
+                                    <div class="h-full overflow-auto">
+                                        ${createUTRTable()}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- CTR Table -->
+                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="height: calc(50% - 8px);">
+                                <div class="h-full">
+                                    <h4 class="text-base font-semibold text-gray-900 mb-2">CTR Information</h4>
+                                    <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
+                                    <div class="h-full overflow-auto">
+                                        ${createCTRTable()}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -652,7 +690,15 @@
                     </div>
                     
                     <!-- Network Graph Container -->
-                    <div id="network-graph" style="height: 600px; width: 66.67%; min-height: 450px; border: 1px solid #e5e7eb; border-radius: 8px; resize: both; overflow: hidden; margin: 0;"></div>
+                    <div id="network-graph" style="height: 500px; width: 100%; min-height: 400px; min-width: 400px; border: 1px solid #e5e7eb; border-radius: 8px; resize: both; overflow: hidden; margin: 0; background-color: white; position: relative;">
+                        <div class="absolute inset-0 flex items-center justify-center text-gray-500">
+                            <div class="text-center">
+                                <i data-lucide="network" class="w-8 h-8 mx-auto mb-2 text-gray-300"></i>
+                                <p>Network graph will render here</p>
+                                <p class="text-xs">Click "Render Graph" button to start</p>
+                            </div>
+                        </div>
+                    </div>
                     
                     <!-- Render Button and Legend -->
                     <div class="flex items-center justify-start space-x-6 mt-3">
@@ -708,11 +754,19 @@
                 return;
             }
             
+            // Check if container has proper dimensions
+            if (container.offsetWidth === 0 || container.offsetHeight === 0) {
+                console.warn('Container has no dimensions, retrying in 100ms...');
+                setTimeout(() => renderNetworkGraph(), 100);
+                return;
+            }
+            
             console.log('Found container:', container);
+            console.log('Container dimensions:', { offsetWidth: container.offsetWidth, offsetHeight: container.offsetHeight, clientWidth: container.clientWidth, clientHeight: container.clientHeight });
             console.log('Graph data for rendering:', apiData.graph);
 
             try {
-                // Clear the container
+                // Clear the container and any placeholder content
                 container.innerHTML = '';
                 
                 // Set up the SVG with responsive dimensions
@@ -790,6 +844,7 @@
                     .attr('fill', d => d.color || '#666')
                     .attr('stroke', '#333')
                     .attr('stroke-width', 1.5)
+                    .attr('opacity', 0.8)
                     .attr('cursor', 'pointer')
                     .each(function(d, i) {
                         // Set initial positions in a circle
@@ -800,7 +855,7 @@
                     })
                     .on('mouseover', function(event, d) {
                         // Highlight node and connected links
-                        d3.select(this).attr('stroke-width', 4);
+                        d3.select(this).attr('stroke-width', 4).attr('opacity', 1);
                         links.filter(l => l.source.id === d.id || l.target.id === d.id)
                             .attr('stroke-width', 3)
                             .attr('stroke-opacity', 0.8);
@@ -810,8 +865,44 @@
                             .attr('opacity', 1);
                     })
                     .on('mouseout', function(event, d) {
-                        // Remove highlighting
-                        d3.select(this).attr('stroke-width', 2);
+                        // Remove highlighting and restore appropriate opacity based on current state
+                        d3.select(this).attr('stroke-width', 1.5);
+                        
+                        // Check if this node is currently highlighted (has blue stroke)
+                        const isHighlighted = d3.select(this).attr('stroke') === '#3b82f6';
+                        if (isHighlighted) {
+                            // If highlighted, keep at 100% opacity
+                            d3.select(this).attr('opacity', 1);
+                        } else {
+                            // If not highlighted, check if we're in dimmed state
+                            const anyHighlighted = d3.select(window.currentSvg).selectAll('circle').filter(d => d3.select(this).attr('stroke') === '#3b82f6').size() > 0;
+                            if (anyHighlighted) {
+                                // Check if this is a neighbor node (should be 80% opacity)
+                                const currentAccountNumber = d3.select(this).data()[0].id;
+                                const highlightedNode = d3.select(window.currentSvg).selectAll('circle').filter(d => d3.select(this).attr('stroke') === '#3b82f6').data()[0];
+                                if (highlightedNode) {
+                                    const isNeighbor = d3.select(window.currentSvg).selectAll('line').filter(d => 
+                                        (d.source.id === highlightedNode.id && d.target.id === currentAccountNumber) ||
+                                        (d.target.id === highlightedNode.id && d.source.id === currentAccountNumber)
+                                    ).size() > 0;
+                                    
+                                    if (isNeighbor) {
+                                        // Neighbor node: return to 80% opacity
+                                        d3.select(this).attr('opacity', 0.8);
+                                    } else {
+                                        // Non-neighbor node: return to 20% opacity
+                                        d3.select(this).attr('opacity', 0.2);
+                                    }
+                                } else {
+                                    // Fallback: return to 20% opacity
+                                    d3.select(this).attr('opacity', 0.2);
+                                }
+                            } else {
+                                // In normal state, return to 80% opacity
+                                d3.select(this).attr('opacity', 0.8);
+                            }
+                        }
+                        
                         links.attr('stroke-width', 1)
                             .attr('stroke-opacity', 0.3);
                         
@@ -1839,6 +1930,236 @@
             return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
         }
 
+        // Create UTR table
+        function createUTRTable() {
+            if (!apiData.utrInfo || !Array.isArray(apiData.utrInfo) || apiData.utrInfo.length === 0) {
+                return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>No UTR information available</p></div>';
+            }
+
+            const firstItem = apiData.utrInfo[0];
+            if (!firstItem || typeof firstItem !== 'object') {
+                return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid UTR data format</p></div>';
+            }
+
+            const keys = Object.keys(firstItem);
+            
+            // Create table rows with click functionality
+            const tableRows = apiData.utrInfo.map(function(item, index) {
+                const rowCells = keys.map(function(key) {
+                    const value = item[key];
+                    let formattedValue;
+                    
+                    if (typeof value === 'string') {
+                        formattedValue = formatText(value);
+                    } else if (typeof value === 'number') {
+                        formattedValue = value.toLocaleString('en-US');
+                    } else if (typeof value === 'object' && value !== null) {
+                        formattedValue = JSON.stringify(value);
+                    } else {
+                        formattedValue = String(value);
+                    }
+
+                    // Alternate row colors for better readability
+                    const bgColor = index % 2 === 0 ? 'white' : '#f9fafb';
+                    
+                    return '<td style="padding: 8px 12px; font-size: 11px; color: #374151; border: 1px solid #e5e7eb; background-color: ' + bgColor + '; text-align: left; vertical-align: top;">' + formattedValue + '</td>';
+                }).join('');
+
+                // Get account number for click functionality (assuming first key is account number)
+                const accountNumber = item[keys[0]] || item['Account Number'] || item['account_number'] || item['accountNumber'];
+                const rowId = `utr-row-${index}`;
+                
+                return '<tr id="' + rowId + '" data-account="' + accountNumber + '" class="cursor-pointer hover:bg-blue-50 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500" onclick="highlightNodeInGraph(\'' + accountNumber + '\')" title="Click to highlight corresponding node in graph">' + rowCells + '</tr>';
+            }).join('');
+
+            // Create table headers
+            const tableHeaders = keys.map(function(key) {
+                const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                return '<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
+            }).join('');
+
+            return '<div style="overflow-x: auto;"><table id="utr-table" style="width: 100%; border-collapse: collapse; font-size: 11px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
+        }
+
+        // Create CTR table
+        function createCTRTable() {
+            if (!apiData.ctrInfo || !Array.isArray(apiData.ctrInfo) || apiData.ctrInfo.length === 0) {
+                return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>No CTR information available</p></div>';
+            }
+
+            const firstItem = apiData.ctrInfo[0];
+            if (!firstItem || typeof firstItem !== 'object') {
+                return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid CTR data format</p></div>';
+            }
+
+            const keys = Object.keys(firstItem);
+            
+            // Create table rows with click functionality
+            const tableRows = apiData.ctrInfo.map(function(item, index) {
+                const rowCells = keys.map(function(key) {
+                    const value = item[key];
+                    let formattedValue;
+                    
+                    if (typeof value === 'string') {
+                        formattedValue = formatText(value);
+                    } else if (typeof value === 'number') {
+                        formattedValue = value.toLocaleString('en-US');
+                    } else if (typeof value === 'object' && value !== null) {
+                        formattedValue = JSON.stringify(value);
+                    } else {
+                        formattedValue = String(value);
+                    }
+
+                    // Alternate row colors for better readability
+                    const bgColor = index % 2 === 0 ? 'white' : '#f9fafb';
+                    
+                    return '<td style="padding: 8px 12px; font-size: 11px; color: #374151; border: 1px solid #e5e7eb; background-color: ' + bgColor + '; text-align: left; vertical-align: top;">' + formattedValue + '</td>';
+                }).join('');
+
+                // Get account number for click functionality
+                const accountNumber = item['Account Number'] || item['account_number'] || item['accountNumber'];
+                const rowId = `ctr-row-${index}`;
+                
+                return '<tr id="' + rowId + '" data-account="' + accountNumber + '" class="cursor-pointer hover:bg-blue-50 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500" onclick="highlightNodeInGraph(\'' + accountNumber + '\')" title="Click to highlight corresponding node in graph">' + rowCells + '</tr>';
+            }).join('');
+
+            // Create table headers
+            const tableHeaders = keys.map(function(key) {
+                const formattedKey = key.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                return '<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
+            }).join('');
+
+            return '<div style="overflow-x: auto;"><table id="ctr-table" style="width: 100%; border-collapse: collapse; font-size: 11px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
+        }
+
+        // Function to highlight node in D3 graph when CTR table row is clicked
+        function highlightNodeInGraph(accountNumber) {
+            console.log('Highlighting node for account:', accountNumber);
+            
+            // Check if this row is already highlighted
+            const isAlreadyHighlighted = document.querySelector(`#ctr-table tr[data-account="${accountNumber}"]`).classList.contains('bg-blue-100');
+            
+            if (isAlreadyHighlighted) {
+                // If already highlighted, clear all highlights
+                console.log('Row already highlighted, clearing highlights');
+                clearAllHighlights();
+                return;
+            }
+            
+            // Clear any existing highlights first
+            clearAllHighlights();
+            
+            // Find the node in the graph data
+            if (!apiData.graph || !apiData.graph.nodes) {
+                console.warn('No graph data available');
+                return;
+            }
+            
+            const targetNode = apiData.graph.nodes.find(node => node.id === accountNumber);
+            if (!targetNode) {
+                console.warn('Node not found for account:', accountNumber);
+                return;
+            }
+            
+            // Highlight the clicked row in both tables
+            highlightTableRow(accountNumber);
+            
+            // Highlight the corresponding node in the D3 graph
+            highlightD3Node(accountNumber);
+        }
+
+        // Function to clear all highlights
+        function clearAllHighlights() {
+            // Clear UTR table highlights
+            document.querySelectorAll('#utr-table tr').forEach(row => {
+                row.classList.remove('bg-blue-100', 'ring-2', 'ring-blue-500');
+            });
+            
+            // Clear CTR table highlights
+            document.querySelectorAll('#ctr-table tr').forEach(row => {
+                row.classList.remove('bg-blue-100', 'ring-2', 'ring-blue-500');
+            });
+            
+            // Clear D3 graph highlights and restore all nodes to 80% opacity (if graph exists)
+            if (window.currentSvg) {
+                const svg = d3.select(window.currentSvg);
+                svg.selectAll('circle').attr('stroke-width', 1.5).attr('opacity', 0.8);
+                svg.selectAll('line').attr('stroke-width', 1).attr('stroke-opacity', 0.3);
+                // Hide all relationship labels
+                svg.selectAll('.link-label').attr('opacity', 0);
+            }
+        }
+
+        // Function to highlight table rows (both UTR and CTR)
+        function highlightTableRow(accountNumber) {
+            // Highlight UTR table rows
+            const utrRows = document.querySelectorAll('#utr-table tr[data-account]');
+            utrRows.forEach(row => {
+                if (row.getAttribute('data-account') === accountNumber) {
+                    row.classList.add('bg-blue-100', 'ring-2', 'ring-blue-500');
+                } else {
+                    row.classList.remove('bg-blue-100', 'ring-2', 'ring-blue-500');
+                }
+            });
+            
+            // Highlight CTR table rows
+            const ctrRows = document.querySelectorAll('#ctr-table tr[data-account]');
+            ctrRows.forEach(row => {
+                if (row.getAttribute('data-account') === accountNumber) {
+                    row.classList.add('bg-blue-100', 'ring-2', 'ring-blue-500');
+                } else {
+                    row.classList.remove('bg-blue-100', 'ring-2', 'ring-blue-500');
+                }
+            });
+        }
+
+        // Function to highlight D3 node
+        function highlightD3Node(accountNumber) {
+            if (!window.currentSvg) {
+                console.warn('D3 graph not yet rendered');
+                return;
+            }
+            
+            const svg = d3.select(window.currentSvg);
+            
+            // Set all nodes to 20% opacity (dimming effect)
+            svg.selectAll('circle').attr('opacity', 0.2);
+            
+            // Find and highlight the target node
+            const targetNode = svg.selectAll('circle').filter(d => d.id === accountNumber);
+            if (targetNode.size() > 0) {
+                targetNode.attr('stroke-width', 4).attr('stroke', '#3b82f6').attr('opacity', 1);
+                
+                // Find neighbor nodes (directly connected) and set them to 80% opacity
+                const neighborNodes = [];
+                svg.selectAll('line').each(function(d) {
+                    if (d.source.id === accountNumber) {
+                        neighborNodes.push(d.target.id);
+                    } else if (d.target.id === accountNumber) {
+                        neighborNodes.push(d.source.id);
+                    }
+                });
+                
+                // Set neighbor nodes to 80% opacity
+                svg.selectAll('circle').filter(d => neighborNodes.includes(d.id)).attr('opacity', 0.8);
+                
+                // Highlight connected links
+                const connectedLinks = svg.selectAll('line').filter(d => 
+                    d.source.id === accountNumber || d.target.id === accountNumber
+                );
+                connectedLinks.attr('stroke-width', 3).attr('stroke-opacity', 0.8);
+                
+                // Show relationship labels for connected edges
+                svg.selectAll('.link-label').filter(d => 
+                    d.source.id === accountNumber || d.target.id === accountNumber
+                ).attr('opacity', 1);
+                
+                console.log('Successfully highlighted node and connections for account:', accountNumber);
+            } else {
+                console.warn('Node not found in D3 graph for account:', accountNumber);
+            }
+        }
+
         // Sort table function
         function sortTable(key, headerElement) {
             const table = document.getElementById('trans-usage-table');
@@ -2066,4 +2387,5 @@
         document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
+</html>
 </html>

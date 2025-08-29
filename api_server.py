@@ -423,6 +423,36 @@ def get_trans_usage_dict():
         print(f"Error in get_trans_usage_dict: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/utr-info')
+def get_utr_info():
+    """Get UTR (Currency Transaction Report) information"""
+    try:
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        logger.info(f"Received request for /api/utr-info with acctno: {acctno}")
+        result, status_code = get_key_data('utr_info', acctno)
+        return jsonify(result), status_code
+    except Exception as e:
+        logger.error(f"Error in get_utr_info: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ctr-info')
+def get_ctr_info():
+    """Get CTR (Currency Transaction Report) information"""
+    try:
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        logger.info(f"Received request for /api/ctr-info with acctno: {acctno}")
+        result, status_code = get_key_data('ctr_info', acctno)
+        return jsonify(result), status_code
+    except Exception as e:
+        logger.error(f"Error in get_ctr_info: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/accounts')
 def list_accounts():
     """List all available account numbers from cache_data folder"""
@@ -538,6 +568,18 @@ def list_endpoints():
                 'path': '/api/transactions_usage_dict',
                 'method': 'GET',
                 'description': 'Get transaction usage dictionary data from JSON, sorted by direction (asc) and trans_am (desc)',
+                'parameters': ['acctno (required)']
+            },
+            {
+                'path': '/api/utr-info',
+                'method': 'GET',
+                'description': 'Get UTR (Currency Transaction Report) information',
+                'parameters': ['acctno (required)']
+            },
+            {
+                'path': '/api/ctr-info',
+                'method': 'GET',
+                'description': 'Get CTR (Currency Transaction Report) information',
                 'parameters': ['acctno (required)']
             },
             {
