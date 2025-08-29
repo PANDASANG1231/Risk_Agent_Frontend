@@ -458,21 +458,30 @@ def get_utr_info():
         logger.info(f"Received request for /api/utr-info with acctno: {acctno}")
         result, status_code = get_key_data('utr_info', acctno)
         
-        if status_code == 200 and result:
-            # Load the full data to find frmtd_acct_no
+        if status_code == 200:
+            # Load the full data to find frmtd_acct_no under customer_info
             try:
                 full_data = load_data(acctno)
-                if 'frmtd_acct_no' in full_data:
-                    target_acct = full_data['frmtd_acct_no']
-                    logger.info(f"Found frmtd_acct_no in data: {target_acct}")
+                if 'customer_info' in full_data and 'frmtd_acct_no' in full_data['customer_info']:
+                    target_acct = full_data['customer_info']['frmtd_acct_no']
+                    logger.info(f"Found frmtd_acct_no in customer_info: {target_acct}")
                 else:
-                    logger.warning("frmtd_acct_no not found in data, using acctno parameter")
-                    target_acct = acctno.zfill(16)
+                    logger.warning("frmtd_acct_no not found in customer_info, using acctno parameter")
+                    target_acct = acctno.split("_")[0].zfill(16)
             except Exception as e:
                 logger.error(f"Error loading full data: {str(e)}")
-                target_acct = acctno.zfill(16)
+                target_acct = acctno.split("_")[0].zfill(16)
             
             logger.info(f"Target account number: {target_acct}")
+            
+            # If result is empty list, return default structure
+            if not result or (isinstance(result, list) and len(result) == 0):
+                logger.info(f"Result is empty, returning default UTR structure for {target_acct}")
+                default_result = {
+                    "Account Number": target_acct,
+                    "CTR Count": "0, target_acct"
+                }
+                return jsonify(default_result), 200
             
             # Check if target account exists in the data
             target_found = False
@@ -531,21 +540,30 @@ def get_ctr_info():
         logger.info(f"Received request for /api/ctr-info with acctno: {acctno}")
         result, status_code = get_key_data('ctr_info', acctno)
         
-        if status_code == 200 and result:
-            # Load the full data to find frmtd_acct_no
+        if status_code == 200:
+            # Load the full data to find frmtd_acct_no under customer_info
             try:
                 full_data = load_data(acctno)
-                if 'frmtd_acct_no' in full_data:
-                    target_acct = full_data['frmtd_acct_no']
-                    logger.info(f"Found frmtd_acct_no in data: {target_acct}")
+                if 'customer_info' in full_data and 'frmtd_acct_no' in full_data['customer_info']:
+                    target_acct = full_data['customer_info']['frmtd_acct_no']
+                    logger.info(f"Found frmtd_acct_no in customer_info: {target_acct}")
                 else:
-                    logger.warning("frmtd_acct_no not found in data, using acctno parameter")
-                    target_acct = acctno.zfill(16)
+                    logger.warning("frmtd_acct_no not found in customer_info, using acctno parameter")
+                    target_acct = acctno.split("_")[0].zfill(16)
             except Exception as e:
                 logger.error(f"Error loading full data: {str(e)}")
-                target_acct = acctno.zfill(16)
+                target_acct = acctno.split("_")[0].zfill(16)
             
             logger.info(f"Target account number: {target_acct}")
+            
+            # If result is empty list, return default structure
+            if not result or (isinstance(result, list) and len(result) == 0):
+                logger.info(f"Result is empty, returning default CTR structure for {target_acct}")
+                default_result = {
+                    "Account Number": target_acct,
+                    "CTR Count": "0, target_acct"
+                }
+                return jsonify(default_result), 200
             
             # Check if target account exists in the data
             target_found = False

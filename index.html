@@ -164,7 +164,7 @@
              { id: 'business-pattern', name: 'Business Pattern', icon: 'bar-chart-3', description: 'Industry alignment' },
              { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
              { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' },
-             { id: 'high-cash', name: 'Cash Analysis', icon: 'dollar-sign', description: 'Cash flow insights' }
+             { id: 'high-cash', name: 'Internal Analysis', icon: 'dollar-sign', description: 'Previous existing analysis' }
          ];
 
         // Utility functions
@@ -594,13 +594,13 @@
                          <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
                              <i data-lucide="dollar-sign" class="w-6 h-6 text-primary-600"></i>
                          </div>
-                         <p class="text-xs text-gray-600">Loading cash analysis data...</p>
+                         <p class="text-xs text-gray-600">Loading internal analysis data...</p>
                      </div>
                  `;
              }
 
              return `
-                 <h4 class="text-base font-semibold text-gray-900 mb-2">High Cash analysis</h4>
+                 <h4 class="text-base font-semibold text-gray-900 mb-2">Internal Analysis</h4>
                  <div class="bg-white rounded-lg p-2 shadow-sm">
                      <div class="text-xs text-gray-700 leading-relaxed">${formatText(apiData.highCash.raw_analysis)}</div>
                  </div>
