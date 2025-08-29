@@ -652,7 +652,7 @@
                     </div>
                     
                     <!-- Network Graph Container -->
-                    <div id="network-graph" style="height: 400px; width: 100%; border: 1px solid #e5e7eb; border-radius: 8px;"></div>
+                    <div id="network-graph" style="height: 400px; width: 100%; min-height: 300px; border: 1px solid #e5e7eb; border-radius: 8px; resize: both; overflow: hidden;"></div>
                     
                     <!-- Debug Button -->
                     <button onclick="renderNetworkGraph()" class="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
@@ -711,14 +711,17 @@
                 // Clear the container
                 container.innerHTML = '';
                 
-                // Set up the SVG
-                const width = container.clientWidth;
-                const height = 400;
+                // Set up the SVG with responsive dimensions
+                const containerRect = container.getBoundingClientRect();
+                const width = container.clientWidth || containerRect.width || 600;
+                const height = container.clientHeight || 400;
                 
                 const svg = d3.select(container)
                     .append('svg')
-                    .attr('width', width)
-                    .attr('height', height)
+                    .attr('width', '100%')
+                    .attr('height', '100%')
+                    .attr('viewBox', `0 0 ${width} ${height}`)
+                    .attr('preserveAspectRatio', 'xMidYMid meet')
                     .style('border', '1px solid #e5e7eb')
                     .style('border-radius', '8px')
                     .style('background-color', '#f8fafc');
@@ -850,6 +853,23 @@
                 }
                 
                 console.log('D3.js network graph rendered successfully');
+                
+                // Add resize handler for responsive behavior
+                const resizeObserver = new ResizeObserver(() => {
+                    const newWidth = container.clientWidth || 600;
+                    const newHeight = container.clientHeight || 400;
+                    
+                    // Update SVG viewBox
+                    svg.attr('viewBox', `0 0 ${newWidth} ${newHeight}`);
+                    
+                    // Update force simulation center
+                    simulation.force('center', d3.forceCenter(newWidth / 2, newHeight / 2));
+                    
+                    // Restart simulation to reposition nodes
+                    simulation.alpha(0.3).restart();
+                });
+                
+                resizeObserver.observe(container);
                 
             } catch (error) {
                 console.error('Error rendering D3.js network graph:', error);
