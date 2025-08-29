@@ -459,9 +459,20 @@ def get_utr_info():
         result, status_code = get_key_data('utr_info', acctno)
         
         if status_code == 200 and result:
-            # Zfill the acctno parameter to 16 digits
-            target_acct = acctno.zfill(16)
-            logger.info(f"Target account number (16 digits): {target_acct}")
+            # Load the full data to find frmtd_acct_no
+            try:
+                full_data = load_data(acctno)
+                if 'frmtd_acct_no' in full_data:
+                    target_acct = full_data['frmtd_acct_no']
+                    logger.info(f"Found frmtd_acct_no in data: {target_acct}")
+                else:
+                    logger.warning("frmtd_acct_no not found in data, using acctno parameter")
+                    target_acct = acctno.zfill(16)
+            except Exception as e:
+                logger.error(f"Error loading full data: {str(e)}")
+                target_acct = acctno.zfill(16)
+            
+            logger.info(f"Target account number: {target_acct}")
             
             # Check if target account exists in the data
             target_found = False
@@ -479,7 +490,7 @@ def get_utr_info():
                                     logger.info(f"Zero-padded account number in utr_info: {acct_str} -> {item[field]}")
                                 
                                 # Check if this is the target account
-                                if str(item[field]).zfill(16) == target_acct:
+                                if str(item[field]).zfill(16) == str(target_acct).zfill(16):
                                     target_found = True
                                     # Modify the UTR count to include ", target acct"
                                     if 'utr count' in item:
@@ -521,9 +532,20 @@ def get_ctr_info():
         result, status_code = get_key_data('ctr_info', acctno)
         
         if status_code == 200 and result:
-            # Zfill the acctno parameter to 16 digits
-            target_acct = acctno.zfill(16)
-            logger.info(f"Target account number (16 digits): {target_acct}")
+            # Load the full data to find frmtd_acct_no
+            try:
+                full_data = load_data(acctno)
+                if 'frmtd_acct_no' in full_data:
+                    target_acct = full_data['frmtd_acct_no']
+                    logger.info(f"Found frmtd_acct_no in data: {target_acct}")
+                else:
+                    logger.warning("frmtd_acct_no not found in data, using acctno parameter")
+                    target_acct = acctno.zfill(16)
+            except Exception as e:
+                logger.error(f"Error loading full data: {str(e)}")
+                target_acct = acctno.zfill(16)
+            
+            logger.info(f"Target account number: {target_acct}")
             
             # Check if target account exists in the data
             target_found = False
@@ -541,7 +563,7 @@ def get_ctr_info():
                                     logger.info(f"Zero-padded account number in ctr_info: {acct_str} -> {item[field]}")
                                 
                                 # Check if this is the target account
-                                if str(item[field]).zfill(16) == target_acct:
+                                if str(item[field]).zfill(16) == str(target_acct).zfill(16):
                                     target_found = True
                                     # Modify the CTR count to include ", target acct"
                                     if 'ctr count' in item:
