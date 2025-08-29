@@ -458,10 +458,51 @@ def get_utr_info():
         logger.info(f"Received request for /api/utr-info with acctno: {acctno}")
         result, status_code = get_key_data('utr_info', acctno)
         
-        # Process account numbers to ensure 16-digit format
         if status_code == 200 and result:
-            logger.info("Processing UTR info account numbers for zero-padding")
-            result = process_account_numbers(result, 'utr_info')
+            # Zfill the acctno parameter to 16 digits
+            target_acct = acctno.zfill(16)
+            logger.info(f"Target account number (16 digits): {target_acct}")
+            
+            # Check if target account exists in the data
+            target_found = False
+            if isinstance(result, list):
+                for item in result:
+                    if isinstance(item, dict):
+                        # Look for common account number field names
+                        account_fields = ['Account Number', 'account_number', 'accountNumber', 'acctno', 'acct_no']
+                        for field in account_fields:
+                            if field in item and item[field]:
+                                # Convert to string and zero-pad to 16 digits
+                                acct_str = str(item[field]).strip()
+                                if acct_str.isdigit():
+                                    item[field] = acct_str.zfill(16)
+                                    logger.info(f"Zero-padded account number in utr_info: {acct_str} -> {item[field]}")
+                                
+                                # Check if this is the target account
+                                if str(item[field]).zfill(16) == target_acct:
+                                    target_found = True
+                                    # Modify the UTR count to include ", target acct"
+                                    if 'utr count' in item:
+                                        item['utr count'] = f"{item['utr count']}, target acct"
+                                    logger.info(f"Modified UTR count for target account {target_acct}")
+                                break
+                        if target_found:
+                            break
+            
+            # If target account not found, add a new row
+            if not target_found:
+                logger.info(f"Target account {target_acct} not found, adding new row")
+                new_row = {
+                    'Account Number': target_acct,
+                    'utr count': '0, target acct'
+                }
+                if isinstance(result, list):
+                    result.append(new_row)
+                else:
+                    result = [new_row]
+                logger.info(f"Added new row for target account {target_acct}")
+            
+            logger.info(f"Successfully processed UTR info for target account {target_acct}")
         
         return jsonify(result), status_code
     except Exception as e:
@@ -479,10 +520,51 @@ def get_ctr_info():
         logger.info(f"Received request for /api/ctr-info with acctno: {acctno}")
         result, status_code = get_key_data('ctr_info', acctno)
         
-        # Process account numbers to ensure 16-digit format
         if status_code == 200 and result:
-            logger.info("Processing CTR info account numbers for zero-padding")
-            result = process_account_numbers(result, 'ctr_info')
+            # Zfill the acctno parameter to 16 digits
+            target_acct = acctno.zfill(16)
+            logger.info(f"Target account number (16 digits): {target_acct}")
+            
+            # Check if target account exists in the data
+            target_found = False
+            if isinstance(result, list):
+                for item in result:
+                    if isinstance(item, dict):
+                        # Look for common account number field names
+                        account_fields = ['Account Number', 'account_number', 'accountNumber', 'acctno', 'acct_no']
+                        for field in account_fields:
+                            if field in item and item[field]:
+                                # Convert to string and zero-pad to 16 digits
+                                acct_str = str(item[field]).strip()
+                                if acct_str.isdigit():
+                                    item[field] = acct_str.zfill(16)
+                                    logger.info(f"Zero-padded account number in ctr_info: {acct_str} -> {item[field]}")
+                                
+                                # Check if this is the target account
+                                if str(item[field]).zfill(16) == target_acct:
+                                    target_found = True
+                                    # Modify the CTR count to include ", target acct"
+                                    if 'ctr count' in item:
+                                        item['ctr count'] = f"{item['ctr count']}, target acct"
+                                    logger.info(f"Modified CTR count for target account {target_acct}")
+                                break
+                        if target_found:
+                            break
+            
+            # If target account not found, add a new row
+            if not target_found:
+                logger.info(f"Target account {target_acct} not found, adding new row")
+                new_row = {
+                    'Account Number': target_acct,
+                    'ctr count': '0, target acct'
+                }
+                if isinstance(result, list):
+                    result.append(new_row)
+                else:
+                    result = [new_row]
+                logger.info(f"Added new row for target account {target_acct}")
+            
+            logger.info(f"Successfully processed CTR info for target account {target_acct}")
         
         return jsonify(result), status_code
     except Exception as e:
