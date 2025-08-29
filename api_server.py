@@ -349,6 +349,35 @@ def get_customer_info():
         print(f"Error in get_customer_info: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/graph')
+def get_graph_data():
+    """Get network graph data for visualization from analysis result"""
+    try:
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+        
+        logger.info(f"Received request for /api/graph with acctno: {acctno}")
+        
+        # Load the analysis data for the specified account
+        data = load_data(acctno)
+        if not data:
+            return jsonify({'error': f'No data found for account {acctno}'}), 404
+        
+        # Extract the linkage data
+        if 'linkage' not in data:
+            logger.warning(f"No linkage data found for account {acctno}")
+            return jsonify({'error': 'No linkage data available for this account'}), 404
+        
+        linkage_data = data['linkage']
+        logger.info("Linkage data extracted successfully from analysis result")
+        
+        return jsonify(linkage_data)
+        
+    except Exception as e:
+        logger.error(f"Error in get_graph_data: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/wire-usage')
 def get_wire_money_usage():
     """Get wire transfer money usage analysis (bonus endpoint)"""
@@ -492,6 +521,12 @@ def list_endpoints():
                 'method': 'GET',
                 'description': 'Get customer information and details',
                 'parameters': ['acctno (required)']
+            },
+            {
+                'path': '/api/graph',
+                'method': 'GET',
+                'description': 'Get network graph data for visualization',
+                'parameters': []
             },
             {
                 'path': '/api/wire-usage',

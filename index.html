@@ -11,6 +11,7 @@
     <!-- External Dependencies -->
     <script src="./static/js/lucide.js"></script>
     <script src="./static/js/plotly.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -127,16 +128,16 @@
                      </div>
                  </section>
 
-                                   <!-- Company Info Section -->
-                  <section id="public-info" class="section-content">
-                      <div class="section-header">
-                          <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
-                          <p class="text-gray-600">Public information</p>
-                      </div>
-                      <div class="card-elevated" id="public-info-content">
-                          <!-- Will be populated dynamically -->
-                      </div>
-                  </section>
+                 <!-- Company Info Section -->
+                 <section id="public-info" class="section-content">
+                     <div class="section-header">
+                         <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
+                         <p class="text-gray-600">Public information</p>
+                     </div>
+                     <div class="card-elevated" id="public-info-content">
+                         <!-- Will be populated dynamically -->
+                     </div>
+                 </section>
 
                  <!-- Other sections will be added dynamically -->
                      </div>
@@ -270,7 +271,8 @@
                     moneyFlowData,
                     moneyUsageData,
                     wireUsageData,
-                    transUsageDictData
+                    transUsageDictData,
+                    graphData
                 ] = await Promise.all([
                     fetchApiData('transactions', acctno),
                     fetchApiData('high-cash', acctno),
@@ -281,7 +283,8 @@
                     fetchApiData('money-flow', acctno),
                     fetchApiData('money-usage', acctno),
                     fetchApiData('wire-usage', acctno),
-                    fetchApiData('transactions_usage_dict', acctno)
+                    fetchApiData('transactions_usage_dict', acctno),
+                    fetchApiData('graph', acctno)
                 ]);
 
                 // Store data globally
@@ -295,7 +298,8 @@
                     moneyFlow: moneyFlowData,
                     moneyUsage: moneyUsageData,
                     wireUsage: wireUsageData,
-                    transUsageDict: transUsageDictData
+                    transUsageDict: transUsageDictData,
+                    graph: graphData
                 };
 
                 console.log('Stored apiData for account:', acctno, apiData);
@@ -343,6 +347,17 @@
                     createSection(section.id);
                 }
             });
+            
+            // Render network graph if data is available
+            if (apiData.graph && apiData.graph.nodes && apiData.graph.nodes.length > 0) {
+                console.log('Graph data available, scheduling render:', apiData.graph);
+                setTimeout(() => {
+                    console.log('Attempting to render network graph...');
+                    renderNetworkGraph();
+                }, 500); // Increased timeout to ensure DOM is ready
+            } else {
+                console.log('No graph data available:', apiData.graph);
+            }
             
             // Show business pattern as default
             showSection('business-pattern');
@@ -516,43 +531,43 @@
             sectionElement.id = sectionId;
             sectionElement.className = 'section-content';
             
-            // Special handling for high-cash section
-            if (sectionId === 'high-cash') {
-                sectionElement.innerHTML = `
-                    <div class="section-header">
-                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                        <p class="text-gray-600">${sectionConfig.description}</p>
-                    </div>
-                    <div class="card-elevated" id="${sectionId}-content">
-                        ${createHighCashContent()}
-                    </div>
-                `;
-            } else if (sectionId === 'business-pattern') {
-                sectionElement.innerHTML = `
-                    <div class="section-header">
-                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                        <p class="text-gray-600">${sectionConfig.description}</p>
-                    </div>
-                    <div class="card-elevated" id="${sectionId}-content">
-                        ${createBusinessPatternContent()}
-                    </div>
-                `;
-            } else {
-                sectionElement.innerHTML = `
-                    <div class="section-header">
-                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                        <p class="text-gray-600">${sectionConfig.description}</p>
-                    </div>
-                    <div class="card-elevated" id="${sectionId}-content">
-                        <div class="text-center">
-                            <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                                <i data-lucide="${sectionConfig.icon}" class="w-6 h-6 text-primary-600"></i>
-                            </div>
-                            <p class="text-xs text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
-                        </div>
-                    </div>
-                `;
-            }
+                         // Special handling for high-cash section
+             if (sectionId === 'high-cash') {
+                 sectionElement.innerHTML = `
+                     <div class="section-header">
+                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                         <p class="text-gray-600">${sectionConfig.description}</p>
+                     </div>
+                     <div class="card-elevated" id="${sectionId}-content">
+                         ${createHighCashContent()}
+                     </div>
+                 `;
+                           } else if (sectionId === 'business-pattern') {
+                  sectionElement.innerHTML = `
+                      <div class="section-header">
+                          <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                          <p class="text-gray-600">${sectionConfig.description}</p>
+                      </div>
+                      <div class="card-elevated" id="${sectionId}-content">
+                          ${createBusinessPatternContent()}
+                      </div>
+                  `;
+              } else {
+                 sectionElement.innerHTML = `
+                     <div class="section-header">
+                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                         <p class="text-gray-600">${sectionConfig.description}</p>
+                     </div>
+                     <div class="card-elevated" id="${sectionId}-content">
+                         <div class="text-center">
+                             <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                 <i data-lucide="${sectionConfig.icon}" class="w-6 h-6 text-primary-600"></i>
+                             </div>
+                             <p class="text-xs text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
+                         </div>
+                     </div>
+                 `;
+             }
             
             container.appendChild(sectionElement);
             createIcons();
@@ -579,14 +594,274 @@
                          </div>
                      </div>
                  </div>
-             `;
-         }
+                
+                <!-- Network Visualization Subsection -->
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Network Visualization</h3>
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-2">
+                        <div class="prose prose-purple max-w-none">
+                            <div class="bg-white rounded-lg p-2 shadow-sm">
+                                ${createNetworkVisualization()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
                  
 
+        // Create network visualization
+        function createNetworkVisualization() {
+            console.log('createNetworkVisualization called with apiData.graph:', apiData.graph);
+            
+            if (!apiData.graph) {
+                console.log('No graph data in apiData');
+                return `
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                            <i data-lucide="network" class="w-6 h-6 text-purple-600"></i>
+                        </div>
+                        <p class="text-xs text-gray-600">Loading network graph data...</p>
+                    </div>
+                `;
+            }
 
+            // Check if graph data has content
+            if (!apiData.graph.nodes || !apiData.graph.links || apiData.graph.nodes.length === 0) {
+                console.log('Graph data incomplete:', {
+                    hasNodes: !!apiData.graph.nodes,
+                    hasLinks: !!apiData.graph.links,
+                    nodesLength: apiData.graph.nodes?.length
+                });
+                return `
+                    <div class="text-center py-4 text-gray-500">
+                        <i data-lucide="network" class="w-8 h-8 mx-auto mb-2 text-gray-300"></i>
+                        <p>No network graph data available</p>
+                    </div>
+                `;
+            }
 
+            return `
+                <div class="space-y-4">
+                    <!-- Graph Statistics Title -->
+                    <div class="text-center">
+                        <div class="text-base text-gray-700 font-medium">
+                            The graph has ${apiData.graph.nodes.length} nodes and ${apiData.graph.links.length} linkages
+                        </div>
+                    </div>
+                    
+                    <!-- Network Graph Container -->
+                    <div id="network-graph" style="height: 400px; width: 100%; border: 1px solid #e5e7eb; border-radius: 8px;"></div>
+                    
+                    <!-- Debug Button -->
+                    <button onclick="renderNetworkGraph()" class="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
+                        Render Graph
+                    </button>
+                    
+                    <!-- Legend -->
+                    <div class="text-xs text-gray-600">
+                        <div class="font-semibold mb-2">Node Types:</div>
+                        <div class="flex flex-wrap gap-3">
+                            ${createNodeTypeLegend()}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
+        // Create node type legend
+        function createNodeTypeLegend() {
+            if (!apiData.graph || !apiData.graph.nodes) return '';
+            
+            const nodeTypes = {};
+            apiData.graph.nodes.forEach(node => {
+                if (node.node_type && node.color) {
+                    nodeTypes[node.node_type] = node.color;
+                }
+            });
+            
+            return Object.entries(nodeTypes).map(([type, color]) => `
+                <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 rounded-full" style="background-color: ${color};"></div>
+                    <span>${type}</span>
+                </div>
+            `).join('');
+        }
+
+        // Render network graph using D3.js
+        function renderNetworkGraph() {
+            console.log('renderNetworkGraph called with D3.js');
+            
+            if (!apiData.graph || !apiData.graph.nodes || !apiData.graph.links) {
+                console.warn('No graph data available for rendering');
+                return;
+            }
+
+            const container = document.getElementById('network-graph');
+            if (!container) {
+                console.warn('Network graph container not found');
+                return;
+            }
+            
+            console.log('Found container:', container);
+            console.log('Graph data for rendering:', apiData.graph);
+
+            try {
+                // Clear the container
+                container.innerHTML = '';
+                
+                // Set up the SVG
+                const width = container.clientWidth;
+                const height = 400;
+                
+                const svg = d3.select(container)
+                    .append('svg')
+                    .attr('width', width)
+                    .attr('height', height)
+                    .style('border', '1px solid #e5e7eb')
+                    .style('border-radius', '8px')
+                    .style('background-color', '#f8fafc');
+                
+                // Create a group for the graph
+                const g = svg.append('g');
+                
+                // Set up force simulation
+                const simulation = d3.forceSimulation(apiData.graph.nodes)
+                    .force('link', d3.forceLink(apiData.graph.links).id(d => d.id).distance(100))
+                    .force('charge', d3.forceManyBody().strength(-300))
+                    .force('center', d3.forceCenter(width / 2, height / 2))
+                    .force('collision', d3.forceCollide().radius(30));
+                
+                // Create the links
+                const links = g.append('g')
+                    .selectAll('line')
+                    .data(apiData.graph.links)
+                    .enter()
+                    .append('line')
+                    .attr('stroke', d => d.color || '#999')
+                    .attr('stroke-width', 1)
+                    .attr('stroke-opacity', 0.3);
+                
+                // Create link labels (relationship text) - hidden by default
+                const linkLabels = g.append('g')
+                    .selectAll('text')
+                    .data(apiData.graph.links)
+                    .enter()
+                    .append('text')
+                    .attr('class', 'link-label')
+                    .attr('font-size', '10px')
+                    .attr('font-weight', 'bold')
+                    .attr('fill', d => d.color || '#999')
+                    .attr('text-anchor', 'middle')
+                    .attr('pointer-events', 'none')
+                    .attr('opacity', 0) // Hidden by default
+                    .text(d => d.relationship);
+                
+                // Create the nodes
+                const nodes = g.append('g')
+                    .selectAll('circle')
+                    .data(apiData.graph.nodes)
+                    .enter()
+                    .append('circle')
+                    .attr('r', 20)
+                    .attr('fill', d => d.color || '#666')
+                    .attr('stroke', '#333')
+                    .attr('stroke-width', 2)
+                    .attr('cursor', 'pointer')
+                    .on('mouseover', function(event, d) {
+                        // Highlight node and connected links
+                        d3.select(this).attr('stroke-width', 4);
+                        links.filter(l => l.source.id === d.id || l.target.id === d.id)
+                            .attr('stroke-width', 3)
+                            .attr('stroke-opacity', 0.8);
+                        
+                        // Show relationship labels for connected edges
+                        linkLabels.filter(l => l.source.id === d.id || l.target.id === d.id)
+                            .attr('opacity', 1);
+                    })
+                    .on('mouseout', function(event, d) {
+                        // Remove highlighting
+                        d3.select(this).attr('stroke-width', 2);
+                        links.attr('stroke-width', 1)
+                            .attr('stroke-opacity', 0.3);
+                        
+                        // Hide all relationship labels
+                        linkLabels.attr('opacity', 0);
+                    });
+                
+                // Add labels to nodes
+                const labels = g.append('g')
+                    .selectAll('text')
+                    .data(apiData.graph.nodes)
+                    .enter()
+                    .append('text')
+                    .text(d => d.id)
+                    .attr('font-size', '10px')
+                    .attr('font-weight', 'bold')
+                    .attr('text-anchor', 'middle')
+                    .attr('dy', '0.35em')
+                    .attr('fill', '#333')
+                    .attr('pointer-events', 'none');
+                
+                // Update positions on simulation tick
+                simulation.on('tick', () => {
+                    links
+                        .attr('x1', d => d.source.x)
+                        .attr('y1', d => d.source.y)
+                        .attr('x2', d => d.target.x)
+                        .attr('y2', d => d.target.y);
+                    
+                    // Position link labels in the middle of each edge
+                    linkLabels
+                        .attr('x', d => (d.source.x + d.target.x) / 2)
+                        .attr('y', d => (d.source.y + d.target.y) / 2);
+                    
+                    nodes
+                        .attr('cx', d => d.x)
+                        .attr('cy', d => d.y);
+                    
+                    labels
+                        .attr('x', d => d.x)
+                        .attr('y', d => d.y);
+                });
+                
+                // Add drag behavior
+                nodes.call(d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended));
+                
+                function dragstarted(event, d) {
+                    if (!event.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                }
+                
+                function dragged(event, d) {
+                    d.fx = event.x;
+                    d.fy = event.y;
+                }
+                
+                function dragended(event, d) {
+                    if (!event.active) simulation.alphaTarget(0);
+                    d.fx = null;
+                    d.fy = null;
+                }
+                
+                console.log('D3.js network graph rendered successfully');
+                
+            } catch (error) {
+                console.error('Error rendering D3.js network graph:', error);
+                container.innerHTML = `
+                    <div class="text-center py-8 text-red-500">
+                        <i data-lucide="alert-circle" class="w-8 h-8 mx-auto mb-2 text-red-300"></i>
+                        <p>Error rendering network graph</p>
+                        <p class="text-xs text-gray-500 mt-1">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
 
         // Create public info content with both public-info and public-address
         function createPublicInfoContent() {
@@ -878,7 +1153,7 @@
                              
                              <!-- Business Pattern Content -->
                              <div class="mt-4 pt-4 border-t border-gray-200">
-                                 ${contentHtml}
+                             ${contentHtml}
                              </div>
                          </div>
                      </div>
@@ -1112,15 +1387,15 @@
                     <div id="sankey-chart" style="height: 300px; width: 100%;"></div>
                 </div>
                 
-                <!-- Transaction Usage Dictionary Table -->
+                                 <!-- Transaction Usage Dictionary Table -->
                 <div class="mt-4">
                     <div class="bg-white rounded-xl shadow-sm p-4">
                         <h3 class="text-lg font-semibold text-gray-900 mb-3">Transaction Usage Dictionary</h3>
-                        <div id="trans-usage-dict-table" class="overflow-x-auto">
-                            <!-- Will be populated dynamically -->
-                        </div>
-                    </div>
-                </div>
+                         <div id="trans-usage-dict-table" class="overflow-x-auto">
+                             <!-- Will be populated dynamically -->
+                         </div>
+                     </div>
+                 </div>
                 `;
 
             // Prepare data for Sankey diagram
@@ -1412,12 +1687,12 @@
                     return;
                 }
 
-                // Create table from the data
-                const tableHtml = createTransactionUsageDictTable(data);
-                document.getElementById('trans-usage-dict-table').innerHTML = tableHtml;
-                
-                // Recreate icons for the new content
-                createIcons();
+                                     // Create table from the data
+                     const tableHtml = createTransactionUsageDictTable(data);
+                     document.getElementById('trans-usage-dict-table').innerHTML = tableHtml;
+                     
+                     // Recreate icons for the new content
+                     createIcons();
                 
                 console.log('Transaction usage dictionary table created successfully for account:', selectedAccount);
             } catch (error) {
@@ -1445,8 +1720,8 @@
                         return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>No items available</p></div>';
                     }
 
-                    const firstItem = data[0];
-                    if (!firstItem || typeof firstItem !== 'object') {
+                     const firstItem = data[0];
+                     if (!firstItem || typeof firstItem !== 'object') {
                         return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
                     }
 
@@ -1456,29 +1731,29 @@
                     // Create simple table rows
                     const tableRows = data.map(function(item) {
                         const rowCells = keys.map(function(key) {
-                            const value = item[key];
-                            let formattedValue;
-                            
-                            if (typeof value === 'string') {
-                                formattedValue = formatText(value);
-                            } else if (typeof value === 'number') {
+                             const value = item[key];
+                             let formattedValue;
+                             
+                             if (typeof value === 'string') {
+                                 formattedValue = formatText(value);
+                             } else if (typeof value === 'number') {
                                 // Format trans_am as currency (rounded)
                                 if (key === 'trans_am') {
                                     formattedValue = '$' + Math.round(value).toLocaleString('en-US');
-                                } else {
+                                 } else {
                                     formattedValue = Math.round(value).toLocaleString('en-US');
-                                }
-                            } else if (typeof value === 'object' && value !== null) {
+                                 }
+                             } else if (typeof value === 'object' && value !== null) {
                                 formattedValue = JSON.stringify(value);
-                            } else {
-                                formattedValue = String(value);
-                            }
+                             } else {
+                                 formattedValue = String(value);
+                             }
 
                             return '<td style="padding: 8px 16px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white;">' + formattedValue + '</td>';
-                        }).join('');
+                         }).join('');
 
                         return '<tr>' + rowCells + '</tr>';
-                    }).join('');
+                     }).join('');
 
                     // Create simple headers
                     const tableHeaders = keys.map(function(key) {
@@ -1518,27 +1793,27 @@
             return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
         }
 
-                 // Sort table function
-         function sortTable(key, headerElement) {
-             const table = document.getElementById('trans-usage-table');
-             const tbody = table.querySelector('tbody');
-             const rows = Array.from(tbody.querySelectorAll('tr'));
-             
-             // Get current sort direction
-             const currentSort = headerElement.dataset.sort;
-             const newSort = currentSort === 'asc' ? 'desc' : 'asc';
-             
-             // Reset all headers
-             table.querySelectorAll('th').forEach(th => {
-                 th.dataset.sort = 'none';
+        // Sort table function
+        function sortTable(key, headerElement) {
+            const table = document.getElementById('trans-usage-table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // Get current sort direction
+            const currentSort = headerElement.dataset.sort;
+            const newSort = currentSort === 'asc' ? 'desc' : 'asc';
+            
+            // Reset all headers
+            table.querySelectorAll('th').forEach(th => {
+                th.dataset.sort = 'none';
                  th.style.backgroundColor = 'transparent';
-             });
-             
-             // Update current header
-             headerElement.dataset.sort = newSort;
+            });
+            
+            // Update current header
+            headerElement.dataset.sort = newSort;
              headerElement.style.backgroundColor = newSort === 'asc' ? '#f0fdf4' : '#eff6ff';
-             
-             // Sort rows
+            
+                         // Sort rows
              rows.sort((a, b) => {
                  const aValue = a.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
                  const bValue = b.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
@@ -1559,13 +1834,13 @@
                      }
                  }
              });
-             
-             // Reorder rows in DOM
-             rows.forEach(row => tbody.appendChild(row));
-             
+            
+            // Reorder rows in DOM
+            rows.forEach(row => tbody.appendChild(row));
+            
              // Update sort indicators
              updateSortIndicators(headerElement, newSort);
-         }
+        }
         
         // Get column index for a given key
         function getColumnIndex(key) {
@@ -1586,15 +1861,15 @@
              const indicators = headerElement.querySelectorAll('span');
              const upIndicator = indicators[1]; // ▲
              const downIndicator = indicators[2]; // ▼
-             
-             if (sortDirection === 'asc') {
+            
+            if (sortDirection === 'asc') {
                  upIndicator.style.color = '#059669'; // green-600
                  downIndicator.style.color = '#9ca3af'; // gray-400
-             } else {
+            } else {
                  downIndicator.style.color = '#2563eb'; // blue-600
                  upIndicator.style.color = '#9ca3af'; // gray-400
-             }
-         }
+            }
+        }
 
         // Create quick insights
         function createQuickInsights() {
