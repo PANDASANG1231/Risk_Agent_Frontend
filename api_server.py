@@ -5,6 +5,7 @@ import os
 import logging
 from datetime import datetime
 import re
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
@@ -449,167 +450,153 @@ def process_account_numbers(data, key_name):
 
 @app.route('/api/utr-info')
 def get_utr_info():
-    """Get UTR (Currency Transaction Report) information"""
+    """Get UTR (Currency Transaction Report) information using pandas for simplified data processing"""
     try:
         acctno = request.args.get('acctno')
         if not acctno:
             return jsonify({'error': 'acctno parameter is required'}), 400
             
         logger.info(f"Received request for /api/utr-info with acctno: {acctno}")
+
+        # Get customer info and validate
+        customer_info, customer_status = get_key_data('customer_info', acctno)
+        if customer_status != 200:
+            return jsonify({'error': 'Failed to retrieve customer information'}), customer_status
+            
+        target_acct = customer_info.get('frmtd_acct_no', "")
+        if not target_acct:
+            return jsonify({'error': 'Customer account number not found'}), 404
+            
+        target_acct = str(target_acct).zfill(16)
+
+        # Get UTR info and validate
         result, status_code = get_key_data('utr_info', acctno)
+        if status_code != 200:
+            return jsonify({'error': 'Failed to retrieve UTR information'}), status_code
+            
+        if not result:
+            return jsonify({'error': 'No UTR data available'}), 404
+
+        # Convert result to pandas DataFrame for easier manipulation
+        df = pd.DataFrame(result if isinstance(result, list) else [result])
         
-        if status_code == 200:
-            # Load the full data to find frmtd_acct_no under customer_info
-            try:
-                full_data = load_data(acctno)
-                if 'customer_info' in full_data and 'frmtd_acct_no' in full_data['customer_info']:
-                    target_acct = full_data['customer_info']['frmtd_acct_no'].zfill(16)
-                    logger.info(f"Found frmtd_acct_no in customer_info: {target_acct}")
-                else:
-                    logger.warning("frmtd_acct_no not found in customer_info, using acctno parameter")
-                    target_acct = acctno.split("_")[0].zfill(16)
-            except Exception as e:
-                logger.error(f"Error loading full data: {str(e)}")
-                target_acct = acctno.split("_")[0].zfill(16)
+        # Validate DataFrame structure
+        required_columns = ['Account Number', 'UTR Count']
+        if not all(col in df.columns for col in required_columns):
+            return jsonify({'error': 'Invalid UTR data structure'}), 500
             
-            logger.info(f"Target account number: {target_acct}")
-            
-            # If result is empty list, return default structure
-            if not result or (isinstance(result, list) and len(result) == 0):
-                logger.info(f"Result is empty, returning default UTR structure for {target_acct}")
-                default_result = {
-                    "Account Number": target_acct,
-                    "CTR Count": "0, target_acct"
-                }
-                return jsonify(default_result), 200
-            
-            # Check if target account exists in the data
-            target_found = False
-            if isinstance(result, list):
-                for item in result:
-                    if isinstance(item, dict):
-                        # Look for common account number field names
-                        account_fields = ['Account Number', 'account_number', 'accountNumber', 'acctno', 'acct_no']
-                        for field in account_fields:
-                            if field in item and item[field]:
-                                # Convert to string and zero-pad to 16 digits
-                                acct_str = str(item[field]).strip()
-                                if acct_str.isdigit():
-                                    item[field] = acct_str.zfill(16)
-                                    logger.info(f"Zero-padded account number in utr_info: {acct_str} -> {item[field]}")
-                                
-                                # Check if this is the target account
-                                if str(item[field]).zfill(16) == str(target_acct).zfill(16):
-                                    target_found = True
-                                    # Modify the UTR count to include ", target acct"
-                                    if 'utr count' in item:
-                                        item['utr count'] = f"{item['utr count']}, target acct"
-                                    logger.info(f"Modified UTR count for target account {target_acct}")
-                                break
-                        if target_found:
-                            break
-            
-            # If target account not found, add a new row
-            if not target_found:
-                logger.info(f"Target account {target_acct} not found, adding new row")
-                new_row = {
-                    'Account Number': target_acct,
-                    'utr count': '0, target acct'
-                }
-                if isinstance(result, list):
-                    result.append(new_row)
-                else:
-                    result = [new_row]
-                logger.info(f"Added new row for target account {target_acct}")
-            
-            logger.info(f"Successfully processed UTR info for target account {target_acct}")
+        # Add Target Account column
+        utr_col = 'Target Account'
+        df[utr_col] = "N"
         
-        return jsonify(result), status_code
+        # Process account numbers
+        acct_col = 'Account Number'
+        df[acct_col] = df[acct_col].astype(str).str.strip()
+        df[acct_col] = df[acct_col].apply(lambda x: x.zfill(16))
+        logger.info(f"Zero-padded account numbers in utr_info")
+                            
+        # Check if target account exists
+        target_found = df[acct_col] == target_acct
+
+        if target_found.any():
+            # Modify UTR count for target account
+            df.loc[target_found, utr_col] = "Y"
+            logger.info(f"Modified UTR count for target account {target_acct}")
+        else:
+            # Add new row for target account if not found
+            logger.info(f"Target account {target_acct} not found, adding new row")
+            new_row = pd.DataFrame([{
+                acct_col: target_acct,
+                'UTR Count': '0',
+                utr_col: "Y"
+            }])
+            df = pd.concat([df, new_row], ignore_index=True)
+            logger.info(f"Added new row for target account {target_acct}")
+                
+        # Convert back to list of dictionaries
+        result = df.to_dict('records')
+        logger.info(f"Successfully processed UTR info for target account {target_acct}")
+        
+        return jsonify(result), 200
+        
     except Exception as e:
         logger.error(f"Error in get_utr_info: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error processing UTR information'}), 500
 
 @app.route('/api/ctr-info')
 def get_ctr_info():
-    """Get CTR (Currency Transaction Report) information"""
+    """Get CTR (Currency Transaction Report) information using pandas for simplified data processing"""
     try:
         acctno = request.args.get('acctno')
         if not acctno:
             return jsonify({'error': 'acctno parameter is required'}), 400
             
         logger.info(f"Received request for /api/ctr-info with acctno: {acctno}")
+
+        # Get customer info and validate
+        customer_info, customer_status = get_key_data('customer_info', acctno)
+        if customer_status != 200:
+            return jsonify({'error': 'Failed to retrieve customer information'}), customer_status
+            
+        target_acct = customer_info.get('frmtd_acct_no', "")
+        if not target_acct:
+            return jsonify({'error': 'Customer account number not found'}), 404
+            
+        target_acct = str(target_acct).zfill(16)
+
+        # Get CTR info and validate
         result, status_code = get_key_data('ctr_info', acctno)
+        if status_code != 200:
+            return jsonify({'error': 'Failed to retrieve CTR information'}), status_code
+            
+        if not result:
+            return jsonify({'error': 'No CTR data available'}), 404
+
+        # Convert result to pandas DataFrame for easier manipulation
+        df = pd.DataFrame(result if isinstance(result, list) else [result])
         
-        if status_code == 200:
-            # Load the full data to find frmtd_acct_no under customer_info
-            try:
-                full_data = load_data(acctno)
-                if 'customer_info' in full_data and 'frmtd_acct_no' in full_data['customer_info']:
-                    target_acct = full_data['customer_info']['frmtd_acct_no'].zfill(16)
-                    logger.info(f"Found frmtd_acct_no in customer_info: {target_acct}")
-                else:
-                    logger.warning("frmtd_acct_no not found in customer_info, using acctno parameter")
-                    target_acct = acctno.split("_")[0].zfill(16)
-            except Exception as e:
-                logger.error(f"Error loading full data: {str(e)}")
-                target_acct = acctno.split("_")[0].zfill(16)
+        # Validate DataFrame structure
+        required_columns = ['Account Number', 'CTR Count']
+        if not all(col in df.columns for col in required_columns):
+            return jsonify({'error': 'Invalid CTR data structure'}), 500
             
-            logger.info(f"Target account number: {target_acct}")
-            
-            # If result is empty list, return default structure
-            if not result or (isinstance(result, list) and len(result) == 0):
-                logger.info(f"Result is empty, returning default CTR structure for {target_acct}")
-                default_result = {
-                    "Account Number": target_acct,
-                    "CTR Count": "0, target_acct"
-                }
-                return jsonify(default_result), 200
-            
-            # Check if target account exists in the data
-            target_found = False
-            if isinstance(result, list):
-                for item in result:
-                    if isinstance(item, dict):
-                        # Look for common account number field names
-                        account_fields = ['Account Number', 'account_number', 'accountNumber', 'acctno', 'acct_no']
-                        for field in account_fields:
-                            if field in item and item[field]:
-                                # Convert to string and zero-pad to 16 digits
-                                acct_str = str(item[field]).strip()
-                                if acct_str.isdigit():
-                                    item[field] = acct_str.zfill(16)
-                                    logger.info(f"Zero-padded account number in ctr_info: {acct_str} -> {item[field]}")
-                                
-                                # Check if this is the target account
-                                if str(item[field]).zfill(16) == str(target_acct).zfill(16):
-                                    target_found = True
-                                    # Modify the CTR count to include ", target acct"
-                                    if 'ctr count' in item:
-                                        item['ctr count'] = f"{item['ctr count']}, target acct"
-                                    logger.info(f"Modified CTR count for target account {target_acct}")
-                                break
-                        if target_found:
-                            break
-            
-            # If target account not found, add a new row
-            if not target_found:
-                logger.info(f"Target account {target_acct} not found, adding new row")
-                new_row = {
-                    'Account Number': target_acct,
-                    'ctr count': '0, target acct'
-                }
-                if isinstance(result, list):
-                    result.append(new_row)
-                else:
-                    result = [new_row]
-                logger.info(f"Added new row for target account {target_acct}")
-            
-            logger.info(f"Successfully processed CTR info for target account {target_acct}")
+        # Add Target Account column
+        ctr_col = 'Target Account'
+        df[ctr_col] = "N"
         
-        return jsonify(result), status_code
+        # Process account numbers
+        acct_col = 'Account Number'
+        df[acct_col] = df[acct_col].astype(str).str.strip()
+        df[acct_col] = df[acct_col].apply(lambda x: x.zfill(16))
+        logger.info(f"Zero-padded account numbers in ctr_info")
+                            
+        # Check if target account exists
+        target_found = df[acct_col] == target_acct
+
+        if target_found.any():
+            # Modify CTR count for target account
+            df.loc[target_found, ctr_col] = "Y"
+            logger.info(f"Modified CTR count for target account {target_acct}")
+        else:
+            # Add new row for target account if not found
+            logger.info(f"Target account {target_acct} not found, adding new row")
+            new_row = pd.DataFrame([{
+                acct_col: target_acct,
+                'CTR Count': '0',
+                ctr_col: "Y"
+            }])
+            df = pd.concat([df, new_row], ignore_index=True)
+            logger.info(f"Added new row for target account {target_acct}")
+                
+        # Convert back to list of dictionaries
+        result = df.to_dict('records')
+        logger.info(f"Successfully processed CTR info for target account {target_acct}")
+        
+        return jsonify(result), 200
+        
     except Exception as e:
         logger.error(f"Error in get_ctr_info: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error processing CTR information'}), 500
 
 @app.route('/api/accounts')
 def list_accounts():
