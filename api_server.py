@@ -463,7 +463,7 @@ def get_utr_info():
             try:
                 full_data = load_data(acctno)
                 if 'customer_info' in full_data and 'frmtd_acct_no' in full_data['customer_info']:
-                    target_acct = full_data['customer_info']['frmtd_acct_no']
+                    target_acct = full_data['customer_info']['frmtd_acct_no'].zfill(16)
                     logger.info(f"Found frmtd_acct_no in customer_info: {target_acct}")
                 else:
                     logger.warning("frmtd_acct_no not found in customer_info, using acctno parameter")
@@ -545,7 +545,7 @@ def get_ctr_info():
             try:
                 full_data = load_data(acctno)
                 if 'customer_info' in full_data and 'frmtd_acct_no' in full_data['customer_info']:
-                    target_acct = full_data['customer_info']['frmtd_acct_no']
+                    target_acct = full_data['customer_info']['frmtd_acct_no'].zfill(16)
                     logger.info(f"Found frmtd_acct_no in customer_info: {target_acct}")
                 else:
                     logger.warning("frmtd_acct_no not found in customer_info, using acctno parameter")
