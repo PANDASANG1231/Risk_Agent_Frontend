@@ -1251,26 +1251,36 @@
             // Check if dict_analysis exists, otherwise use raw_analysis
             let contentHtml = '';
             if (apiData.businessPattern && apiData.businessPattern.dict_analysis) {
-                // Handle dict_analysis - display key-value pairs
-                                 contentHtml = Object.entries(apiData.businessPattern.dict_analysis).map(([key, value]) => {
-                     // Format the key to be more readable and apply text formatting
-                     const formattedKey = formatText(key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()));
-                     
-                     // Format the value with text formatting
-                     let formattedValue;
-                     if (typeof value === 'string') {
-                         formattedValue = formatText(value);
-                     } else {
-                         formattedValue = JSON.stringify(value, null, 2);
-                     }
-                     
-                     return `
-                         <div class="mb-3 border-b border-gray-200 pb-2 last:border-b-0">
-                             <h4 class="text-sm font-semibold text-gray-900 mb-1">${formattedKey}</h4>
-                             <div class="text-xs text-gray-700 leading-relaxed" style="word-break: keep-all; hyphens: none;">${formattedValue}</div>
-                         </div>
-                     `;
-                 }).join('');
+                // Check if dict_analysis is a string or an object
+                if (typeof apiData.businessPattern.dict_analysis === 'string') {
+                    // If dict_analysis is a string, display it as text
+                    const formattedText = formatText(apiData.businessPattern.dict_analysis);
+                    contentHtml = `<div class="text-sm text-gray-700 leading-relaxed" style="word-break: keep-all; hyphens: none;">${formattedText}</div>`;
+                } else if (typeof apiData.businessPattern.dict_analysis === 'object' && apiData.businessPattern.dict_analysis !== null) {
+                    // Handle dict_analysis as object - display key-value pairs
+                    contentHtml = Object.entries(apiData.businessPattern.dict_analysis).map(([key, value]) => {
+                        // Format the key to be more readable and apply text formatting
+                        const formattedKey = formatText(key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()));
+                        
+                        // Format the value with text formatting
+                        let formattedValue;
+                        if (typeof value === 'string') {
+                            formattedValue = formatText(value);
+                        } else {
+                            formattedValue = JSON.stringify(value, null, 2);
+                        }
+                        
+                        return `
+                            <div class="mb-3 border-b border-gray-200 pb-2 last:border-b-0">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-1">${formattedKey}</h4>
+                                <div class="text-xs text-gray-700 leading-relaxed" style="word-break: keep-all; hyphens: none;">${formattedValue}</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    // Fallback for other dict_analysis types
+                    contentHtml = `<div class="text-sm text-gray-700 leading-relaxed">Invalid dict_analysis format</div>`;
+                }
             } else if (apiData.businessPattern && apiData.businessPattern.raw_analysis) {
                 // Handle raw_analysis with consolidated text formatting
                 const formattedText = formatText(apiData.businessPattern.raw_analysis);
