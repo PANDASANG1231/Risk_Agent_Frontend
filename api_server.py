@@ -423,6 +423,30 @@ def get_trans_usage_dict():
         print(f"Error in get_trans_usage_dict: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+def process_account_numbers(data, key_name):
+    """Process account numbers in data to ensure they are 16 digits with zero-padding"""
+    try:
+        if isinstance(data, list) and len(data) > 0:
+            # Look for common account number field names
+            account_fields = ['Account Number', 'account_number', 'accountNumber', 'acctno', 'acct_no']
+            
+            for item in data:
+                if isinstance(item, dict):
+                    for field in account_fields:
+                        if field in item and item[field]:
+                            # Convert to string and zero-pad to 16 digits
+                            acct_str = str(item[field]).strip()
+                            if acct_str.isdigit():
+                                item[field] = acct_str.zfill(16)
+                                logger.info(f"Zero-padded account number in {key_name}: {acct_str} -> {item[field]}")
+                            break
+            
+            logger.info(f"Successfully processed account numbers in {key_name}")
+        return data
+    except Exception as e:
+        logger.error(f"Error processing account numbers in {key_name}: {str(e)}")
+        return data
+
 @app.route('/api/utr-info')
 def get_utr_info():
     """Get UTR (Currency Transaction Report) information"""
@@ -433,6 +457,12 @@ def get_utr_info():
             
         logger.info(f"Received request for /api/utr-info with acctno: {acctno}")
         result, status_code = get_key_data('utr_info', acctno)
+        
+        # Process account numbers to ensure 16-digit format
+        if status_code == 200 and result:
+            logger.info("Processing UTR info account numbers for zero-padding")
+            result = process_account_numbers(result, 'utr_info')
+        
         return jsonify(result), status_code
     except Exception as e:
         logger.error(f"Error in get_utr_info: {str(e)}")
@@ -448,6 +478,12 @@ def get_ctr_info():
             
         logger.info(f"Received request for /api/ctr-info with acctno: {acctno}")
         result, status_code = get_key_data('ctr_info', acctno)
+        
+        # Process account numbers to ensure 16-digit format
+        if status_code == 200 and result:
+            logger.info("Processing CTR info account numbers for zero-padding")
+            result = process_account_numbers(result, 'ctr_info')
+        
         return jsonify(result), status_code
     except Exception as e:
         logger.error(f"Error in get_ctr_info: {str(e)}")
