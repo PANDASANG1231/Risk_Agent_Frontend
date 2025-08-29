@@ -8,6 +8,15 @@ mkdir -p static/js
 echo "Creating static/css directory..."
 mkdir -p static/css
 
+# Copy D3.js
+echo "Copying D3.js..."
+if [ -f "node_modules/d3/dist/d3.min.js" ]; then
+    cp node_modules/d3/dist/d3.min.js static/js/
+    echo "✓ D3.js copied successfully"
+else
+    echo "✗ D3.js not found in node_modules"
+fi
+
 # Copy Plotly.js
 echo "Copying Plotly.js..."
 if [ -f "node_modules/plotly.js/dist/plotly.js" ]; then
