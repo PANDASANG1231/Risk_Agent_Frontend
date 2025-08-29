@@ -473,9 +473,6 @@ def get_utr_info():
         result, status_code = get_key_data('utr_info', acctno)
         if status_code != 200:
             return jsonify({'error': 'Failed to retrieve UTR information'}), status_code
-            
-        if not result:
-            return jsonify({'error': 'No UTR data available'}), 404
 
         # Convert result to pandas DataFrame for easier manipulation
         df = pd.DataFrame(result if isinstance(result, list) else [result])
@@ -548,9 +545,6 @@ def get_ctr_info():
         result, status_code = get_key_data('ctr_info', acctno)
         if status_code != 200:
             return jsonify({'error': 'Failed to retrieve CTR information'}), status_code
-            
-        if not result:
-            return jsonify({'error': 'No CTR data available'}), 404
 
         # Convert result to pandas DataFrame for easier manipulation
         df = pd.DataFrame(result if isinstance(result, list) else [result])
