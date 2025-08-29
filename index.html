@@ -1941,11 +1941,12 @@
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid UTR data format</p></div>';
             }
 
-            const keys = Object.keys(firstItem);
+            // Define fixed column order: Account Number, UTR Count, Target Account
+            const columnOrder = ['Account Number', 'UTR Count', 'Target Account'];
             
             // Create table rows with click functionality
             const tableRows = apiData.utrInfo.map(function(item, index) {
-                const rowCells = keys.map(function(key) {
+                const rowCells = columnOrder.map(function(key) {
                     const value = item[key];
                     let formattedValue;
                     
@@ -1965,15 +1966,15 @@
                     return '<td style="padding: 8px 12px; font-size: 11px; color: #374151; border: 1px solid #e5e7eb; background-color: ' + bgColor + '; text-align: left; vertical-align: top;">' + formattedValue + '</td>';
                 }).join('');
 
-                // Get account number for click functionality (assuming first key is account number)
-                const accountNumber = item[keys[0]] || item['Account Number'] || item['account_number'] || item['accountNumber'];
+                // Get account number for click functionality
+                const accountNumber = item['Account Number'] || item['account_number'] || item['accountNumber'];
                 const rowId = `utr-row-${index}`;
                 
                 return '<tr id="' + rowId + '" data-account="' + accountNumber + '" class="cursor-pointer hover:bg-blue-50 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500" onclick="highlightNodeInGraph(\'' + accountNumber + '\')" title="Click to highlight corresponding node in graph">' + rowCells + '</tr>';
             }).join('');
 
-            // Create table headers
-            const tableHeaders = keys.map(function(key) {
+            // Create table headers with fixed order
+            const tableHeaders = columnOrder.map(function(key) {
                 const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                 return '<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
             }).join('');
@@ -1992,11 +1993,12 @@
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid CTR data format</p></div>';
             }
 
-            const keys = Object.keys(firstItem);
+            // Define fixed column order: Account Number, CTR Count, Target Account
+            const columnOrder = ['Account Number', 'CTR Count', 'Target Account'];
             
             // Create table rows with click functionality
             const tableRows = apiData.ctrInfo.map(function(item, index) {
-                const rowCells = keys.map(function(key) {
+                const rowCells = columnOrder.map(function(key) {
                     const value = item[key];
                     let formattedValue;
                     
@@ -2023,8 +2025,8 @@
                 return '<tr id="' + rowId + '" data-account="' + accountNumber + '" class="cursor-pointer hover:bg-blue-50 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500" onclick="highlightNodeInGraph(\'' + accountNumber + '\')" title="Click to highlight corresponding node in graph">' + rowCells + '</tr>';
             }).join('');
 
-            // Create table headers
-            const tableHeaders = keys.map(function(key) {
+            // Create table headers with fixed order
+            const tableHeaders = columnOrder.map(function(key) {
                 const formattedKey = key.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                 return '<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
             }).join('');
