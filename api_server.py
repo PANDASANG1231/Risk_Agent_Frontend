@@ -600,6 +600,45 @@ def get_ctr_info():
         logger.error(f"Error in get_ctr_info: {str(e)}")
         return jsonify({'error': 'Internal server error processing CTR information'}), 500
 
+@app.route('/api/frmtd-account')
+def get_frmtd_account():
+    """Get formatted account number by splitting on '_' and zero-padding to 16 digits"""
+    try:
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        logger.info(f"Received request for /api/frmtd-account with acctno: {acctno}")
+        
+        # Split by "_" if "_" exists in acctno
+        if "_" in acctno:
+            parts = acctno.split("_")
+            # Take the last part (assuming it's the account number)
+            account_part = parts[-1]
+            logger.info(f"Split acctno '{acctno}' by '_', using part: '{account_part}'")
+        else:
+            account_part = acctno
+            logger.info(f"No '_' found in acctno '{acctno}', using as-is")
+        
+        # Remove any non-digit characters and zero-pad to 16 digits
+        clean_account = ''.join(filter(str.isdigit, account_part))
+        if not clean_account:
+            return jsonify({'error': 'No digits found in account number'}), 400
+            
+        frmtd_account = clean_account.zfill(16)
+        
+        logger.info(f"Formatted account: '{acctno}' -> '{frmtd_account}'")
+        
+        return jsonify({
+            'original_acctno': acctno,
+            'frmtd_acctno': frmtd_account,
+            'message': f'Successfully formatted account number to 16 digits'
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error in get_frmtd_account: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/accounts')
 def list_accounts():
     """List all available account numbers from cache_data folder"""
@@ -644,6 +683,12 @@ def list_endpoints():
                 'method': 'GET',
                 'description': 'List all available account numbers from cache_data folder',
                 'parameters': []
+            },
+            {
+                'path': '/api/frmtd-account',
+                'method': 'GET',
+                'description': 'Get formatted account number by splitting on "_" and zero-padding to 16 digits',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/data',

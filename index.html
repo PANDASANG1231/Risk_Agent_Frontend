@@ -357,15 +357,15 @@
             // Render network graph if data is available
             if (apiData.graph && apiData.graph.nodes && apiData.graph.nodes.length > 0) {
                 console.log('Graph data available, scheduling render:', apiData.graph);
-                setTimeout(() => {
+                setTimeout(async () => {
                     console.log('Attempting to render network graph...');
                     // Check if container exists and has dimensions before rendering
                     const container = document.getElementById('network-graph');
                     if (container && container.offsetWidth > 0 && container.offsetHeight > 0) {
-                        renderNetworkGraph();
+                        await renderNetworkGraph();
                     } else {
                         console.log('Container not ready, retrying in 100ms...');
-                        setTimeout(() => renderNetworkGraph(), 100);
+                        setTimeout(async () => await renderNetworkGraph(), 100);
                     }
                 }, 500); // Increased timeout to ensure DOM is ready
             } else {
@@ -607,7 +607,13 @@
                 
                 <!-- Network Visualization and Transaction Reports Section -->
                 <div class="mt-4">
-                    <h4 class="text-base font-semibold text-gray-900 mb-2">Linkage analysis</h4>
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-base font-semibold text-gray-900">Linkage analysis</h4>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="show-full-graph" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+                            <span class="text-sm text-gray-600">Show full graph</span>
+                        </label>
+                    </div>
                     <div class="flex space-x-4 w-full">
                         <!-- Left side: D3 Network Graph -->
                         <div class="flex-1" style="height: 600px;">
@@ -684,8 +690,8 @@
                 <div class="space-y-4">
                     <!-- Graph Statistics Title -->
                     <div class="text-left">
-                        <div class="text-base text-gray-700 font-medium">
-                            The graph has ${apiData.graph.nodes.length} nodes and ${apiData.graph.links.length} linkages
+                        <div class="text-base text-gray-700 font-medium" id="graph-stats">
+                            Loading graph statistics...
                         </div>
                     </div>
                     
@@ -739,8 +745,90 @@
             `).join('');
         }
 
+        // Fetch formatted account number from API
+        async function getFormattedAccountNumber(acctno) {
+            try {
+                console.log(`Fetching formatted account number for: ${acctno}`);
+                const response = await fetch(`/api/frmtd-account?acctno=${encodeURIComponent(acctno)}`);
+                
+                if (!response.ok) {
+                    console.error(`HTTP ${response.status} for frmtd-account:`, await response.text());
+                    return acctno; // Fallback to original account number
+                }
+                
+                const data = await response.json();
+                console.log(`Formatted account number: ${acctno} -> ${data.frmtd_acctno}`);
+                return data.frmtd_acctno;
+            } catch (error) {
+                console.error(`Error fetching formatted account number:`, error);
+                return acctno; // Fallback to original account number
+            }
+        }
+
+        // Filter graph data for subgraph (selected account + direct neighbors)
+        async function getSubgraphData() {
+            if (!apiData.graph || !apiData.graph.nodes || !apiData.graph.links || !selectedAccount) {
+                console.warn('Missing data for subgraph:', {
+                    hasGraph: !!apiData.graph,
+                    hasNodes: !!(apiData.graph && apiData.graph.nodes),
+                    hasLinks: !!(apiData.graph && apiData.graph.links),
+                    selectedAccount: selectedAccount
+                });
+                return apiData.graph;
+            }
+            
+            console.log(`Starting subgraph analysis for account: ${selectedAccount}`);
+            console.log(`Graph has ${apiData.graph.nodes.length} nodes and ${apiData.graph.links.length} links`);
+            
+            // Get formatted account number
+            const frmtdAcctno = await getFormattedAccountNumber(selectedAccount);
+            console.log(`Using formatted account number for subgraph: ${frmtdAcctno}`);
+            
+            // Find the selected account node (try both original and formatted)
+            let selectedNode = apiData.graph.nodes.find(node => node.id === selectedAccount);
+            if (!selectedNode) {
+                selectedNode = apiData.graph.nodes.find(node => node.id === frmtdAcctno);
+            }
+            
+            if (!selectedNode) {
+                console.warn(`Selected account not found in graph data (tried: ${selectedAccount}, ${frmtdAcctno})`);
+                console.log('Available node IDs:', apiData.graph.nodes.map(n => n.id).slice(0, 10));
+                return apiData.graph;
+            }
+            
+            // Use the actual node ID found in the graph
+            const actualNodeId = selectedNode.id;
+            console.log(`Found node with ID: ${actualNodeId}`);
+            
+            // Find direct neighbors (nodes connected to the selected account)
+            const neighborIds = new Set();
+            neighborIds.add(actualNodeId); // Include the selected account itself
+            
+            console.log('Analyzing links for neighbors...');
+            apiData.graph.links.forEach((link, index) => {
+                if (link.source.id === actualNodeId) {
+                    neighborIds.add(link.target.id);
+                    console.log(`Link ${index}: Found neighbor ${link.target.id} (source connection)`);
+                } else if (link.target.id === actualNodeId) {
+                    neighborIds.add(link.source.id);
+                    console.log(`Link ${index}: Found neighbor ${link.source.id} (target connection)`);
+                }
+            });
+            
+            console.log(`Subgraph analysis complete. Neighbor IDs:`, Array.from(neighborIds));
+            console.log(`Total neighbors found: ${neighborIds.size - 1} (excluding center node)`);
+            
+            // Return the full graph data but with neighbor information for visibility control
+            return {
+                nodes: apiData.graph.nodes,
+                links: apiData.graph.links,
+                subgraphNodeIds: neighborIds,
+                centerNodeId: actualNodeId
+            };
+        }
+
         // Render network graph using D3.js
-        function renderNetworkGraph() {
+        async function renderNetworkGraph() {
             console.log('renderNetworkGraph called with D3.js');
             
             if (!apiData.graph || !apiData.graph.nodes || !apiData.graph.links) {
@@ -761,9 +849,29 @@
                 return;
             }
             
+            // Check if we should show full graph or subgraph
+            const showFullGraph = document.getElementById('show-full-graph').checked;
+            let graphData;
+            
+            console.log('Checkbox state - showFullGraph:', showFullGraph);
+            
+            if (showFullGraph) {
+                graphData = apiData.graph;
+                console.log('Using full graph data');
+            } else {
+                console.log('Getting subgraph data...');
+                graphData = await getSubgraphData();
+                console.log('Subgraph data received:', {
+                    hasSubgraphNodeIds: !!graphData.subgraphNodeIds,
+                    subgraphNodeCount: graphData.subgraphNodeIds ? graphData.subgraphNodeIds.size : 0,
+                    centerNodeId: graphData.centerNodeId
+                });
+            }
+            
             console.log('Found container:', container);
             console.log('Container dimensions:', { offsetWidth: container.offsetWidth, offsetHeight: container.offsetHeight, clientWidth: container.clientWidth, clientHeight: container.clientHeight });
-            console.log('Graph data for rendering:', apiData.graph);
+            console.log('Graph data for rendering:', graphData);
+            console.log('Show full graph:', showFullGraph);
 
             try {
                 // Clear the container and any placeholder content
@@ -801,28 +909,35 @@
                 const g = svg.append('g');
                 
                 // Set up force simulation with circular layout
-                const simulation = d3.forceSimulation(apiData.graph.nodes)
-                    .force('link', d3.forceLink(apiData.graph.links).id(d => d.id).distance(100))
+                const simulation = d3.forceSimulation(graphData.nodes)
+                    .force('link', d3.forceLink(graphData.links).id(d => d.id).distance(100))
                     .force('charge', d3.forceManyBody().strength(-400))
                     .force('center', d3.forceCenter(width / 2, height / 2))
                     .force('collision', d3.forceCollide().radius(25))
                     .force('x', d3.forceX(width / 2).strength(0.1))
                     .force('y', d3.forceY(height / 2).strength(0.1));
                 
-                // Create the links
+                // Create the links with visibility control
                 const links = g.append('g')
                     .selectAll('line')
-                    .data(apiData.graph.links)
+                    .data(graphData.links)
                     .enter()
                     .append('line')
                     .attr('stroke', d => d.color || '#999')
                     .attr('stroke-width', 1)
-                    .attr('stroke-opacity', 0.3);
+                    .attr('stroke-opacity', d => {
+                        if (showFullGraph) return 0.3;
+                        // For subgraph mode, only show links between subgraph nodes
+                        const isSubgraphLink = graphData.subgraphNodeIds && 
+                            graphData.subgraphNodeIds.has(d.source.id) && 
+                            graphData.subgraphNodeIds.has(d.target.id);
+                        return isSubgraphLink ? 0.3 : 0; // Hide non-subgraph links
+                    });
                 
                 // Create link labels (relationship text) - hidden by default
                 const linkLabels = g.append('g')
                     .selectAll('text')
-                    .data(apiData.graph.links)
+                    .data(graphData.links)
                     .enter()
                     .append('text')
                     .attr('class', 'link-label')
@@ -834,21 +949,29 @@
                     .attr('opacity', 0) // Hidden by default
                     .text(d => d.relationship);
                 
-                // Create the nodes with initial circular positioning
+                // Create the nodes with initial circular positioning and visibility control
                 const nodes = g.append('g')
                     .selectAll('circle')
-                    .data(apiData.graph.nodes)
+                    .data(graphData.nodes)
                     .enter()
                     .append('circle')
                     .attr('r', 12)
                     .attr('fill', d => d.color || '#666')
                     .attr('stroke', '#333')
                     .attr('stroke-width', 1.5)
-                    .attr('opacity', 0.8)
+                    .attr('opacity', d => {
+                        if (showFullGraph) return 0.8;
+                        // For subgraph mode, only show subgraph nodes
+                        const isSubgraphNode = graphData.subgraphNodeIds && graphData.subgraphNodeIds.has(d.id);
+                        if (isSubgraphNode) {
+                            console.log(`Node ${d.id} is visible (subgraph member)`);
+                        }
+                        return isSubgraphNode ? 0.8 : 0; // Hide non-subgraph nodes
+                    })
                     .attr('cursor', 'pointer')
                     .each(function(d, i) {
                         // Set initial positions in a circle
-                        const angle = (i / apiData.graph.nodes.length) * 2 * Math.PI;
+                        const angle = (i / graphData.nodes.length) * 2 * Math.PI;
                         const radius = Math.min(width, height) * 0.3;
                         d.x = width / 2 + radius * Math.cos(angle);
                         d.y = height / 2 + radius * Math.sin(angle);
@@ -910,10 +1033,10 @@
                         linkLabels.attr('opacity', 0);
                     });
                 
-                // Add labels to nodes
+                // Add labels to nodes with visibility control
                 const labels = g.append('g')
                     .selectAll('text')
-                    .data(apiData.graph.nodes)
+                    .data(graphData.nodes)
                     .enter()
                     .append('text')
                     .text(d => d.id)
@@ -922,7 +1045,13 @@
                     .attr('text-anchor', 'middle')
                     .attr('dy', '0.35em')
                     .attr('fill', '#333')
-                    .attr('pointer-events', 'none');
+                    .attr('pointer-events', 'none')
+                    .attr('opacity', d => {
+                        if (showFullGraph) return 1;
+                        // For subgraph mode, only show labels for subgraph nodes
+                        const isSubgraphNode = graphData.subgraphNodeIds && graphData.subgraphNodeIds.has(d.id);
+                        return isSubgraphNode ? 1 : 0; // Hide non-subgraph labels
+                    });
                 
                 // Update positions on simulation tick
                 simulation.on('tick', () => {
@@ -971,6 +1100,9 @@
                 
                 console.log('D3.js network graph rendered successfully');
                 
+                // Update graph statistics display
+                updateGraphStatistics(graphData, showFullGraph);
+                
                 // Add resize handler for responsive behavior
                 const resizeObserver = new ResizeObserver(() => {
                     const newWidth = container.clientWidth || 600;
@@ -997,6 +1129,31 @@
                         <p class="text-xs text-gray-500 mt-1">${error.message}</p>
                     </div>
                 `;
+            }
+        }
+
+        // Update graph statistics display
+        function updateGraphStatistics(graphData, showFullGraph) {
+            const statsElement = document.getElementById('graph-stats');
+            if (statsElement) {
+                const totalNodes = apiData.graph ? apiData.graph.nodes.length : 0;
+                const totalLinks = apiData.graph ? apiData.graph.links.length : 0;
+                
+                if (showFullGraph) {
+                    const currentNodes = graphData.nodes.length;
+                    const currentLinks = graphData.links.length;
+                    statsElement.textContent = `The graph has ${currentNodes} nodes and ${currentLinks} linkages`;
+                } else {
+                    // For subgraph mode, count visible nodes and links
+                    const visibleNodes = graphData.subgraphNodeIds ? graphData.subgraphNodeIds.size : 0;
+                    const visibleLinks = graphData.links ? graphData.links.filter(link => 
+                        graphData.subgraphNodeIds && 
+                        graphData.subgraphNodeIds.has(link.source.id) && 
+                        graphData.subgraphNodeIds.has(link.target.id)
+                    ).length : 0;
+                    
+                    statsElement.textContent = `Subgraph: ${visibleNodes} nodes and ${visibleLinks} linkages (from ${totalNodes} total nodes, ${totalLinks} total linkages)`;
+                }
             }
         }
 
@@ -2374,6 +2531,15 @@
                 a.download = `risk-analysis-${selectedAccount}-${currentSection}-${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
+            });
+            
+            // Show full graph checkbox
+            document.getElementById('show-full-graph').addEventListener('change', async (event) => {
+                console.log('Show full graph checkbox changed:', event.target.checked);
+                // Re-render the graph with the new setting
+                if (apiData.graph && apiData.graph.nodes && apiData.graph.nodes.length > 0) {
+                    await renderNetworkGraph();
+                }
             });
         }
 
