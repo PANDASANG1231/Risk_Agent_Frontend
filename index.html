@@ -745,20 +745,26 @@
             `).join('');
         }
 
-        // Fetch formatted account number from API
+        // Fetch formatted account number from customer-info API
         async function getFormattedAccountNumber(acctno) {
             try {
                 console.log(`Fetching formatted account number for: ${acctno}`);
-                const response = await fetch(`/api/frmtd-account?acctno=${encodeURIComponent(acctno)}`);
+                const response = await fetch(`/api/customer-info?acctno=${encodeURIComponent(acctno)}`);
                 
                 if (!response.ok) {
-                    console.error(`HTTP ${response.status} for frmtd-account:`, await response.text());
+                    console.error(`HTTP ${response.status} for customer-info:`, await response.text());
                     return acctno; // Fallback to original account number
                 }
                 
                 const data = await response.json();
-                console.log(`Formatted account number: ${acctno} -> ${data.frmtd_acctno}`);
-                return data.frmtd_acctno;
+                if (data && data.frmtd_acct_no) {
+                    const frmtdAcctno = String(data.frmtd_acct_no).zfill(16);
+                    console.log(`Formatted account number: ${acctno} -> ${frmtdAcctno}`);
+                    return frmtdAcctno;
+                } else {
+                    console.warn('No frmtd_acct_no found in customer-info response');
+                    return acctno; // Fallback to original account number
+                }
             } catch (error) {
                 console.error(`Error fetching formatted account number:`, error);
                 return acctno; // Fallback to original account number
