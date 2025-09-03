@@ -584,6 +584,11 @@
             
             container.appendChild(sectionElement);
             createIcons();
+            
+            // Set up checkbox event listener if this is the high-cash section
+            if (sectionId === 'high-cash') {
+                setupShowFullGraphCheckbox();
+            }
         }
 
                  // Create high cash content
@@ -2542,14 +2547,30 @@
                 URL.revokeObjectURL(url);
             });
             
-            // Show full graph checkbox
-            document.getElementById('show-full-graph').addEventListener('change', async (event) => {
-                console.log('Show full graph checkbox changed:', event.target.checked);
-                // Re-render the graph with the new setting
-                if (apiData.graph && apiData.graph.nodes && apiData.graph.nodes.length > 0) {
-                    await renderNetworkGraph();
-                }
-            });
+            // Show full graph checkbox - will be set up when the checkbox is created
+            setupShowFullGraphCheckbox();
+        }
+
+        // Set up show full graph checkbox event listener
+        function setupShowFullGraphCheckbox() {
+            const showFullGraphCheckbox = document.getElementById('show-full-graph');
+            if (showFullGraphCheckbox) {
+                // Remove any existing event listeners to avoid duplicates
+                showFullGraphCheckbox.removeEventListener('change', handleShowFullGraphChange);
+                showFullGraphCheckbox.addEventListener('change', handleShowFullGraphChange);
+                console.log('Show full graph checkbox event listener set up');
+            } else {
+                console.warn('Show full graph checkbox not found, will retry when content is created');
+            }
+        }
+
+        // Handle show full graph checkbox change
+        async function handleShowFullGraphChange(event) {
+            console.log('Show full graph checkbox changed:', event.target.checked);
+            // Re-render the graph with the new setting
+            if (apiData.graph && apiData.graph.nodes && apiData.graph.nodes.length > 0) {
+                await renderNetworkGraph();
+            }
         }
 
         // Error handling
