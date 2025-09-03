@@ -747,6 +747,11 @@
 
         // Fetch formatted account number from API
         async function getFormattedAccountNumber(acctno) {
+            if (!acctno) {
+                console.warn('No account number provided to getFormattedAccountNumber');
+                return null;
+            }
+            
             try {
                 console.log(`Fetching formatted account number for: ${acctno}`);
                 const response = await fetch(`/api/frmtd-account?acctno=${encodeURIComponent(acctno)}`);
@@ -782,6 +787,10 @@
             
             // Get formatted account number
             const frmtdAcctno = await getFormattedAccountNumber(selectedAccount);
+            if (!frmtdAcctno) {
+                console.warn('Failed to get formatted account number, using original');
+                return apiData.graph;
+            }
             console.log(`Using formatted account number for subgraph: ${frmtdAcctno}`);
             
             // Find the selected account node (try both original and formatted)
@@ -850,10 +859,17 @@
             }
             
             // Check if we should show full graph or subgraph
-            const showFullGraph = document.getElementById('show-full-graph').checked;
+            const checkboxElement = document.getElementById('show-full-graph');
+            let showFullGraph = true; // Default to full graph if checkbox not found
             let graphData;
             
-            console.log('Checkbox state - showFullGraph:', showFullGraph);
+            if (!checkboxElement) {
+                console.warn('Checkbox element not found, defaulting to full graph mode');
+                showFullGraph = true;
+            } else {
+                showFullGraph = checkboxElement.checked;
+                console.log('Checkbox state - showFullGraph:', showFullGraph);
+            }
             
             if (showFullGraph) {
                 graphData = apiData.graph;
@@ -2534,13 +2550,18 @@
             });
             
             // Show full graph checkbox
-            document.getElementById('show-full-graph').addEventListener('change', async (event) => {
-                console.log('Show full graph checkbox changed:', event.target.checked);
-                // Re-render the graph with the new setting
-                if (apiData.graph && apiData.graph.nodes && apiData.graph.nodes.length > 0) {
-                    await renderNetworkGraph();
-                }
-            });
+            const checkboxElement = document.getElementById('show-full-graph');
+            if (checkboxElement) {
+                checkboxElement.addEventListener('change', async (event) => {
+                    console.log('Show full graph checkbox changed:', event.target.checked);
+                    // Re-render the graph with the new setting
+                    if (apiData.graph && apiData.graph.nodes && apiData.graph.nodes.length > 0) {
+                        await renderNetworkGraph();
+                    }
+                });
+            } else {
+                console.warn('Show full graph checkbox not found, skipping event listener setup');
+            }
         }
 
         // Error handling
