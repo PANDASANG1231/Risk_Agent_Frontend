@@ -850,10 +850,13 @@
             }
             
             // Check if we should show full graph or subgraph
-            const showFullGraph = document.getElementById('show-full-graph').checked;
+            const checkboxElement = document.getElementById('show-full-graph');
+            const showFullGraph = checkboxElement ? checkboxElement.checked : false; // Default to false (subgraph mode)
             let graphData;
             
-            console.log('Checkbox state - showFullGraph:', showFullGraph);
+            console.log('Checkbox element found:', !!checkboxElement);
+            console.log('Checkbox checked state:', showFullGraph);
+            console.log('Selected account:', selectedAccount);
             
             if (showFullGraph) {
                 graphData = apiData.graph;
