@@ -634,24 +634,24 @@
                         </div>
                         
                         <!-- Right side: UTR and CTR Tables -->
-                        <div class="w-80 space-y-4" style="height: 600px;">
+                        <div class="w-80 space-y-4" style="height: 600px; overflow-y: auto;">
                             <!-- UTR Table -->
-                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="height: calc(50% - 8px);">
+                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="min-height: 250px;">
                                 <div class="h-full">
-                                    <h4 class="text-base font-semibold text-gray-900 mb-2">UTR Information</h4>
+                                    <h4 class="text-base font-semibold text-gray-900 mb-2">UTR Information ${apiData.utrInfo && Array.isArray(apiData.utrInfo) ? `(${apiData.utrInfo.length})` : ''}</h4>
                                     <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
-                                    <div class="h-full overflow-auto">
+                                    <div style="height: 200px; overflow-y: auto;">
                                         ${createUTRTable()}
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- CTR Table -->
-                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="height: calc(50% - 8px);">
+                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="min-height: 250px;">
                                 <div class="h-full">
-                                    <h4 class="text-base font-semibold text-gray-900 mb-2">CTR Information</h4>
+                                    <h4 class="text-base font-semibold text-gray-900 mb-2">CTR Information ${apiData.ctrInfo && Array.isArray(apiData.ctrInfo) ? `(${apiData.ctrInfo.length})` : ''}</h4>
                                     <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
-                                    <div class="h-full overflow-auto">
+                                    <div style="height: 200px; overflow-y: auto;">
                                         ${createCTRTable()}
                                     </div>
                                 </div>
@@ -2153,22 +2153,34 @@
 
         // Create UTR table
         function createUTRTable() {
+            console.log('Creating UTR table with data:', apiData.utrInfo);
+            
             if (!apiData.utrInfo || !Array.isArray(apiData.utrInfo) || apiData.utrInfo.length === 0) {
+                console.log('No UTR data available');
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>No UTR information available</p></div>';
             }
 
             const firstItem = apiData.utrInfo[0];
             if (!firstItem || typeof firstItem !== 'object') {
+                console.log('Invalid UTR data format:', firstItem);
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid UTR data format</p></div>';
             }
 
-            // Define fixed column order: Account Number, UTR Count, Target Account
-            const columnOrder = ['Account Number', 'UTR Count', 'Target Account'];
+            // Define column order based on available data
+            const firstItemKeys = Object.keys(firstItem);
+            console.log('UTR data keys:', firstItemKeys);
+            
+            // Use available keys, prioritizing UTR Count if available, otherwise use CTR Count
+            const columnOrder = firstItemKeys.includes('UTR Count') ? 
+                ['Account Number', 'UTR Count', 'Target Account'] :
+                ['Account Number', 'CTR Count', 'Target Account'];
             
             // Create table rows with click functionality
             const tableRows = apiData.utrInfo.map(function(item, index) {
+                console.log('Processing UTR item:', item, 'for index:', index);
                 const rowCells = columnOrder.map(function(key) {
                     const value = item[key];
+                    console.log('UTR key:', key, 'value:', value);
                     let formattedValue;
                     
                     if (typeof value === 'string') {
@@ -2196,7 +2208,13 @@
 
             // Create table headers with fixed order
             const tableHeaders = columnOrder.map(function(key) {
-                const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                let formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                
+                // Special handling for UTR table - show "UTR Count" even if data has "CTR Count"
+                if (key === 'CTR Count' && columnOrder.includes('CTR Count') && !columnOrder.includes('UTR Count')) {
+                    formattedKey = 'UTR Count';
+                }
+                
                 return '<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
             }).join('');
 
@@ -2205,12 +2223,16 @@
 
         // Create CTR table
         function createCTRTable() {
+            console.log('Creating CTR table with data:', apiData.ctrInfo);
+            
             if (!apiData.ctrInfo || !Array.isArray(apiData.ctrInfo) || apiData.ctrInfo.length === 0) {
+                console.log('No CTR data available');
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>No CTR information available</p></div>';
             }
 
             const firstItem = apiData.ctrInfo[0];
             if (!firstItem || typeof firstItem !== 'object') {
+                console.log('Invalid CTR data format:', firstItem);
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid CTR data format</p></div>';
             }
 
@@ -2248,7 +2270,13 @@
 
             // Create table headers with fixed order
             const tableHeaders = columnOrder.map(function(key) {
-                const formattedKey = key.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                let formattedKey = key.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                
+                // Special handling for UTR table - show "UTR Count" even if data has "CTR Count"
+                if (key === 'CTR Count' && columnOrder.includes('CTR Count') && !columnOrder.includes('UTR Count')) {
+                    formattedKey = 'UTR Count';
+                }
+                
                 return '<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
             }).join('');
 
