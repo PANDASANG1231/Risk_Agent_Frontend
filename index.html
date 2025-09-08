@@ -763,7 +763,7 @@
                 
                 const data = await response.json();
                 if (data && data.frmtd_acct_no) {
-                    const frmtdAcctno = String(data.frmtd_acct_no).zfill(16);
+                    const frmtdAcctno = String(data.frmtd_acct_no).padStart(16, '0');
                     console.log(`Formatted account number: ${acctno} -> ${frmtdAcctno}`);
                     return frmtdAcctno;
                 } else {
@@ -778,31 +778,47 @@
 
         // Filter graph data for subgraph (selected account + direct neighbors)
         async function getSubgraphData() {
-            if (!apiData.graph || !apiData.graph.nodes || !apiData.graph.links || !selectedAccount) {
-                console.warn('Missing data for subgraph:', {
+            if (!apiData.graph || !apiData.graph.nodes || !apiData.graph.links) {
+                console.warn('Missing graph data for subgraph:', {
                     hasGraph: !!apiData.graph,
                     hasNodes: !!(apiData.graph && apiData.graph.nodes),
-                    hasLinks: !!(apiData.graph && apiData.graph.links),
-                    selectedAccount: selectedAccount
+                    hasLinks: !!(apiData.graph && apiData.graph.links)
                 });
                 return apiData.graph;
             }
             
-            console.log(`Starting subgraph analysis for account: ${selectedAccount}`);
+            // If no account is selected, try to get the target account from customer info
+            let targetAccount = selectedAccount;
+            if (!targetAccount && apiData.customerInfo && apiData.customerInfo.frmtd_acct_no) {
+                targetAccount = String(apiData.customerInfo.frmtd_acct_no).padStart(16, '0');
+                console.log(`No account selected, using target account from customer info: ${targetAccount}`);
+            }
+            
+            if (!targetAccount) {
+                console.warn('No account selected and no target account found in customer info, showing full graph instead of subgraph');
+                return apiData.graph;
+            }
+            
+            console.log(`Starting subgraph analysis for account: ${targetAccount}`);
             console.log(`Graph has ${apiData.graph.nodes.length} nodes and ${apiData.graph.links.length} links`);
             
-            // Get formatted account number
-            const frmtdAcctno = await getFormattedAccountNumber(selectedAccount);
-            console.log(`Using formatted account number for subgraph: ${frmtdAcctno}`);
+            // Get formatted account number (only if we have a selected account, otherwise use targetAccount directly)
+            let frmtdAcctno = targetAccount;
+            if (selectedAccount) {
+                frmtdAcctno = await getFormattedAccountNumber(selectedAccount);
+                console.log(`Using formatted account number for subgraph: ${frmtdAcctno}`);
+            } else {
+                console.log(`Using target account directly: ${frmtdAcctno}`);
+            }
             
-            // Find the selected account node (try both original and formatted)
-            let selectedNode = apiData.graph.nodes.find(node => node.id === selectedAccount);
+            // Find the target account node (try both original and formatted)
+            let selectedNode = apiData.graph.nodes.find(node => node.id === targetAccount);
             if (!selectedNode) {
                 selectedNode = apiData.graph.nodes.find(node => node.id === frmtdAcctno);
             }
             
             if (!selectedNode) {
-                console.warn(`Selected account not found in graph data (tried: ${selectedAccount}, ${frmtdAcctno})`);
+                console.warn(`Target account not found in graph data (tried: ${targetAccount}, ${frmtdAcctno})`);
                 console.log('Available node IDs:', apiData.graph.nodes.map(n => n.id).slice(0, 10));
                 return apiData.graph;
             }
@@ -869,17 +885,26 @@
             console.log('Checkbox checked state:', showFullGraph);
             console.log('Selected account:', selectedAccount);
             
+            // Check if we can create a subgraph (either with selected account or target account from customer info)
+            const canCreateSubgraph = selectedAccount || (apiData.customerInfo && apiData.customerInfo.frmtd_acct_no);
+            
             if (showFullGraph) {
+                // Show full graph only if checkbox is explicitly checked
                 graphData = apiData.graph;
-                console.log('Using full graph data');
-            } else {
-                console.log('Getting subgraph data...');
+                console.log('Using full graph data (checkbox checked)');
+            } else if (canCreateSubgraph) {
+                // Default behavior: show subgraph (target node + 1-degree neighbors)
+                console.log('Getting subgraph data (default behavior)...');
                 graphData = await getSubgraphData();
                 console.log('Subgraph data received:', {
                     hasSubgraphNodeIds: !!graphData.subgraphNodeIds,
                     subgraphNodeCount: graphData.subgraphNodeIds ? graphData.subgraphNodeIds.size : 0,
                     centerNodeId: graphData.centerNodeId
                 });
+            } else {
+                // Fallback: show full graph if no account/target account available
+                graphData = apiData.graph;
+                console.log('Using full graph data (no account/target account available)');
             }
             
             console.log('Found container:', container);
@@ -1153,11 +1178,13 @@
                 const totalNodes = apiData.graph ? apiData.graph.nodes.length : 0;
                 const totalLinks = apiData.graph ? apiData.graph.links.length : 0;
                 
+                const canCreateSubgraph = selectedAccount || (apiData.customerInfo && apiData.customerInfo.frmtd_acct_no);
+                
                 if (showFullGraph) {
                     const currentNodes = graphData.nodes.length;
                     const currentLinks = graphData.links.length;
-                    statsElement.textContent = `The graph has ${currentNodes} nodes and ${currentLinks} linkages`;
-                } else {
+                    statsElement.textContent = `The graph has ${currentNodes} nodes and ${currentLinks} linkages (full graph mode)`;
+                } else if (canCreateSubgraph) {
                     // For subgraph mode, count visible nodes and links
                     const visibleNodes = graphData.subgraphNodeIds ? graphData.subgraphNodeIds.size : 0;
                     const visibleLinks = graphData.links ? graphData.links.filter(link => 
@@ -1166,7 +1193,16 @@
                         graphData.subgraphNodeIds.has(link.target.id)
                     ).length : 0;
                     
-                    statsElement.textContent = `Subgraph: ${visibleNodes} nodes and ${visibleLinks} linkages (from ${totalNodes} total nodes, ${totalLinks} total linkages)`;
+                    if (!selectedAccount && apiData.customerInfo && apiData.customerInfo.frmtd_acct_no) {
+                        statsElement.textContent = `Subgraph: ${visibleNodes} nodes and ${visibleLinks} linkages (target account + 1-degree neighbors)`;
+                    } else {
+                        statsElement.textContent = `Subgraph: ${visibleNodes} nodes and ${visibleLinks} linkages (selected account + 1-degree neighbors)`;
+                    }
+                } else {
+                    // Fallback case
+                    const currentNodes = graphData.nodes.length;
+                    const currentLinks = graphData.links.length;
+                    statsElement.textContent = `The graph has ${currentNodes} nodes and ${currentLinks} linkages (no account/target available)`;
                 }
             }
         }
