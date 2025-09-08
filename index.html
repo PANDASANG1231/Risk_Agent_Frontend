@@ -66,11 +66,15 @@
                          <i data-lucide="refresh-cw" class="w-3 h-3 text-gray-600"></i>
                      </button>
                      
-                     <button class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" id="export-btn">
-                         <i data-lucide="download" class="w-3 h-3 text-gray-600"></i>
-                     </button>
+                    <button class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" id="export-btn">
+                        <i data-lucide="download" class="w-3 h-3 text-gray-600"></i>
+                    </button>
+                    
+                    <button class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" id="download-html-btn" title="Download HTML">
+                        <i data-lucide="file-text" class="w-3 h-3 text-gray-600"></i>
+                    </button>
 
-                     <!-- Mobile Menu -->
+                    <!-- Mobile Menu -->
                      <button class="lg:hidden p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" id="mobile-menu-toggle">
                          <i data-lucide="menu" class="w-3 h-3 text-gray-600"></i>
                      </button>
@@ -2520,6 +2524,57 @@
             createIcons();
         }
 
+        // Download HTML file with embedded CSS
+        async function downloadHTML() {
+            if (!selectedAccount) {
+                alert('Please select an account first');
+                return;
+            }
+            
+            try {
+                // Fetch the CSS content
+                const cssResponse = await fetch('./static/css/output.css');
+                const cssContent = await cssResponse.text();
+                
+                // Get the current HTML content
+                let htmlContent = document.documentElement.outerHTML;
+                
+                // Replace the external CSS link with embedded CSS
+                htmlContent = htmlContent.replace(
+                    /<link href="\.\/static\/css\/output\.css" rel="stylesheet">/g,
+                    `<style>${cssContent}</style>`
+                );
+                
+                // Also embed the Google Fonts
+                htmlContent = htmlContent.replace(
+                    /<link href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter[^"]*" rel="stylesheet">/g,
+                    `<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">`
+                );
+                
+                htmlContent = htmlContent.replace(
+                    /<link href="https:\/\/fonts\.googleapis\.com\/css2\?family=JetBrains\+Mono[^"]*" rel="stylesheet">/g,
+                    `<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">`
+                );
+                
+                // Create a blob with the HTML content
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                // Create a download link
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `risk-analysis-${selectedAccount}-${new Date().toISOString().split('T')[0]}.html`;
+                a.click();
+                
+                // Clean up
+                URL.revokeObjectURL(url);
+                
+            } catch (error) {
+                console.error('Error downloading HTML:', error);
+                alert('Error downloading HTML file. Please try again.');
+            }
+        }
+
         // Event listeners
         function initEventListeners() {
             // Account selector
@@ -2581,6 +2636,11 @@
                 a.download = `risk-analysis-${selectedAccount}-${currentSection}-${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
+            });
+            
+            // Download HTML button
+            document.getElementById('download-html-btn').addEventListener('click', () => {
+                downloadHTML();
             });
             
             // Show full graph checkbox - will be set up when the checkbox is created
