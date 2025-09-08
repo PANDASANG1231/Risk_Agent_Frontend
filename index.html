@@ -2545,15 +2545,33 @@
                     `<style>${cssContent}</style>`
                 );
                 
-                // Also embed the Google Fonts
+                // Remove Google Fonts dependencies for offline use
                 htmlContent = htmlContent.replace(
                     /<link href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter[^"]*" rel="stylesheet">/g,
-                    `<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">`
+                    ''
                 );
                 
                 htmlContent = htmlContent.replace(
                     /<link href="https:\/\/fonts\.googleapis\.com\/css2\?family=JetBrains\+Mono[^"]*" rel="stylesheet">/g,
-                    `<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">`
+                    ''
+                );
+                
+                // Add inline CSS to override font families with system fonts
+                const fontOverrideCSS = `
+                    <style>
+                        body, html {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+                        }
+                        code, kbd, pre, samp, .font-mono {
+                            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace !important;
+                        }
+                    </style>
+                `;
+                
+                // Insert the font override CSS after the main CSS
+                htmlContent = htmlContent.replace(
+                    /<\/style>/,
+                    `</style>${fontOverrideCSS}`
                 );
                 
                 // Create a blob with the HTML content
