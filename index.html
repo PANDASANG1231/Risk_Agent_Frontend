@@ -634,24 +634,24 @@
                         </div>
                         
                         <!-- Right side: UTR and CTR Tables -->
-                        <div class="w-80 space-y-4" style="height: 600px; overflow-y: auto;">
+                        <div class="w-96 space-y-4" style="height: 600px; overflow-y: auto;">
                             <!-- UTR Table -->
-                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="min-height: 250px;">
+                            <div class="bg-white rounded-lg p-3 border border-gray-200" style="min-height: 280px;">
                                 <div class="h-full">
-                                    <h4 class="text-base font-semibold text-gray-900 mb-2">UTR Information ${apiData.utrInfo && Array.isArray(apiData.utrInfo) ? `(${apiData.utrInfo.length})` : ''}</h4>
-                                    <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
-                                    <div style="height: 200px; overflow-y: auto;">
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-2">UTR Information ${apiData.utrInfo && Array.isArray(apiData.utrInfo) ? `(${apiData.utrInfo.length})` : ''}</h4>
+                                    <p class="text-sm text-gray-500 mb-3">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
+                                    <div style="height: 240px; overflow-y: auto;">
                                         ${createUTRTable()}
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- CTR Table -->
-                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="min-height: 250px;">
+                            <div class="bg-white rounded-lg p-3 border border-gray-200" style="min-height: 280px;">
                                 <div class="h-full">
-                                    <h4 class="text-base font-semibold text-gray-900 mb-2">CTR Information ${apiData.ctrInfo && Array.isArray(apiData.ctrInfo) ? `(${apiData.ctrInfo.length})` : ''}</h4>
-                                    <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
-                                    <div style="height: 200px; overflow-y: auto;">
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-2">CTR Information ${apiData.ctrInfo && Array.isArray(apiData.ctrInfo) ? `(${apiData.ctrInfo.length})` : ''}</h4>
+                                    <p class="text-sm text-gray-500 mb-3">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
+                                    <div style="height: 240px; overflow-y: auto;">
                                         ${createCTRTable()}
                                     </div>
                                 </div>
@@ -1589,7 +1589,7 @@
             // Create table headers
             const tableHeaders = keys.map(key => {
                 const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                return `<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; text-align: left;">${formattedKey}</th>`;
+                return `<th style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; text-align: left;">${formattedKey}</th>`;
             }).join('');
 
             // Create table rows
@@ -1611,7 +1611,7 @@
                     // Alternate row colors for better readability
                     const bgColor = rowIndex % 2 === 0 ? 'white' : '#f9fafb';
                     
-                    return `<td style="padding: 8px 12px; font-size: 11px; color: #374151; border: 1px solid #e5e7eb; background-color: ${bgColor}; text-align: left; vertical-align: top;">${formattedValue}</td>`;
+                    return `<td style="padding: 10px 14px; font-size: 13px; color: #374151; border: 1px solid #e5e7eb; background-color: ${bgColor}; text-align: left; vertical-align: top;">${formattedValue}</td>`;
                 }).join('');
 
                 return `<tr>${rowCells}</tr>`;
@@ -2170,10 +2170,8 @@
             const firstItemKeys = Object.keys(firstItem);
             console.log('UTR data keys:', firstItemKeys);
             
-            // Use available keys, prioritizing UTR Count if available, otherwise use CTR Count
-            const columnOrder = firstItemKeys.includes('UTR Count') ? 
-                ['Account Number', 'UTR Count', 'Target Account'] :
-                ['Account Number', 'CTR Count', 'Target Account'];
+            // Use available keys for UTR table
+            const columnOrder = firstItemKeys;
             
             // Create table rows with click functionality
             const tableRows = apiData.utrInfo.map(function(item, index) {
@@ -2196,7 +2194,7 @@
                     // Alternate row colors for better readability
                     const bgColor = index % 2 === 0 ? 'white' : '#f9fafb';
                     
-                    return '<td style="padding: 8px 12px; font-size: 11px; color: #374151; border: 1px solid #e5e7eb; background-color: ' + bgColor + '; text-align: left; vertical-align: top;">' + formattedValue + '</td>';
+                    return '<td style="padding: 10px 14px; font-size: 13px; color: #374151; border: 1px solid #e5e7eb; background-color: ' + bgColor + '; text-align: left; vertical-align: top;">' + formattedValue + '</td>';
                 }).join('');
 
                 // Get account number for click functionality
@@ -2210,15 +2208,10 @@
             const tableHeaders = columnOrder.map(function(key) {
                 let formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                 
-                // Special handling for UTR table - show "UTR Count" even if data has "CTR Count"
-                if (key === 'CTR Count' && columnOrder.includes('CTR Count') && !columnOrder.includes('UTR Count')) {
-                    formattedKey = 'UTR Count';
-                }
-                
-                return '<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
+                return '<th style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
             }).join('');
 
-            return '<div style="overflow-x: auto;"><table id="utr-table" style="width: 100%; border-collapse: collapse; font-size: 11px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
+            return '<div style="overflow-x: auto;"><table id="utr-table" style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
         }
 
         // Create CTR table
@@ -2236,8 +2229,12 @@
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid CTR data format</p></div>';
             }
 
-            // Define fixed column order: Account Number, CTR Count, Target Account
-            const columnOrder = ['Account Number', 'CTR Count', 'Target Account'];
+            // Define column order based on available data
+            const firstItemKeys = Object.keys(firstItem);
+            console.log('CTR data keys:', firstItemKeys);
+            
+            // Use available keys for CTR table
+            const columnOrder = firstItemKeys;
             
             // Create table rows with click functionality
             const tableRows = apiData.ctrInfo.map(function(item, index) {
@@ -2258,7 +2255,7 @@
                     // Alternate row colors for better readability
                     const bgColor = index % 2 === 0 ? 'white' : '#f9fafb';
                     
-                    return '<td style="padding: 8px 12px; font-size: 11px; color: #374151; border: 1px solid #e5e7eb; background-color: ' + bgColor + '; text-align: left; vertical-align: top;">' + formattedValue + '</td>';
+                    return '<td style="padding: 10px 14px; font-size: 13px; color: #374151; border: 1px solid #e5e7eb; background-color: ' + bgColor + '; text-align: left; vertical-align: top;">' + formattedValue + '</td>';
                 }).join('');
 
                 // Get account number for click functionality
@@ -2270,17 +2267,12 @@
 
             // Create table headers with fixed order
             const tableHeaders = columnOrder.map(function(key) {
-                let formattedKey = key.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                let formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                 
-                // Special handling for UTR table - show "UTR Count" even if data has "CTR Count"
-                if (key === 'CTR Count' && columnOrder.includes('CTR Count') && !columnOrder.includes('UTR Count')) {
-                    formattedKey = 'UTR Count';
-                }
-                
-                return '<th style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
+                return '<th style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
             }).join('');
 
-            return '<div style="overflow-x: auto;"><table id="ctr-table" style="width: 100%; border-collapse: collapse; font-size: 11px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
+            return '<div style="overflow-x: auto;"><table id="ctr-table" style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
         }
 
         // Function to highlight node in D3 graph when CTR table row is clicked
