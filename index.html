@@ -619,7 +619,7 @@
                     <div class="flex items-center justify-between mb-2">
                         <h4 class="text-base font-semibold text-gray-900">Linkage analysis</h4>
                         <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" id="show-full-graph" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+                            <input type="checkbox" id="show-full-graph" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" checked>
                             <span class="text-sm text-gray-600">Show full graph</span>
                         </label>
                     </div>
@@ -882,7 +882,7 @@
             
             // Check if we should show full graph or subgraph
             const checkboxElement = document.getElementById('show-full-graph');
-            const showFullGraph = checkboxElement ? checkboxElement.checked : false; // Default to false (subgraph mode)
+            const showFullGraph = checkboxElement ? checkboxElement.checked : true; // Default to true (full graph mode)
             let graphData;
             
             console.log('Checkbox element found:', !!checkboxElement);
@@ -2166,18 +2166,20 @@
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid UTR data format</p></div>';
             }
 
-            // Define column order based on available data
-            const firstItemKeys = Object.keys(firstItem);
-            console.log('UTR data keys:', firstItemKeys);
-            
-            // Use available keys for UTR table
-            const columnOrder = firstItemKeys;
+            // Define fixed column order: Account Number, UTR Count, Target Account
+            const columnOrder = ['Account Number', 'UTR Count', 'Target Account'];
             
             // Create table rows with click functionality
             const tableRows = apiData.utrInfo.map(function(item, index) {
                 console.log('Processing UTR item:', item, 'for index:', index);
                 const rowCells = columnOrder.map(function(key) {
-                    const value = item[key];
+                    let value = item[key];
+                    
+                    // Handle missing columns gracefully
+                    if (value === undefined || value === null) {
+                        value = '-';
+                    }
+                    
                     console.log('UTR key:', key, 'value:', value);
                     let formattedValue;
                     
@@ -2229,17 +2231,19 @@
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid CTR data format</p></div>';
             }
 
-            // Define column order based on available data
-            const firstItemKeys = Object.keys(firstItem);
-            console.log('CTR data keys:', firstItemKeys);
-            
-            // Use available keys for CTR table
-            const columnOrder = firstItemKeys;
+            // Define fixed column order: Account Number, CTR Count, Target Account
+            const columnOrder = ['Account Number', 'CTR Count', 'Target Account'];
             
             // Create table rows with click functionality
             const tableRows = apiData.ctrInfo.map(function(item, index) {
                 const rowCells = columnOrder.map(function(key) {
-                    const value = item[key];
+                    let value = item[key];
+                    
+                    // Handle missing columns gracefully
+                    if (value === undefined || value === null) {
+                        value = '-';
+                    }
+                    
                     let formattedValue;
                     
                     if (typeof value === 'string') {
