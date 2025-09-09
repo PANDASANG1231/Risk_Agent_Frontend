@@ -634,24 +634,24 @@
                         </div>
                         
                         <!-- Right side: UTR and CTR Tables -->
-                        <div class="w-96 space-y-4" style="height: 600px; overflow-y: auto;">
+                        <div class="space-y-2" style="width: 33.33%; height: 600px; overflow-y: auto;">
                             <!-- UTR Table -->
-                            <div class="bg-white rounded-lg p-3 border border-gray-200" style="min-height: 280px;">
+                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="height: 290px;">
                                 <div class="h-full">
-                                    <h4 class="text-lg font-semibold text-gray-900 mb-2">UTR Information ${apiData.utrInfo && Array.isArray(apiData.utrInfo) ? `(${apiData.utrInfo.length})` : ''}</h4>
-                                    <p class="text-sm text-gray-500 mb-3">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
-                                    <div style="height: 240px; overflow-y: auto;">
+                                    <h4 class="text-base font-semibold text-gray-900 mb-1">UTR Information ${apiData.utrInfo && Array.isArray(apiData.utrInfo) ? `(${apiData.utrInfo.length})` : ''}</h4>
+                                    <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
+                                    <div style="height: calc(100% - 50px); overflow-y: auto;">
                                         ${createUTRTable()}
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- CTR Table -->
-                            <div class="bg-white rounded-lg p-3 border border-gray-200" style="min-height: 280px;">
+                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="height: 290px;">
                                 <div class="h-full">
-                                    <h4 class="text-lg font-semibold text-gray-900 mb-2">CTR Information ${apiData.ctrInfo && Array.isArray(apiData.ctrInfo) ? `(${apiData.ctrInfo.length})` : ''}</h4>
-                                    <p class="text-sm text-gray-500 mb-3">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
-                                    <div style="height: 240px; overflow-y: auto;">
+                                    <h4 class="text-base font-semibold text-gray-900 mb-1">CTR Information ${apiData.ctrInfo && Array.isArray(apiData.ctrInfo) ? `(${apiData.ctrInfo.length})` : ''}</h4>
+                                    <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
+                                    <div style="height: calc(100% - 50px); overflow-y: auto;">
                                         ${createCTRTable()}
                                     </div>
                                 </div>
