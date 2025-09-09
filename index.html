@@ -2095,8 +2095,9 @@
                              if (typeof value === 'string') {
                                  formattedValue = formatText(value);
                              } else if (typeof value === 'number') {
-                                // Format trans_am as currency (rounded)
-                                if (key === 'trans_am') {
+                                // Format currency columns (trans_am, amount, value, etc.)
+                                if (key === 'trans_am' || key.toLowerCase().includes('trans_am') || key.toLowerCase().includes('trans am') || 
+                                    key.toLowerCase().includes('amount') || key.toLowerCase().includes('value') || key.toLowerCase().includes('am')) {
                                     formattedValue = '$' + Math.round(value).toLocaleString('en-US');
                                  } else {
                                     formattedValue = Math.round(value).toLocaleString('en-US');
