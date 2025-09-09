@@ -2098,9 +2098,13 @@
                                 // Format currency columns (trans_am, amount, value, etc.)
                                 if (key === 'trans_am' || key.toLowerCase().includes('trans_am') || key.toLowerCase().includes('trans am') || 
                                     key.toLowerCase().includes('amount') || key.toLowerCase().includes('value') || key.toLowerCase().includes('am')) {
-                                    formattedValue = '$' + Math.round(value).toLocaleString('en-US');
+                                    // Offline-compatible currency formatting
+                                    const roundedValue = Math.round(value);
+                                    formattedValue = '$' + roundedValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                                  } else {
-                                    formattedValue = Math.round(value).toLocaleString('en-US');
+                                    // Offline-compatible number formatting
+                                    const roundedValue = Math.round(value);
+                                    formattedValue = roundedValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                                  }
                              } else if (typeof value === 'object' && value !== null) {
                                 formattedValue = JSON.stringify(value);
