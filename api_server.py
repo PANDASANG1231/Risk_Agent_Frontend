@@ -396,7 +396,7 @@ def get_wire_money_usage():
 
 @app.route('/api/transactions_usage_dict')
 def get_trans_usage_dict():
-    """Get transaction usage dictionary data from JSON, sorted by direction (asc) and trans_am (desc)"""
+    """Get transaction usage dictionary data from JSON, sorted by direction (asc) and trans_am (desc), with trans_am formatted as currency"""
     try:
         acctno = request.args.get('acctno')
         if not acctno:
@@ -418,6 +418,23 @@ def get_trans_usage_dict():
                     -float(x.get('trans_am', 0))  # trans_am descending (negative for reverse sort)
                 ))
                 print(f"Sorted {len(result)} items by direction (asc) and trans_am (desc)")
+                
+                # Format trans_am as currency for each item
+                for item in result:
+                    if 'trans_am' in item and item['trans_am'] is not None:
+                        try:
+                            # Convert to float, round, and format as currency
+                            trans_am_value = float(item['trans_am'])
+                            rounded_value = round(trans_am_value)
+                            # Format as currency with commas
+                            formatted_currency = f"${rounded_value:,}"
+                            item['trans_am'] = formatted_currency
+                        except (ValueError, TypeError) as e:
+                            logger.warning(f"Could not format trans_am value '{item['trans_am']}': {e}")
+                            # Keep original value if formatting fails
+                            pass
+                
+                logger.info("Formatted trans_am values as currency")
         
         return jsonify(result), status_code
     except Exception as e:
