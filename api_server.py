@@ -394,6 +394,93 @@ def get_wire_money_usage():
         print(f"Error in get_wire_money_usage: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/transactions_usage_detail_dict')
+def get_trans_usage_detail_dict():
+    """Get concatenated transaction usage detail data from transactions_display and wire_money_usage_display"""
+    try:
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+            
+        print(f"Received request for /api/transactions_usage_detail_dict with acctno: {acctno}")
+        
+        # Get transactions_display data
+        transactions_display_result, status_code1 = get_key_data('transactions_display', acctno)
+        if status_code1 != 200:
+            return jsonify({'error': 'Failed to fetch transactions_display data'}), status_code1
+        
+        # Get wire_money_usage data to access wire_money_usage_display
+        wire_money_usage_result, status_code2 = get_key_data('wire_money_usage', acctno)
+        if status_code2 != 200:
+            return jsonify({'error': 'Failed to fetch wire_money_usage data'}), status_code2
+        
+        # Extract wire_money_usage_display from the result
+        wire_display_data = wire_money_usage_result.get('wire_money_usage_display', []) if isinstance(wire_money_usage_result, dict) else []
+        
+        # Initialize result list
+        combined_result = []
+        
+        # Add transactions_display data
+        if isinstance(transactions_display_result, list):
+            combined_result.extend(transactions_display_result)
+            print(f"Added {len(transactions_display_result)} items from transactions_display")
+        
+        # Add wire_money_usage_display data
+        if isinstance(wire_display_data, list):
+            combined_result.extend(wire_display_data)
+            print(f"Added {len(wire_display_data)} items from wire_money_usage_display")
+        
+        # Apply text processing (hyphen replacement) to combined result
+        logger.info("Applying text processing (hyphen replacement) to combined transaction detail data")
+        combined_result = apply_text_processing(combined_result)
+        
+        # Sort the combined data by direction (ascending) first, then by trans_am (descending)
+        if len(combined_result) > 0:
+            combined_result = sorted(combined_result, key=lambda x: (
+                str(x.get('direction', '')).lower(),  # direction ascending
+                -float(x.get('trans_am', 0))  # trans_am descending (negative for reverse sort)
+            ))
+            print(f"Sorted {len(combined_result)} combined items by direction (asc) and trans_am (desc)")
+            
+            # Format trans_am as currency and trans_am_pct as percentage for each item
+            for item in combined_result:
+                if 'trans_am' in item and item['trans_am'] is not None:
+                    try:
+                        # Convert to float, round, and format as currency
+                        trans_am_value = float(item['trans_am'])
+                        rounded_value = round(trans_am_value)
+                        # Format as currency with commas
+                        formatted_currency = f"${rounded_value:,}"
+                        item['trans_am'] = formatted_currency
+                    except (ValueError, TypeError) as e:
+                        logger.warning(f"Could not format trans_am value '{item['trans_am']}': {e}")
+                        # Keep original value if formatting fails
+                        pass
+                
+                # Format trans_am_pct as percentage with rounded number
+                if 'trans_am_pct' in item and item['trans_am_pct'] is not None:
+                    try:
+                        # Convert to float, multiply by 100, round to whole number, and format as percentage
+                        pct_value = float(item['trans_am_pct']) * 100
+                        rounded_pct = round(pct_value, 0)
+                        # Format as percentage string
+                        formatted_percentage = f"{rounded_pct}%"
+                        item['trans_am_pct'] = formatted_percentage
+                    except (ValueError, TypeError) as e:
+                        logger.warning(f"Could not format trans_am_pct value '{item['trans_am_pct']}': {e}")
+                        # Keep original value if formatting fails
+                        pass
+            
+            logger.info("Formatted trans_am values as currency and trans_am_pct values as percentages")
+
+        print(f"Total concatenated items: {len(combined_result)} (transactions_display + wire_money_usage_display)")
+        print(f"Returning {len(combined_result)} combined transaction detail items")
+        return jsonify(combined_result), 200
+        
+    except Exception as e:
+        print(f"Error in get_trans_usage_detail_dict: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/transactions_usage_dict')
 def get_trans_usage_dict():
     """Get transaction usage dictionary data from JSON, sorted by direction (asc) and trans_am (desc), with trans_am formatted as currency"""
@@ -419,7 +506,34 @@ def get_trans_usage_dict():
                 ))
                 print(f"Sorted {len(result)} items by direction (asc) and trans_am (desc)")
                 
-                # Format trans_am as currency for each item
+                # Reorder columns to: category, direction, usage_category, trans_am
+                desired_column_order = ['category', 'direction', 'usage_category', 'trans_am']
+                
+                # Reorder each dictionary to match desired column order
+                reordered_result = []
+                for item in result:
+                    if isinstance(item, dict):
+                        # Create new ordered dictionary
+                        reordered_item = {}
+                        
+                        # Add columns in desired order if they exist
+                        for column in desired_column_order:
+                            if column in item:
+                                reordered_item[column] = item[column]
+                        
+                        # Add any remaining columns not in the desired order
+                        for key, value in item.items():
+                            if key not in desired_column_order:
+                                reordered_item[key] = value
+                        
+                        reordered_result.append(reordered_item)
+                    else:
+                        reordered_result.append(item)
+                
+                result = reordered_result
+                print(f"Reordered columns to: {desired_column_order}")
+                
+                # Format trans_am as currency and trans_am_pct as percentage for each item
                 for item in result:
                     if 'trans_am' in item and item['trans_am'] is not None:
                         try:
@@ -433,8 +547,22 @@ def get_trans_usage_dict():
                             logger.warning(f"Could not format trans_am value '{item['trans_am']}': {e}")
                             # Keep original value if formatting fails
                             pass
+                    
+                    # Format trans_am_pct as percentage with rounded number
+                    if 'trans_am_pct' in item and item['trans_am_pct'] is not None:
+                        try:
+                            # Convert to float, round to 2 decimal places, and format as percentage
+                            pct_value = float(item['trans_am_pct']) * 100
+                            rounded_pct = round(pct_value, 0)
+                            # Format as percentage string
+                            formatted_percentage = f"{rounded_pct}%"
+                            item['trans_am_pct'] = formatted_percentage
+                        except (ValueError, TypeError) as e:
+                            logger.warning(f"Could not format trans_am_pct value '{item['trans_am_pct']}': {e}")
+                            # Keep original value if formatting fails
+                            pass
                 
-                logger.info("Formatted trans_am values as currency")
+                logger.info("Formatted trans_am values as currency and trans_am_pct values as percentages")
         
         return jsonify(result), status_code
     except Exception as e:
@@ -733,6 +861,12 @@ def list_endpoints():
                 'path': '/api/transactions_usage_dict',
                 'method': 'GET',
                 'description': 'Get transaction usage dictionary data from JSON, sorted by direction (asc) and trans_am (desc)',
+                'parameters': ['acctno (required)']
+            },
+            {
+                'path': '/api/transactions_usage_detail_dict',
+                'method': 'GET',
+                'description': 'Get concatenated transaction usage detail data from transactions_display and wire_money_usage_display',
                 'parameters': ['acctno (required)']
             },
             {

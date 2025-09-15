@@ -17,6 +17,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
+    <style>
+        /* Details/Summary styling for collapsible sections */
+        .transaction-details-toggle {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .transaction-details-toggle summary {
+            list-style: none;
+            outline: none;
+        }
+        
+        .transaction-details-toggle summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .transaction-details-toggle[open] .details-chevron {
+            transform: rotate(180deg);
+        }
+        
+        .transaction-details-toggle[open] summary {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .details-chevron {
+            transition: transform 0.2s ease;
+        }
+    </style>
 
 </head>
 
@@ -276,6 +304,7 @@
                     moneyUsageData,
                     wireUsageData,
                     transUsageDictData,
+                    transUsageDetailDictData,
                     graphData,
                     utrInfoData,
                     ctrInfoData
@@ -290,6 +319,7 @@
                     fetchApiData('money-usage', acctno),
                     fetchApiData('wire-usage', acctno),
                     fetchApiData('transactions_usage_dict', acctno),
+                    fetchApiData('transactions_usage_detail_dict', acctno),
                     fetchApiData('graph', acctno),
                     fetchApiData('utr-info', acctno),
                     fetchApiData('ctr-info', acctno)
@@ -307,6 +337,7 @@
                     moneyUsage: moneyUsageData,
                     wireUsage: wireUsageData,
                     transUsageDict: transUsageDictData,
+                    transUsageDetailDict: transUsageDetailDictData,
                     graph: graphData,
                     utrInfo: utrInfoData,
                     ctrInfo: ctrInfoData
@@ -375,6 +406,9 @@
             } else {
                 console.log('No graph data available:', apiData.graph);
             }
+            
+            // Populate transaction usage detail content
+            populateTransactionUsageDetail();
             
             // Show business pattern as default
             showSection('business-pattern');
@@ -1749,9 +1783,19 @@
                 <div class="mt-4">
                     <div class="bg-white rounded-xl shadow-sm p-4">
                         <h3 class="text-lg font-semibold text-gray-900 mb-3">Transaction Usage Dictionary</h3>
-                         <div id="trans-usage-dict-table" class="overflow-x-auto">
-                             <!-- Will be populated dynamically -->
-                         </div>
+                        <div id="trans-usage-dict-table" class="overflow-x-auto">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                         <details class="transaction-details-toggle mt-6 rounded-xl border border-purple-100 shadow-sm hover:shadow-lg hover:shadow-purple-200/50 transition-all duration-300 overflow-hidden bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30">
+                             <summary class="cursor-pointer px-6 py-3 bg-gradient-to-r from-purple-100/80 via-blue-100/80 via-indigo-100/80 to-purple-100/80 hover:from-purple-200 hover:via-blue-200 hover:via-indigo-200 hover:to-purple-200 transition-all duration-300 flex items-center justify-center group border-b border-purple-200/50">
+                                 <span class="text-xs font-medium text-purple-700 hover:text-indigo-800 transition-colors duration-300 tracking-wide uppercase letter-spacing-widest drop-shadow-sm">
+                                     Show Transaction Usage Details
+                                 </span>
+                             </summary>
+                             <div class="px-6 py-4 bg-gradient-to-b from-purple-50/40 via-blue-50/40 to-white" id="transaction-usage-detail-content">
+                                 <!-- Will be populated dynamically -->
+                             </div>
+                         </details>
                      </div>
                  </div>
                 `;
@@ -2066,6 +2110,31 @@
             }
         }
 
+        // Populate transaction usage detail content
+        function populateTransactionUsageDetail() {
+            const container = document.getElementById('transaction-usage-detail-content');
+            if (!container) {
+                console.warn('Transaction usage detail container not found');
+                return;
+            }
+
+            if (!apiData.transUsageDetailDict || (!Array.isArray(apiData.transUsageDetailDict) && typeof apiData.transUsageDetailDict !== 'object')) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i data-lucide="database" class="w-12 h-12 mx-auto mb-3 text-gray-300"></i>
+                        <p>No transaction usage detail data available</p>
+                    </div>
+                `;
+                return;
+            }
+
+            console.log('Populating transaction usage detail data:', apiData.transUsageDetailDict);
+            container.innerHTML = createTransactionUsageDetailTable(apiData.transUsageDetailDict);
+
+            // Re-initialize Lucide icons
+            lucide.createIcons();
+        }
+
         // Create transaction usage dictionary table - Simple and cross-compatible
         function createTransactionUsageDictTable(data) {
             if (typeof data === 'string') {
@@ -2083,12 +2152,42 @@
                         return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
                     }
 
-                    // Simple column order - just use available keys
-                    const keys = Object.keys(firstItem);
+                    // Define column order for transaction usage dictionary table: Category, Direction, User Category, Trans Am
+                    const columnOrder = ['category', 'direction', 'user_category', 'trans_am'];
+                    const availableKeys = Object.keys(firstItem);
+                    
+                    console.log('=== TRANSACTION USAGE DICT TABLE DEBUG ===');
+                    console.log('First item data:', firstItem);
+                    console.log('Available keys in data:', availableKeys);
+                    console.log('Desired column order:', columnOrder);
+                    
+                    const orderedKeys = columnOrder.filter(key => availableKeys.includes(key));
+                    const remainingKeys = availableKeys.filter(key => !columnOrder.includes(key));
+                    const finalKeys = [...orderedKeys, ...remainingKeys];
+                    
+                    console.log('Ordered keys found:', orderedKeys);
+                    console.log('Remaining keys:', remainingKeys);
+                    console.log('Final keys array:', finalKeys);
+                    console.log('=== END DEBUG ===');
+                    
+                    // Force reorder data objects to ensure column order
+                    const reorderedData = data.map(function(item) {
+                        const reorderedItem = {};
+                        // Add columns in desired order first
+                        finalKeys.forEach(key => {
+                            if (item.hasOwnProperty(key)) {
+                                reorderedItem[key] = item[key];
+                            }
+                        });
+                        return reorderedItem;
+                    });
+                    
+                    console.log('Sample reordered item:', reorderedData[0]);
+                    console.log('Reordered item keys:', Object.keys(reorderedData[0]));
                     
                     // Create simple table rows
-                    const tableRows = data.map(function(item) {
-                        const rowCells = keys.map(function(key) {
+                    const tableRows = reorderedData.map(function(item) {
+                        const rowCells = finalKeys.map(function(key) {
                              const value = item[key];
                              let formattedValue;
                              
@@ -2119,7 +2218,7 @@
                      }).join('');
 
                     // Create simple headers
-                    const tableHeaders = keys.map(function(key) {
+                    const tableHeaders = finalKeys.map(function(key) {
                         const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                         return '<th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">' + formattedKey + '</th>';
                     }).join('');
@@ -2150,6 +2249,64 @@
                     }).join('');
 
                     return '<table style="width: 100%; border-collapse: collapse;"><thead><tr><th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">Key</th><th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">Value</th></tr></thead><tbody>' + tableRows + '</tbody></table>';
+                }
+            }
+
+            return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
+        }
+
+        // Create transaction usage detail table
+        function createTransactionUsageDetailTable(data) {
+            if (typeof data === 'string') {
+                return '<div style="background: #f9fafb; border-radius: 8px; padding: 16px;"><div style="font-size: 14px; color: #374151; line-height: 1.6;">' + formatText(data) + '</div></div>';
+            }
+
+            if (typeof data === 'object' && data !== null) {
+                if (Array.isArray(data)) {
+                    if (data.length === 0) {
+                        return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>No transaction usage details available</p></div>';
+                    }
+
+                    const firstItem = data[0];
+                    if (typeof firstItem !== 'object' || firstItem === null) {
+                        return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
+                    }
+
+                    // Define column order for transaction usage detail table: Category, Direction, User Category, Trans Am
+                    const columnOrder = ['category', 'direction', 'usage_category', 'trans_desc', 'trans_am', 'trans_cnt'];
+                    const availableKeys = Object.keys(firstItem);
+                    const orderedKeys = columnOrder.filter(key => availableKeys.includes(key));
+                    const remainingKeys = availableKeys.filter(key => !columnOrder.includes(key));
+                    const finalKeys = [...orderedKeys, ...remainingKeys];
+
+                    // Create table rows
+                    const tableRows = data.map(function(item, index) {
+                        const rowCells = finalKeys.map(function(key) {
+                            let value = item[key];
+                            let formattedValue = '';
+                            
+                            if (value === null || value === undefined) {
+                                formattedValue = '-';
+                            } else if (typeof value === 'object') {
+                                formattedValue = JSON.stringify(value);
+                            } else {
+                                formattedValue = String(value);
+                            }
+
+                            const bgColor = index % 2 === 0 ? 'white' : '#f9fafb';
+                            return '<td style="padding: 8px 16px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: ' + bgColor + ';">' + formattedValue + '</td>';
+                        }).join('');
+
+                        return '<tr>' + rowCells + '</tr>';
+                    }).join('');
+
+                    // Create table headers
+                    const tableHeaders = finalKeys.map(function(key) {
+                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        return '<th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">' + formattedKey + '</th>';
+                    }).join('');
+
+                    return '<div style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;"><table style="width: 100%; border-collapse: collapse;" id="trans-usage-detail-table"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
                 }
             }
 
