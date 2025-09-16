@@ -379,6 +379,35 @@ def get_graph_data():
         logger.error(f"Error in get_graph_data: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/tree')
+def get_tree_data():
+    """Get tree data for visualization from analysis result"""
+    try:
+        acctno = request.args.get('acctno')
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+        
+        logger.info(f"Received request for /api/tree with acctno: {acctno}")
+        
+        # Load the analysis data for the specified account
+        data = load_data(acctno)
+        if not data:
+            return jsonify({'error': f'No data found for account {acctno}'}), 404
+        
+        # Extract the linkage data (same source as graph data)
+        if 'linkage' not in data:
+            logger.warning(f"No linkage data found for account {acctno}")
+            return jsonify({'error': 'No linkage data available for this account'}), 404
+        
+        linkage_data = data['linkage_tree']
+        logger.info("Tree data extracted successfully from analysis result")
+        
+        return jsonify(linkage_data)
+        
+    except Exception as e:
+        logger.error(f"Error in get_tree_data: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/wire-usage')
 def get_wire_money_usage():
     """Get wire transfer money usage analysis (bonus endpoint)"""
@@ -849,7 +878,13 @@ def list_endpoints():
                 'path': '/api/graph',
                 'method': 'GET',
                 'description': 'Get network graph data for visualization',
-                'parameters': []
+                'parameters': ['acctno (required)']
+            },
+            {
+                'path': '/api/tree',
+                'method': 'GET',
+                'description': 'Get tree data for visualization',
+                'parameters': ['acctno (required)']
             },
             {
                 'path': '/api/wire-usage',
