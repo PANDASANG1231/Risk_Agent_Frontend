@@ -408,6 +408,128 @@ def get_tree_data():
         logger.error(f"Error in get_tree_data: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/subgraph')
+def get_subgraph_data():
+    """Get subgraph data for a specific node at a given degree"""
+    try:
+        acctno = request.args.get('acctno')
+        center_node = request.args.get('center_node')
+        degree = request.args.get('degree', '1')  # Default to 1st degree
+        
+        if not acctno:
+            return jsonify({'error': 'acctno parameter is required'}), 400
+        
+        if not center_node:
+            return jsonify({'error': 'center_node parameter is required'}), 400
+            
+        try:
+            degree = int(degree)
+            if degree < 1:
+                degree = 1
+        except ValueError:
+            degree = 1
+        
+        logger.info(f"Received request for /api/subgraph with acctno: {acctno}, center_node: {center_node}, degree: {degree}")
+        
+        # Load the full graph data
+        data = load_data(acctno)
+        if not data:
+            return jsonify({'error': f'No data found for account {acctno}'}), 404
+        
+        if 'linkage' not in data:
+            logger.warning(f"No linkage data found for account {acctno}")
+            return jsonify({'error': 'No linkage data available for this account'}), 404
+        
+        linkage_data = data['linkage']
+        
+        # Extract nodes and links from the full graph
+        full_nodes = linkage_data.get('nodes', [])
+        full_links = linkage_data.get('links', [])
+        
+        if not full_nodes or not full_links:
+            return jsonify({'error': 'Invalid graph data structure'}), 400
+        
+        # Find the center node
+        center_node_obj = None
+        for node in full_nodes:
+            if node.get('id') == center_node:
+                center_node_obj = node
+                break
+        
+        if not center_node_obj:
+            return jsonify({'error': f'Center node {center_node} not found in graph'}), 404
+        
+        # Calculate subgraph using BFS to specified degree
+        subgraph_nodes = {}
+        subgraph_links = []
+        visited_nodes = set()
+        
+        # Build adjacency list for efficient traversal
+        adjacency = {}
+        for link in full_links:
+            source_id = link.get('source')
+            target_id = link.get('target')
+            
+            if source_id not in adjacency:
+                adjacency[source_id] = []
+            if target_id not in adjacency:
+                adjacency[target_id] = []
+                
+            adjacency[source_id].append((target_id, link))
+            adjacency[target_id].append((source_id, link))
+        
+        # BFS to find all nodes within the specified degree
+        from collections import deque
+        queue = deque([(center_node, 0)])  # (node_id, current_degree)
+        visited_nodes.add(center_node)
+        
+        # Add center node
+        subgraph_nodes[center_node] = center_node_obj
+        
+        while queue:
+            current_node, current_degree = queue.popleft()
+            
+            if current_degree < degree:
+                # Explore neighbors
+                for neighbor_id, link in adjacency.get(current_node, []):
+                    if neighbor_id not in visited_nodes:
+                        visited_nodes.add(neighbor_id)
+                        queue.append((neighbor_id, current_degree + 1))
+                        
+                        # Add neighbor node
+                        neighbor_node = next((n for n in full_nodes if n.get('id') == neighbor_id), None)
+                        if neighbor_node:
+                            subgraph_nodes[neighbor_id] = neighbor_node
+                    
+                    # Add link if both nodes are in subgraph
+                    if neighbor_id in subgraph_nodes and link not in subgraph_links:
+                        subgraph_links.append(link)
+        
+        # Convert nodes dict to list
+        subgraph_nodes_list = list(subgraph_nodes.values())
+        
+        # Create the subgraph response
+        subgraph_data = {
+            'nodes': subgraph_nodes_list,
+            'links': subgraph_links,
+            'center_node': center_node,
+            'degree': degree,
+            'total_nodes': len(subgraph_nodes_list),
+            'total_links': len(subgraph_links),
+            'original_graph_size': {
+                'nodes': len(full_nodes),
+                'links': len(full_links)
+            }
+        }
+        
+        logger.info(f"Subgraph generated: {len(subgraph_nodes_list)} nodes, {len(subgraph_links)} links at degree {degree}")
+        
+        return jsonify(subgraph_data)
+        
+    except Exception as e:
+        logger.error(f"Error in get_subgraph_data: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/wire-usage')
 def get_wire_money_usage():
     """Get wire transfer money usage analysis (bonus endpoint)"""

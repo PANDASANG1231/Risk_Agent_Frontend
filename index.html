@@ -650,21 +650,36 @@
                 
                 <!-- Network Visualization and Transaction Reports Section -->
                 <div class="mt-4">
-                    <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-4 mb-2">
                         <h4 class="text-base font-semibold text-gray-900">Linkage analysis</h4>
-                        <div class="flex items-center space-x-4">
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" id="show-full-graph" name="graph-view" value="full" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2" checked>
-                                <span class="text-sm text-gray-600">Full Graph</span>
+                        <div class="flex items-center radio-group-spacing">
+                            <label class="flex items-center space-x-1 cursor-pointer mr-12">
+                                <input type="radio" id="show-full-graph" name="graph-view" value="full" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <span class="text-sm text-gray-600">&nbsp;Full Graph&nbsp&nbsp;&nbsp;&nbsp;&nbsp;</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
+                            <label class="flex items-center space-x-1 cursor-pointer mr-12">
+                                <input type="radio" id="show-tree" name="graph-view" value="tree" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2" checked>
+                                <span class="text-sm text-gray-600">&nbsp;Tree&nbsp&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                            </label>
+                            <label class="flex items-center space-x-1 cursor-pointer mr-4">
                                 <input type="radio" id="show-subgraph" name="graph-view" value="subgraph" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
-                                <span class="text-sm text-gray-600">Subgraph</span>
+                                <span class="text-sm text-gray-600">&nbsp;Subgraph,&nbsp;</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" id="show-tree" name="graph-view" value="tree" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
-                                <span class="text-sm text-gray-600">Tree</span>
-                            </label>
+                            <div class="flex items-center space-x-2">
+                                <label class="text-xs text-gray-600">Degree:</label>
+                                <select id="subgraph-degree" class="text-xs border border-gray-300 rounded px-2 py-1 bg-white">
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="flex space-x-4 w-full">
@@ -824,17 +839,8 @@
             }
         }
 
-        // Filter graph data for subgraph (selected account + direct neighbors)
+        // Get subgraph data from API (selected account + direct neighbors)
         async function getSubgraphData() {
-            if (!apiData.graph || !apiData.graph.nodes || !apiData.graph.links) {
-                console.warn('Missing graph data for subgraph:', {
-                    hasGraph: !!apiData.graph,
-                    hasNodes: !!(apiData.graph && apiData.graph.nodes),
-                    hasLinks: !!(apiData.graph && apiData.graph.links)
-                });
-                return apiData.graph;
-            }
-            
             // If no account is selected, try to get the target account from customer info
             let targetAccount = selectedAccount;
             if (!targetAccount && apiData.customerInfo && apiData.customerInfo.frmtd_acct_no) {
@@ -847,59 +853,56 @@
                 return apiData.graph;
             }
             
-            console.log(`Starting subgraph analysis for account: ${targetAccount}`);
-            console.log(`Graph has ${apiData.graph.nodes.length} nodes and ${apiData.graph.links.length} links`);
-            
-            // Get formatted account number (only if we have a selected account, otherwise use targetAccount directly)
-            let frmtdAcctno = targetAccount;
-            if (selectedAccount) {
-                frmtdAcctno = await getFormattedAccountNumber(selectedAccount);
-                console.log(`Using formatted account number for subgraph: ${frmtdAcctno}`);
-            } else {
-                console.log(`Using target account directly: ${frmtdAcctno}`);
-            }
-            
-            // Find the target account node (try both original and formatted)
-            let selectedNode = apiData.graph.nodes.find(node => node.id === targetAccount);
-            if (!selectedNode) {
-                selectedNode = apiData.graph.nodes.find(node => node.id === frmtdAcctno);
-            }
-            
-            if (!selectedNode) {
-                console.warn(`Target account not found in graph data (tried: ${targetAccount}, ${frmtdAcctno})`);
-                console.log('Available node IDs:', apiData.graph.nodes.map(n => n.id).slice(0, 10));
+            try {
+                console.log(`Fetching subgraph data from API for account: ${targetAccount}`);
+                
+                // Get current account number from URL
+                const acctno = new URLSearchParams(window.location.search).get('acctno') || '12345';
+                
+                // Get formatted account number if we have a selected account
+                let centerNode = targetAccount;
+                if (selectedAccount) {
+                    centerNode = await getFormattedAccountNumber(selectedAccount);
+                    console.log(`Using formatted account number for subgraph: ${centerNode}`);
+                } else {
+                    console.log(`Using target account directly: ${centerNode}`);
+                }
+                
+                // Get the degree value from the dropdown
+                const degreeDropdown = document.getElementById('subgraph-degree');
+                const degree = degreeDropdown ? degreeDropdown.value : '1';
+                
+                // Call the new subgraph API endpoint
+                const response = await fetch(`/api/subgraph?acctno=${acctno}&center_node=${encodeURIComponent(centerNode)}&degree=${degree}`);
+                
+                if (!response.ok) {
+                    console.error(`HTTP ${response.status} for subgraph API:`, await response.text());
+                    // Fallback to full graph
+                    return apiData.graph;
+                }
+                
+                const subgraphData = await response.json();
+                console.log('Subgraph data received from API:', {
+                    nodes: subgraphData.nodes?.length || 0,
+                    links: subgraphData.links?.length || 0,
+                    centerNode: subgraphData.center_node,
+                    degree: subgraphData.degree
+                });
+                
+                // Return the true subgraph data (not full graph with visibility flags)
+                return {
+                    nodes: subgraphData.nodes || [],
+                    links: subgraphData.links || [],
+                    centerNode: subgraphData.center_node,
+                    degree: subgraphData.degree,
+                    isSubgraph: true // Flag to indicate this is a true subgraph
+                };
+                
+            } catch (error) {
+                console.error('Error fetching subgraph data:', error);
+                // Fallback to full graph
                 return apiData.graph;
             }
-            
-            // Use the actual node ID found in the graph
-            const actualNodeId = selectedNode.id;
-            console.log(`Found node with ID: ${actualNodeId}`);
-            
-            // Find direct neighbors (nodes connected to the selected account)
-            const neighborIds = new Set();
-            neighborIds.add(actualNodeId); // Include the selected account itself
-            
-            console.log('Analyzing links for neighbors...');
-            apiData.graph.links.forEach((link, index) => {
-                if (link.source.id === actualNodeId) {
-                    neighborIds.add(link.target.id);
-                    console.log(`Link ${index}: Found neighbor ${link.target.id} (source connection)`);
-                } else if (link.target.id === actualNodeId) {
-                    neighborIds.add(link.source.id);
-                    console.log(`Link ${index}: Found neighbor ${link.source.id} (target connection)`);
-                }
-            });
-            
-            console.log(`Subgraph analysis complete. Neighbor IDs:`, Array.from(neighborIds));
-            console.log(`Total neighbors found: ${neighborIds.size - 1} (excluding center node)`);
-            
-            // Return the full graph data but with neighbor information for visibility control
-            return {
-                nodes: apiData.graph.nodes,
-                links: apiData.graph.links,
-                subgraphNodeIds: neighborIds,
-                centerNodeId: actualNodeId
-            };
         }
 
         // Render network graph using D3.js
@@ -960,15 +963,16 @@
                 .attr('width', width)
                 .attr('height', height);
                 
-            window.currentSvg = svg.node();
-            
-            // Create a group for zoom/pan
+                window.currentSvg = svg.node();
+                window.currentGraphData = null; // Tree mode doesn't have subgraph data
+                
+                // Create a group for zoom/pan
             const g = svg.append('g');
             
             // Convert graph data to tree structure
-            const treeData = convertGraphToTree(treeSourceData);
+            const conversionResult = convertGraphToTree(treeSourceData);
             
-            if (!treeData) {
+            if (!conversionResult || !conversionResult.tree) {
                 console.warn('Could not convert graph data to tree structure');
                 console.log('Trying simple test tree structure...');
                 
@@ -979,8 +983,12 @@
                 // Use test data instead of returning
                 const treeDataToUse = testTreeData;
             } else {
-                const treeDataToUse = treeData;
+                const treeDataToUse = conversionResult.tree;
             }
+            
+            // Extract tree data and link colors
+            const treeData = conversionResult ? conversionResult.tree : null;
+            const linkColors = conversionResult ? conversionResult.linkColors : new Map();
             
             // Use the determined tree data
             const finalTreeData = treeData || {
@@ -1040,15 +1048,15 @@
             
             // Create force simulation
             const simulation = d3.forceSimulation(nodes)
-                .force("link", d3.forceLink(links).id(d => d.id).distance(50).strength(0.8))
-                .force("charge", d3.forceManyBody().strength(-100))
+                .force("link", d3.forceLink(links).id(d => d.id).distance(72).strength(0.65))
+                .force("charge", d3.forceManyBody().strength(-180))
                 .force("center", d3.forceCenter(0, 0))
-                .force("collision", d3.forceCollide().radius(15));
+                .force("collision", d3.forceCollide().radius(32));
             
             // Create links group
             const linksGroup = g.append("g")
                 .attr("stroke", "#999")
-                .attr("stroke-opacity", 0.6);
+                .attr("stroke-opacity", 0.3);
             
             // Add links
             const linkElements = linksGroup
@@ -1056,9 +1064,55 @@
                 .data(links)
                 .join("line")
                 .attr("class", "tree-link")
+                .attr("stroke", d => {
+                    // Create link key from source and target IDs
+                    const sourceId = d.source.data.id.toString();
+                    const targetId = d.target.data.id.toString();
+                    const linkKey = `${sourceId}-${targetId}`;
+                    return linkColors.get(linkKey) || linkColors.get(`${targetId}-${sourceId}`) || '#999';
+                })
                 .attr("stroke-width", 1.5);
             
             console.log('Created', linkElements.size(), 'force-directed links');
+            
+            // Create link labels (relationship text) - hidden by default
+            const linkLabelsGroup = g.append("g");
+            const linkLabels = linkLabelsGroup
+                .selectAll("text")
+                .data(links)
+                .join("text")
+                .attr("class", "link-label")
+                .attr("font-size", "10px")
+                .attr("font-weight", "bold")
+                .attr("fill", d => {
+                    // Get relationship color from linkColors map
+                    const sourceId = d.source.data.id.toString();
+                    const targetId = d.target.data.id.toString();
+                    const linkKey = `${sourceId}-${targetId}`;
+                    return linkColors.get(linkKey) || linkColors.get(`${targetId}-${sourceId}`) || '#999';
+                })
+                .attr("text-anchor", "middle")
+                .attr("pointer-events", "none")
+                .attr("opacity", 0) // Hidden by default
+                .text(d => {
+                    // Get relationship from original graph data
+                    const sourceId = d.source.data.id.toString();
+                    const targetId = d.target.data.id.toString();
+                    
+                    // Find the relationship in original graph data
+                    if (treeSourceData && treeSourceData.links) {
+                        const originalLink = treeSourceData.links.find(link => {
+                            const origSourceId = (typeof link.source === 'object') ? link.source.id.toString() : link.source.toString();
+                            const origTargetId = (typeof link.target === 'object') ? link.target.id.toString() : link.target.toString();
+                            return (origSourceId === sourceId && origTargetId === targetId) || 
+                                   (origSourceId === targetId && origTargetId === sourceId);
+                        });
+                        return originalLink ? originalLink.relationship : '';
+                    }
+                    return '';
+                });
+            
+            console.log('Created', linkLabels.size(), 'force-directed link labels');
             
             // Create nodes group
             const nodesGroup = g.append("g")
@@ -1072,19 +1126,10 @@
                 .data(nodes)
                 .join("circle")
                 .attr("class", "tree-node")
-                .attr("fill", d => {
-                    if (d.data.isRoot) return "#ff6b6b";
-                    return d.children ? "#fff" : (d.data.color || "#000");
-                })
-                .attr("stroke", d => {
-                    if (d.data.isRoot) return "#ff6b6b";
-                    return d.children ? "#000" : "#fff";
-                })
-                .attr("r", d => {
-                    if (d.data.isRoot) return 8; // Root node
-                    if (d.depth === 1) return 6; // First level
-                    return 4; // Deeper levels
-                })
+                .attr("fill", d => d.data.color || "#69b3a2")
+                .attr("stroke", d => d.data.isRoot ? d.data.color || "#69b3a2" : "#333")
+                .attr("r", 12)
+                .attr("opacity", 0.8)
                 .style('cursor', 'pointer')
                 .call(d3.drag()
                     .on("start", dragstarted)
@@ -1110,11 +1155,9 @@
                 .attr("class", "tree-label")
                 .attr("dy", "0.31em")
                 .attr("text-anchor", "middle")
-                .attr("paint-order", "stroke")
-                .attr("stroke", "white")
                 .attr("fill", "currentColor")
-                .style("font-size", d => d.data.isRoot ? "12px" : "10px")
-                .style("font-weight", d => d.data.isRoot ? "bold" : "normal")
+                .style("font-size", "10px")
+                .style("font-weight", "bold")
                 .style("pointer-events", "none")
                 .text(d => d.data.label || d.data.id);
             
@@ -1128,6 +1171,11 @@
                     .attr("y1", d => d.source.y)
                     .attr("x2", d => d.target.x)
                     .attr("y2", d => d.target.y);
+                
+                // Update link label positions (center of each link)
+                linkLabels
+                    .attr("x", d => (d.source.x + d.target.x) / 2)
+                    .attr("y", d => (d.source.y + d.target.y) / 2);
                 
                 // Update node positions
                 nodeCircles
@@ -1170,35 +1218,24 @@
                     d3.select(this)
                         .transition()
                         .duration(200)
-                        .attr('r', d => {
-                            const baseRadius = d.data.isRoot ? 8 : (d.depth === 1 ? 6 : 4);
-                            return baseRadius * 1.5;
-                        })
+                        .attr('r', 18)
                         .attr('stroke-width', 3);
                     
-                    // Highlight connected paths
-                    highlightForceNodePath(d);
+                    // Highlight connected edges and relationships
+                    highlightNodeConnections(d);
                     
-                    // Show tooltip
-                    showTooltip(event, d);
                 })
                 .on('mouseout', function(event, d) {
                     // Reset node size and appearance
                     d3.select(this)
                         .transition()
                         .duration(200)
-                        .attr('r', d => {
-                            if (d.data.isRoot) return 8;
-                            if (d.depth === 1) return 6;
-                            return 4;
-                        })
+                        .attr('r', 12)
                         .attr('stroke-width', 1.5);
                     
-                    // Reset path highlighting
-                    resetForcePathHighlight();
+                    // Reset all highlighting
+                    resetHighlighting();
                     
-                    // Hide tooltip
-                    hideTooltip();
                 })
                 
                 // Click effects
@@ -1229,6 +1266,9 @@
             console.log('SVG children count:', svg.node().children.length);
             console.log('Container final state:', container);
             
+            // Update tree statistics display
+            updateTreeStatistics(nodes.length, links.length);
+            
             // Store references for interactive functions
             window.currentTreeData = {
                 svg: svg,
@@ -1240,6 +1280,17 @@
                 links: links,
                 simulation: simulation
             };
+            
+            // Update tables to show only entries for current tree nodes
+            updateTablesForCurrentGraph(treeSourceData);
+        }
+
+        // Update tree statistics display
+        function updateTreeStatistics(nodeCount, linkCount) {
+            const statsElement = document.getElementById('graph-stats');
+            if (statsElement) {
+                statsElement.textContent = `The tree has ${nodeCount} nodes and ${linkCount} linkages`;
+            }
         }
 
         
@@ -1318,8 +1369,9 @@
             
             console.log('Node map created with', nodeMap.size, 'nodes');
             
-            // Build adjacency list
+            // Build adjacency list and preserve link colors
             const adjacency = new Map();
+            const linkColors = new Map(); // Store link colors
             graphData.links.forEach(link => {
                 // Handle both object and string formats for source/target
                 const sourceId = (typeof link.source === 'object') ? link.source.id.toString() : link.source.toString();
@@ -1330,6 +1382,12 @@
                 
                 adjacency.get(sourceId).push(targetId);
                 adjacency.get(targetId).push(sourceId);
+                
+                // Store link color for both directions
+                const linkKey1 = `${sourceId}-${targetId}`;
+                const linkKey2 = `${targetId}-${sourceId}`;
+                linkColors.set(linkKey1, link.color || '#999');
+                linkColors.set(linkKey2, link.color || '#999');
             });
             
             console.log('Adjacency list created for', adjacency.size, 'nodes');
@@ -1364,7 +1422,7 @@
             console.log('Tree conversion result:', result);
             console.log('Tree has', visited.size, 'nodes out of', graphData.nodes.length, 'total nodes');
             
-            return result;
+            return { tree: result, linkColors: linkColors };
         }
 
         async function renderNetworkGraph() {
@@ -1393,7 +1451,7 @@
             const subgraphRadio = document.getElementById('show-subgraph');
             const treeRadio = document.getElementById('show-tree');
             
-            let viewMode = 'full'; // default
+            let viewMode = 'tree'; // default
             if (fullGraphRadio && fullGraphRadio.checked) viewMode = 'full';
             else if (subgraphRadio && subgraphRadio.checked) viewMode = 'subgraph';
             else if (treeRadio && treeRadio.checked) viewMode = 'tree';
@@ -1457,6 +1515,7 @@
                 
                 // Store references globally for zoom functions
                 window.currentSvg = svg.node();
+                window.currentGraphData = graphData; // Store current graph data globally
                 
                 // Add zoom behavior
                 const zoom = d3.zoom()
@@ -1486,14 +1545,19 @@
                     .data(graphData.links)
                     .enter()
                     .append('line')
+                    .attr('class', 'graph-link') // Added class for easier selection
                     .attr('stroke', d => d.color || '#999')
                     .attr('stroke-width', 1)
                     .attr('stroke-opacity', d => {
                         if (showFullGraph) return 0.3;
-                        // For subgraph mode, only show links between subgraph nodes
+                        // For true subgraph mode, all links are visible (API filtered them already)
+                        if (graphData.isSubgraph) return 0.3;
+                        // Legacy subgraph mode with visibility control (fallback)
+                        const sourceId = (typeof d.source === 'object') ? d.source.id : d.source;
+                        const targetId = (typeof d.target === 'object') ? d.target.id : d.target;
                         const isSubgraphLink = graphData.subgraphNodeIds && 
-                            graphData.subgraphNodeIds.has(d.source.id) && 
-                            graphData.subgraphNodeIds.has(d.target.id);
+                            graphData.subgraphNodeIds.has(sourceId) && 
+                            graphData.subgraphNodeIds.has(targetId);
                         return isSubgraphLink ? 0.3 : 0; // Hide non-subgraph links
                     });
                 
@@ -1524,7 +1588,9 @@
                     .attr('stroke-width', 1.5)
                     .attr('opacity', d => {
                         if (showFullGraph) return 0.8;
-                        // For subgraph mode, only show subgraph nodes
+                        // For true subgraph mode, all nodes are visible (API filtered them already)
+                        if (graphData.isSubgraph) return 0.8;
+                        // Legacy subgraph mode with visibility control (fallback)
                         const isSubgraphNode = graphData.subgraphNodeIds && graphData.subgraphNodeIds.has(d.id);
                         if (isSubgraphNode) {
                             console.log(`Node ${d.id} is visible (subgraph member)`);
@@ -1532,13 +1598,39 @@
                         return isSubgraphNode ? 0.8 : 0; // Hide non-subgraph nodes
                     })
                     .attr('cursor', 'pointer')
+                    .on('mouseover', function(event, d) {
+                        console.log('Graph node hovered:', d.label || d.id);
+                        
+                        // Enlarge the hovered node
+                        d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .attr('r', 18)
+                            .attr('stroke-width', 3);
+                        
+                        // Highlight connected edges and relationships
+                        highlightNodeConnections(d);
+                        
+                    })
+                    .on('mouseout', function(event, d) {
+                        // Reset node size and appearance
+                        d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .attr('r', 12)
+                            .attr('stroke-width', 1.5);
+                        
+                        // Reset all highlighting
+                        resetHighlighting();
+                        
+                    })
                     .each(function(d, i) {
                         // Set initial positions in a circle
                         const angle = (i / graphData.nodes.length) * 2 * Math.PI;
                         const radius = Math.min(width, height) * 0.3;
                         d.x = width / 2 + radius * Math.cos(angle);
                         d.y = height / 2 + radius * Math.sin(angle);
-                    })
+                    });
                 
                 // Add labels to nodes with visibility control
                 const labels = g.append('g')
@@ -1555,7 +1647,9 @@
                     .attr('pointer-events', 'none')
                     .attr('opacity', d => {
                         if (showFullGraph) return 1;
-                        // For subgraph mode, only show labels for subgraph nodes
+                        // For true subgraph mode, all labels are visible (API filtered them already)
+                        if (graphData.isSubgraph) return 1;
+                        // Legacy subgraph mode with visibility control (fallback)
                         const isSubgraphNode = graphData.subgraphNodeIds && graphData.subgraphNodeIds.has(d.id);
                         return isSubgraphNode ? 1 : 0; // Hide non-subgraph labels
                     });
@@ -1653,18 +1747,30 @@
                     const currentLinks = graphData.links.length;
                     statsElement.textContent = `The graph has ${currentNodes} nodes and ${currentLinks} linkages (full graph mode)`;
                 } else if (canCreateSubgraph) {
-                    // For subgraph mode, count visible nodes and links
-                    const visibleNodes = graphData.subgraphNodeIds ? graphData.subgraphNodeIds.size : 0;
-                    const visibleLinks = graphData.links ? graphData.links.filter(link => 
-                        graphData.subgraphNodeIds && 
-                        graphData.subgraphNodeIds.has(link.source.id) && 
-                        graphData.subgraphNodeIds.has(link.target.id)
-                    ).length : 0;
+                    // For subgraph mode, count nodes and links
+                    let visibleNodes, visibleLinks;
                     
-                    if (!selectedAccount && apiData.customerInfo && apiData.customerInfo.frmtd_acct_no) {
-                        statsElement.textContent = `Subgraph: ${visibleNodes} nodes and ${visibleLinks} linkages (target account + 1-degree neighbors)`;
+                    if (graphData.isSubgraph) {
+                        // True subgraph from API - count actual nodes and links
+                        visibleNodes = graphData.nodes.length;
+                        visibleLinks = graphData.links.length;
                     } else {
-                        statsElement.textContent = `Subgraph: ${visibleNodes} nodes and ${visibleLinks} linkages (selected account + 1-degree neighbors)`;
+                        // Legacy subgraph mode with visibility control (fallback)
+                        visibleNodes = graphData.subgraphNodeIds ? graphData.subgraphNodeIds.size : 0;
+                        visibleLinks = graphData.links ? graphData.links.filter(link => {
+                            if (!graphData.subgraphNodeIds) return false;
+                            // Handle both string IDs and object references
+                            const sourceId = (typeof link.source === 'object') ? link.source.id : link.source;
+                            const targetId = (typeof link.target === 'object') ? link.target.id : link.target;
+                            return graphData.subgraphNodeIds.has(sourceId) && graphData.subgraphNodeIds.has(targetId);
+                        }).length : 0;
+                    }
+                    
+                    const degreeText = graphData.degree ? `${graphData.degree}-degree` : '1-degree';
+                    if (!selectedAccount && apiData.customerInfo && apiData.customerInfo.frmtd_acct_no) {
+                        statsElement.textContent = `Subgraph: ${visibleNodes} nodes and ${visibleLinks} linkages (target account + ${degreeText} neighbors)`;
+                    } else {
+                        statsElement.textContent = `Subgraph: ${visibleNodes} nodes and ${visibleLinks} linkages (selected account + ${degreeText} neighbors)`;
                     }
                 } else {
                     // Fallback case
@@ -1673,6 +1779,9 @@
                     statsElement.textContent = `The graph has ${currentNodes} nodes and ${currentLinks} linkages (no account/target available)`;
                 }
             }
+            
+            // Update tables to show only entries for current graph nodes
+            updateTablesForCurrentGraph(graphData);
         }
 
         // Create public info content with both public-info and public-address
@@ -2744,15 +2853,16 @@
         }
 
         // Create UTR table
-        function createUTRTable() {
-            console.log('Creating UTR table with data:', apiData.utrInfo);
+        function createUTRTable(dataOverride = null) {
+            const utrData = dataOverride || apiData.utrInfo;
+            console.log('Creating UTR table with data:', utrData);
             
-            if (!apiData.utrInfo || !Array.isArray(apiData.utrInfo) || apiData.utrInfo.length === 0) {
+            if (!utrData || !Array.isArray(utrData) || utrData.length === 0) {
                 console.log('No UTR data available');
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>No UTR information available</p></div>';
             }
 
-            const firstItem = apiData.utrInfo[0];
+            const firstItem = utrData[0];
             if (!firstItem || typeof firstItem !== 'object') {
                 console.log('Invalid UTR data format:', firstItem);
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid UTR data format</p></div>';
@@ -2762,7 +2872,7 @@
             const columnOrder = ['Account Number', 'UTR Count', 'Target Account'];
             
             // Create table rows with click functionality
-            const tableRows = apiData.utrInfo.map(function(item, index) {
+            const tableRows = utrData.map(function(item, index) {
                 console.log('Processing UTR item:', item, 'for index:', index);
                 const rowCells = columnOrder.map(function(key) {
                     let value = item[key];
@@ -2809,15 +2919,16 @@
         }
 
         // Create CTR table
-        function createCTRTable() {
-            console.log('Creating CTR table with data:', apiData.ctrInfo);
+        function createCTRTable(dataOverride = null) {
+            const ctrData = dataOverride || apiData.ctrInfo;
+            console.log('Creating CTR table with data:', ctrData);
             
-            if (!apiData.ctrInfo || !Array.isArray(apiData.ctrInfo) || apiData.ctrInfo.length === 0) {
+            if (!ctrData || !Array.isArray(ctrData) || ctrData.length === 0) {
                 console.log('No CTR data available');
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>No CTR information available</p></div>';
             }
 
-            const firstItem = apiData.ctrInfo[0];
+            const firstItem = ctrData[0];
             if (!firstItem || typeof firstItem !== 'object') {
                 console.log('Invalid CTR data format:', firstItem);
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid CTR data format</p></div>';
@@ -2827,7 +2938,7 @@
             const columnOrder = ['Account Number', 'CTR Count', 'Target Account'];
             
             // Create table rows with click functionality
-            const tableRows = apiData.ctrInfo.map(function(item, index) {
+            const tableRows = ctrData.map(function(item, index) {
                 const rowCells = columnOrder.map(function(key) {
                     let value = item[key];
                     
@@ -2871,6 +2982,109 @@
             return '<div style="overflow-x: auto;"><table id="ctr-table" style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
         }
 
+        // Function to filter table data based on current graph nodes
+        function filterTableDataByGraph(tableData, graphNodes) {
+            if (!tableData || !Array.isArray(tableData) || !graphNodes || !Array.isArray(graphNodes)) {
+                return tableData || [];
+            }
+            
+            // Create a set of node IDs for efficient lookup
+            const nodeIds = new Set(graphNodes.map(node => node.id));
+            
+            // Filter table data to only include entries with account numbers that exist in the graph
+            return tableData.filter(item => {
+                const accountNumber = item['Account Number'] || item['account_number'] || item['accountNumber'];
+                if (!accountNumber) return false;
+                
+                // Try different formatting variations
+                const variations = [
+                    accountNumber,
+                    String(accountNumber).padStart(16, '0'), // Zero-padded to 16 digits
+                    String(accountNumber).replace(/^0+/, ''), // Remove leading zeros
+                ];
+                
+                return variations.some(variation => nodeIds.has(variation));
+            });
+        }
+
+        // Function to update CTR and UTR tables based on current graph
+        function updateTablesForCurrentGraph(graphData) {
+            if (!graphData || !graphData.nodes) {
+                console.warn('No graph data available for table filtering');
+                return;
+            }
+            
+            console.log(`Filtering tables for graph with ${graphData.nodes.length} nodes`);
+            
+            // Filter UTR data
+            const filteredUTR = filterTableDataByGraph(apiData.utrInfo, graphData.nodes);
+            console.log(`UTR filtered: ${apiData.utrInfo?.length || 0} -> ${filteredUTR.length} entries`);
+            
+            // Filter CTR data  
+            const filteredCTR = filterTableDataByGraph(apiData.ctrInfo, graphData.nodes);
+            console.log(`CTR filtered: ${apiData.ctrInfo?.length || 0} -> ${filteredCTR.length} entries`);
+            
+            // Update UTR table
+            const utrContainer = document.querySelector('#high-cash-content .space-y-2 > div:first-child .h-full > div:last-child');
+            if (utrContainer && filteredUTR.length > 0) {
+                utrContainer.innerHTML = createUTRTable(filteredUTR);
+            } else if (utrContainer) {
+                utrContainer.innerHTML = '<div class="text-center text-gray-500 text-xs">No UTR entries for current graph nodes</div>';
+            }
+            
+            // Update CTR table
+            const ctrContainer = document.querySelector('#high-cash-content .space-y-2 > div:last-child .h-full > div:last-child');
+            if (ctrContainer && filteredCTR.length > 0) {
+                ctrContainer.innerHTML = createCTRTable(filteredCTR);
+            } else if (ctrContainer) {
+                ctrContainer.innerHTML = '<div class="text-center text-gray-500 text-xs">No CTR entries for current graph nodes</div>';
+            }
+            
+            // Update table headers with filtered counts
+            const utrHeader = document.querySelector('#high-cash-content .space-y-2 > div:first-child h4');
+            if (utrHeader) {
+                utrHeader.textContent = `UTR Information (${filteredUTR.length})`;
+            }
+            
+            const ctrHeader = document.querySelector('#high-cash-content .space-y-2 > div:last-child h4');
+            if (ctrHeader) {
+                ctrHeader.textContent = `CTR Information (${filteredCTR.length})`;
+            }
+        }
+
+        // Function to show temporary message to user
+        function showTemporaryMessage(message) {
+            // Remove any existing message
+            const existingMessage = document.getElementById('temp-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            // Create message element
+            const messageEl = document.createElement('div');
+            messageEl.id = 'temp-message';
+            messageEl.className = 'fixed top-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg shadow-lg z-50 max-w-sm';
+            messageEl.innerHTML = `
+                <div class="flex items-start">
+                    <i data-lucide="info" class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"></i>
+                    <div class="text-sm">${message}</div>
+                </div>
+            `;
+            
+            // Add to body
+            document.body.appendChild(messageEl);
+            
+            // Create icons for the message
+            createIcons();
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (messageEl && messageEl.parentNode) {
+                    messageEl.remove();
+                }
+            }, 5000);
+        }
+
         // Function to highlight node in D3 graph when CTR table row is clicked
         function highlightNodeInGraph(accountNumber) {
             console.log('Highlighting node for account:', accountNumber);
@@ -2900,6 +3114,35 @@
                 return;
             }
             
+            // Check if we're in subgraph mode and if the node exists in current graph data
+            if (window.currentGraphData && window.currentGraphData.isSubgraph) {
+                // For true subgraph, check if the node exists in the current subgraph data
+                const nodeExists = window.currentGraphData.nodes.some(node => node.id === accountNumber);
+                if (!nodeExists) {
+                    console.warn(`Node ${accountNumber} is not in current subgraph`);
+                    // Still highlight the table row, but show a message that the node is not visible
+                    highlightTableRow(accountNumber);
+                    
+                    // Show a temporary message to the user
+                    showTemporaryMessage(`Account ${accountNumber} is not in the current subgraph view. Switch to Full Graph to see this node.`);
+                    return;
+                }
+                console.log(`Node ${accountNumber} exists in subgraph, highlighting...`);
+            } else if (window.currentGraphData && window.currentGraphData.subgraphNodeIds) {
+                // Legacy subgraph mode with visibility control (fallback)
+                const isNodeVisible = window.currentGraphData.subgraphNodeIds.has(accountNumber);
+                if (!isNodeVisible) {
+                    console.warn(`Node ${accountNumber} is not visible in current subgraph view`);
+                    // Still highlight the table row, but show a message that the node is not visible
+                    highlightTableRow(accountNumber);
+                    
+                    // Show a temporary message to the user
+                    showTemporaryMessage(`Account ${accountNumber} is not visible in the current subgraph view. Switch to Full Graph to see this node.`);
+                    return;
+                }
+                console.log(`Node ${accountNumber} is visible in subgraph, highlighting...`);
+            }
+            
             // Highlight the clicked row in both tables
             highlightTableRow(accountNumber);
             
@@ -2919,11 +3162,11 @@
                 row.classList.remove('bg-blue-100', 'ring-2', 'ring-blue-500');
             });
             
-            // Clear D3 graph highlights and restore all nodes to 80% opacity (if graph exists)
+            // Clear D3 graph/tree highlights and restore all nodes to 80% opacity (if visualization exists)
             if (window.currentSvg) {
                 const svg = d3.select(window.currentSvg);
                 svg.selectAll('circle').attr('stroke-width', 1.5).attr('opacity', 0.8);
-                svg.selectAll('line').attr('stroke-width', 1).attr('stroke-opacity', 0.3);
+                svg.selectAll('line').attr('stroke-width', 1.5).attr('stroke-opacity', 0.3);
                 // Hide all relationship labels
                 svg.selectAll('.link-label').attr('opacity', 0);
             }
@@ -2952,7 +3195,136 @@
             });
         }
 
-        // Function to highlight D3 node
+        // Function to show node details (works for all graph types)
+        function showNodeDetails(d) {
+            console.log('Showing node details for:', d);
+            
+            // Extract node data based on format (tree vs graph)
+            const nodeData = d.data || d; // Tree format has d.data, graph format is direct
+            const nodeId = nodeData.id;
+            const nodeLabel = nodeData.label || nodeId;
+            const nodeColor = nodeData.color || '#666';
+            
+            // Log detailed information
+            console.log(`Node Details:
+                ID: ${nodeId}
+                Label: ${nodeLabel}
+                Color: ${nodeColor}
+                Type: ${d.data ? 'Tree Node' : 'Graph Node'}`);
+            
+            // You can extend this to show a modal, tooltip, or side panel
+            // For now, we'll just highlight the node and its connections
+            highlightNodeConnections(d);
+        }
+
+        // Function to highlight node connections with edge relationships and colors
+        function highlightNodeConnections(d) {
+            if (!window.currentSvg) {
+                console.warn('D3 graph not yet rendered');
+                return;
+            }
+            
+            const svg = d3.select(window.currentSvg);
+            const nodeData = d.data || d; // Handle both tree and graph formats
+            const nodeId = nodeData.id;
+            
+            // Dim all elements first
+            svg.selectAll('circle').attr('opacity', 0.2);
+            svg.selectAll('line').attr('stroke-opacity', 0.1).attr('stroke-width', 1);
+            svg.selectAll('.tree-label, text').attr('opacity', 0.2);
+            svg.selectAll('.link-label').attr('opacity', 0);
+            
+            // Highlight the selected node
+            svg.selectAll('circle').filter(node => {
+                const currentNodeData = node.data || node;
+                return currentNodeData.id === nodeId;
+            }).attr('opacity', 1).attr('stroke-width', 4).attr('stroke', '#ff6b6b');
+            
+            // Highlight connected edges and their relationships
+            svg.selectAll('line').each(function(linkData) {
+                const link = d3.select(this);
+                const sourceData = linkData.source.data || linkData.source;
+                const targetData = linkData.target.data || linkData.target;
+                const sourceId = sourceData.id;
+                const targetId = targetData.id;
+                
+                // Check if this link connects to our selected node
+                if (sourceId === nodeId || targetId === nodeId) {
+                    // Get the original color for this edge
+                    let edgeColor = '#ff6b6b'; // fallback color
+                    
+                    // For tree format, use the same logic as the original tree links
+                    if (linkData.source.data && linkData.target.data) {
+                        // This is tree format - get color from current stroke attribute (which was set using linkColors map)
+                        edgeColor = link.attr('stroke') || '#ff6b6b';
+                    } else {
+                        // This is graph format - use the color from linkData
+                        edgeColor = linkData.color || '#ff6b6b';
+                    }
+                    
+                    // Highlight the connected edge with its original relationship color
+                    link.attr('stroke-opacity', 0.8)
+                        .attr('stroke-width', 3)
+                        .attr('stroke', edgeColor);
+                    
+                    // Highlight connected nodes
+                    svg.selectAll('circle').filter(node => {
+                        const currentNodeData = node.data || node;
+                        return currentNodeData.id === sourceId || currentNodeData.id === targetId;
+                    }).attr('opacity', 1);
+                    
+                    // Show relationship labels for connected edges
+                    svg.selectAll('.link-label').filter(labelData => {
+                        const labelSourceData = labelData.source.data || labelData.source;
+                        const labelTargetData = labelData.target.data || labelData.target;
+                        return (labelSourceData.id === sourceId && labelTargetData.id === targetId) ||
+                               (labelSourceData.id === targetId && labelTargetData.id === sourceId);
+                    }).attr('opacity', 1);
+                }
+            });
+            
+            // Highlight node labels for connected nodes
+            svg.selectAll('.tree-label, text').filter(function(labelData) {
+                if (!labelData) return false;
+                const labelNodeData = labelData.data || labelData;
+                // Check if this label belongs to the selected node or connected nodes
+                let isConnected = labelNodeData.id === nodeId;
+                
+                if (!isConnected) {
+                    // Check if this node is connected to our selected node
+                    svg.selectAll('line').each(function(linkData) {
+                        const sourceData = linkData.source.data || linkData.source;
+                        const targetData = linkData.target.data || linkData.target;
+                        if ((sourceData.id === nodeId && targetData.id === labelNodeData.id) ||
+                            (targetData.id === nodeId && sourceData.id === labelNodeData.id)) {
+                            isConnected = true;
+                        }
+                    });
+                }
+                
+                return isConnected;
+            }).attr('opacity', 1);
+            
+            console.log(`Highlighted connections for node: ${nodeId}`);
+        }
+
+        // Function to reset all highlighting
+        function resetHighlighting() {
+            if (!window.currentSvg) {
+                console.warn('D3 graph not yet rendered');
+                return;
+            }
+            
+            const svg = d3.select(window.currentSvg);
+            
+            // Reset all elements to their default state
+            svg.selectAll('circle').attr('opacity', 0.8).attr('stroke-width', 1.5).attr('stroke', '#333');
+            svg.selectAll('line').attr('stroke-opacity', 0.3).attr('stroke-width', 1.5);
+            svg.selectAll('.tree-label, text').attr('opacity', 1);
+            svg.selectAll('.link-label').attr('opacity', 0); // Keep relationship labels hidden by default
+        }
+
+        // Function to highlight D3 node (works for both graph and tree)
         function highlightD3Node(accountNumber) {
             if (!window.currentSvg) {
                 console.warn('D3 graph not yet rendered');
@@ -2964,34 +3336,59 @@
             // Set all nodes to 20% opacity (dimming effect)
             svg.selectAll('circle').attr('opacity', 0.2);
             
-            // Find and highlight the target node
-            const targetNode = svg.selectAll('circle').filter(d => d.id === accountNumber);
+            // Find and highlight the target node (try both graph and tree formats)
+            let targetNode = svg.selectAll('circle').filter(d => d.id === accountNumber); // Graph format
+            if (targetNode.size() === 0) {
+                targetNode = svg.selectAll('circle').filter(d => d.data && d.data.id === accountNumber); // Tree format
+            }
+            
             if (targetNode.size() > 0) {
                 targetNode.attr('stroke-width', 4).attr('stroke', '#3b82f6').attr('opacity', 1);
                 
                 // Find neighbor nodes (directly connected) and set them to 80% opacity
                 const neighborNodes = [];
                 svg.selectAll('line').each(function(d) {
-                    if (d.source.id === accountNumber) {
-                        neighborNodes.push(d.target.id);
-                    } else if (d.target.id === accountNumber) {
-                        neighborNodes.push(d.source.id);
+                    // Handle both graph and tree link formats
+                    let sourceId, targetId;
+                    if (d.source && d.target) {
+                        // Graph format or tree with resolved references
+                        sourceId = d.source.id || (d.source.data && d.source.data.id);
+                        targetId = d.target.id || (d.target.data && d.target.data.id);
+                    }
+                    
+                    if (sourceId === accountNumber) {
+                        neighborNodes.push(targetId);
+                    } else if (targetId === accountNumber) {
+                        neighborNodes.push(sourceId);
                     }
                 });
                 
-                // Set neighbor nodes to 80% opacity
-                svg.selectAll('circle').filter(d => neighborNodes.includes(d.id)).attr('opacity', 0.8);
+                // Set neighbor nodes to 80% opacity (handle both formats)
+                svg.selectAll('circle').filter(d => {
+                    const nodeId = d.id || (d.data && d.data.id);
+                    return neighborNodes.includes(nodeId);
+                }).attr('opacity', 0.8);
                 
-                // Highlight connected links
-                const connectedLinks = svg.selectAll('line').filter(d => 
-                    d.source.id === accountNumber || d.target.id === accountNumber
-                );
+                // Highlight connected links (handle both formats)
+                const connectedLinks = svg.selectAll('line').filter(d => {
+                    let sourceId, targetId;
+                    if (d.source && d.target) {
+                        sourceId = d.source.id || (d.source.data && d.source.data.id);
+                        targetId = d.target.id || (d.target.data && d.target.data.id);
+                    }
+                    return sourceId === accountNumber || targetId === accountNumber;
+                });
                 connectedLinks.attr('stroke-width', 3).attr('stroke-opacity', 0.8);
                 
-                // Show relationship labels for connected edges
-                svg.selectAll('.link-label').filter(d => 
-                    d.source.id === accountNumber || d.target.id === accountNumber
-                ).attr('opacity', 1);
+                // Show relationship labels for connected edges (handle both formats)
+                svg.selectAll('.link-label').filter(d => {
+                    let sourceId, targetId;
+                    if (d.source && d.target) {
+                        sourceId = d.source.id || (d.source.data && d.source.data.id);
+                        targetId = d.target.id || (d.target.data && d.target.data.id);
+                    }
+                    return sourceId === accountNumber || targetId === accountNumber;
+                }).attr('opacity', 1);
                 
                 console.log('Successfully highlighted node and connections for account:', accountNumber);
             } else {
@@ -3281,28 +3678,6 @@
             setupShowFullGraphCheckbox();
         }
 
-        // Set up graph view radio buttons event listener
-        function setupShowFullGraphCheckbox() {
-            const fullGraphRadio = document.getElementById('show-full-graph');
-            const subgraphRadio = document.getElementById('show-subgraph');
-            const treeRadio = document.getElementById('show-tree');
-            
-            if (fullGraphRadio && subgraphRadio && treeRadio) {
-                // Remove any existing event listeners to avoid duplicates
-                fullGraphRadio.removeEventListener('change', handleShowFullGraphChange);
-                subgraphRadio.removeEventListener('change', handleShowFullGraphChange);
-                treeRadio.removeEventListener('change', handleShowFullGraphChange);
-                
-                // Add event listeners to all radio buttons
-                fullGraphRadio.addEventListener('change', handleShowFullGraphChange);
-                subgraphRadio.addEventListener('change', handleShowFullGraphChange);
-                treeRadio.addEventListener('change', handleShowFullGraphChange);
-                console.log('Graph view radio buttons event listeners set up');
-            } else {
-                console.warn('Graph view radio buttons not found, will retry when content is created');
-            }
-        }
-
         // Handle graph view radio button change
         async function handleShowFullGraphChange(event) {
             console.log('Graph view changed to:', event.target.value);
@@ -3315,6 +3690,54 @@
                 await renderNetworkGraph();
             } else {
                 console.warn('No graph data available for rendering');
+            }
+        }
+
+        // Handle degree dropdown change
+        async function handleDegreeChange(event) {
+            console.log('Subgraph degree changed to:', event.target.value);
+            
+            // Only re-render if subgraph is currently selected
+            const subgraphRadio = document.getElementById('show-subgraph');
+            if (subgraphRadio && subgraphRadio.checked) {
+                if (apiData.graph && apiData.graph.nodes && apiData.graph.nodes.length > 0) {
+                    await renderNetworkGraph();
+                } else {
+                    console.warn('No graph data available for rendering');
+                }
+            }
+        }
+
+        // Set up graph view radio buttons event listener
+        function setupShowFullGraphCheckbox() {
+            const fullGraphRadio = document.getElementById('show-full-graph');
+            const subgraphRadio = document.getElementById('show-subgraph');
+            const treeRadio = document.getElementById('show-tree');
+            const degreeDropdown = document.getElementById('subgraph-degree');
+            
+            if (fullGraphRadio && subgraphRadio && treeRadio) {
+                // Remove any existing event listeners to avoid duplicates
+                fullGraphRadio.removeEventListener('change', handleShowFullGraphChange);
+                subgraphRadio.removeEventListener('change', handleShowFullGraphChange);
+                treeRadio.removeEventListener('change', handleShowFullGraphChange);
+                
+                // Add event listeners to all radio buttons
+                fullGraphRadio.addEventListener('change', handleShowFullGraphChange);
+                subgraphRadio.addEventListener('change', handleShowFullGraphChange);
+                treeRadio.addEventListener('change', handleShowFullGraphChange);
+                
+                console.log('Graph view radio buttons event listeners set up');
+            } else {
+                console.warn('Graph view radio buttons not found, will retry when content is created');
+            }
+            
+            // Set up degree dropdown listener
+            if (degreeDropdown) {
+                degreeDropdown.removeEventListener('change', handleDegreeChange);
+                degreeDropdown.addEventListener('change', handleDegreeChange);
+                console.log('Degree dropdown event listener set up');
+            } else {
+                console.warn('Degree dropdown not found');
             }
         }
 

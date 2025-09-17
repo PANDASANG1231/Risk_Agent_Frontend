@@ -253,6 +253,11 @@
     padding: 0.5rem !important;
   }
 
+  /* Radio group spacing */
+  .radio-group-spacing {
+    margin-left: 40px;
+  }
+
   /* Reduce spacing in data formatting */
   .data-item {
     margin-bottom: 0.25rem !important;
