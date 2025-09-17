@@ -840,7 +840,7 @@
         }
 
         // Get subgraph data from API (selected account + direct neighbors)
-        async function getSubgraphData(acctno) {
+        async function getSubgraphData() {
             // If no account is selected, try to get the target account from customer info
             let targetAccount = selectedAccount;
             if (!targetAccount && apiData.customerInfo && apiData.customerInfo.frmtd_acct_no) {
@@ -857,7 +857,7 @@
                 console.log(`Fetching subgraph data from API for account: ${targetAccount}`);
                                 
                 // Get formatted account number if we have a selected account
-                let centerNode = targetAccount;
+                let centerNode = apiData.customerInfo.frmtd_acct_no;
             if (selectedAccount) {
                     centerNode = await getFormattedAccountNumber(selectedAccount);
                     console.log(`Using formatted account number for subgraph: ${centerNode}`);
@@ -870,7 +870,7 @@
                 const degree = degreeDropdown ? degreeDropdown.value : '1';
                 
                 // Call the new subgraph API endpoint
-                const response = await fetch(`/api/subgraph?acctno=${acctno}&center_node=${encodeURIComponent(centerNode)}&degree=${degree}`);
+                const response = await fetch(`/api/subgraph?acctno=${selectedAccount}&center_node=${encodeURIComponent(centerNode)}&degree=${degree}`);
                 
                 if (!response.ok) {
                     console.error(`HTTP ${response.status} for subgraph API:`, await response.text());
@@ -1471,7 +1471,7 @@
                 console.log('Using full graph data');
             } else if (viewMode === 'subgraph' && canCreateSubgraph) {
                 console.log('Getting subgraph data...');
-                graphData = await getSubgraphData(apiData.customerInfo.frmtd_acct_no);
+                graphData = await getSubgraphData();
                 console.log('Subgraph data received:', {
                     hasSubgraphNodeIds: !!graphData.subgraphNodeIds,
                     subgraphNodeCount: graphData.subgraphNodeIds ? graphData.subgraphNodeIds.size : 0,
