@@ -840,7 +840,7 @@
         }
 
         // Get subgraph data from API (selected account + direct neighbors)
-        async function getSubgraphData() {
+        async function getSubgraphData(acctno) {
             // If no account is selected, try to get the target account from customer info
             let targetAccount = selectedAccount;
             if (!targetAccount && apiData.customerInfo && apiData.customerInfo.frmtd_acct_no) {
@@ -855,16 +855,13 @@
             
             try {
                 console.log(`Fetching subgraph data from API for account: ${targetAccount}`);
-                
-                // Get current account number from URL
-                const acctno = new URLSearchParams(window.location.search).get('acctno') || '12345';
-                
+                                
                 // Get formatted account number if we have a selected account
                 let centerNode = targetAccount;
-                if (selectedAccount) {
+            if (selectedAccount) {
                     centerNode = await getFormattedAccountNumber(selectedAccount);
                     console.log(`Using formatted account number for subgraph: ${centerNode}`);
-                } else {
+            } else {
                     console.log(`Using target account directly: ${centerNode}`);
                 }
                 
@@ -878,9 +875,9 @@
                 if (!response.ok) {
                     console.error(`HTTP ${response.status} for subgraph API:`, await response.text());
                     // Fallback to full graph
-                    return apiData.graph;
-                }
-                
+                return apiData.graph;
+            }
+            
                 const subgraphData = await response.json();
                 console.log('Subgraph data received from API:', {
                     nodes: subgraphData.nodes?.length || 0,
@@ -890,7 +887,7 @@
                 });
                 
                 // Return the true subgraph data (not full graph with visibility flags)
-                return {
+            return {
                     nodes: subgraphData.nodes || [],
                     links: subgraphData.links || [],
                     centerNode: subgraphData.center_node,
@@ -963,10 +960,10 @@
                 .attr('width', width)
                 .attr('height', height);
                 
-                window.currentSvg = svg.node();
+            window.currentSvg = svg.node();
                 window.currentGraphData = null; // Tree mode doesn't have subgraph data
-                
-                // Create a group for zoom/pan
+            
+            // Create a group for zoom/pan
             const g = svg.append('g');
             
             // Convert graph data to tree structure
@@ -1474,7 +1471,7 @@
                 console.log('Using full graph data');
             } else if (viewMode === 'subgraph' && canCreateSubgraph) {
                 console.log('Getting subgraph data...');
-                graphData = await getSubgraphData();
+                graphData = await getSubgraphData(apiData.customerInfo.frmtd_acct_no);
                 console.log('Subgraph data received:', {
                     hasSubgraphNodeIds: !!graphData.subgraphNodeIds,
                     subgraphNodeCount: graphData.subgraphNodeIds ? graphData.subgraphNodeIds.size : 0,
