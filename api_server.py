@@ -43,14 +43,35 @@ def replace_hyphens_with_spaces(text):
     logger.debug(f"Hyphen replacement: '{text}' -> '{processed_text}'")
     return processed_text
 
+def remove_markdown_headers(text):
+    """
+    Remove markdown headers from the beginning of text.
+    Pattern: ### Summary of becomes Summary of
+    
+    Args:
+        text (str): Input text to process
+        
+    Returns:
+        str: Text with markdown headers removed
+    """
+    if not isinstance(text, str):
+        return text
+        
+    # Remove markdown headers like "### " from the beginning
+    # Pattern explanation: ^ = start of string, #{1,6} = 1-6 hash symbols, \s+ = one or more spaces
+    processed_text = re.sub(r'^#{1,6}\s+', '', text)
+    
+    logger.debug(f"Markdown header removal: '{text}' -> '{processed_text}'")
+    return processed_text
+
 def apply_text_processing(data):
     """
-    Apply text processing (including hyphen replacement and bold formatting) to string values in data structure.
+    Apply text processing (including hyphen replacement and markdown header removal) to string values in data structure.
     Recursively processes dictionaries, lists, and strings.
     
     Text processing steps:
     1. Replace hyphens with spaces (a-b → a b)
-    2. Add \n before **xx**: or **xx** : patterns if not already present
+    2. Remove markdown headers from beginning (### Summary of → Summary of)
     
     Args:
         data: Input data (can be dict, list, str, or other types)
@@ -63,8 +84,10 @@ def apply_text_processing(data):
     elif isinstance(data, list):
         return [apply_text_processing(item) for item in data]
     elif isinstance(data, str):
-        # Apply both text processing functions in sequence
+        # Apply text processing functions in sequence
         processed_text = replace_hyphens_with_spaces(data)
+        processed_text = remove_markdown_headers(processed_text)
+        processed_text = processed_text.strip()
         return processed_text
     else:
         return data
@@ -298,9 +321,9 @@ def get_public_info():
         print(f"Received request for /api/public-info with acctno: {acctno}")
         result, status_code = get_key_data('public_info', acctno)
         
-        # Apply text processing (hyphen replacement) to result
+        # Apply text processing (hyphen replacement, markdown header removal, and strip) to result
         if status_code == 200:
-            logger.info("Applying text processing (hyphen replacement) to public info data")
+            logger.info("Applying text processing (hyphen replacement, markdown header removal, and strip) to public info data")
             result = apply_text_processing(result)
             
         return jsonify(result), status_code
@@ -319,9 +342,9 @@ def get_public_address_info():
         print(f"Received request for /api/public-address with acctno: {acctno}")
         result, status_code = get_key_data('public_address_info', acctno)
         
-        # Apply text processing (hyphen replacement) to result
+        # Apply text processing (hyphen replacement, markdown header removal, and strip) to result
         if status_code == 200:
-            logger.info("Applying text processing (hyphen replacement) to public address data")
+            logger.info("Applying text processing (hyphen replacement, markdown header removal, and strip) to public address data")
             result = apply_text_processing(result)
             
         return jsonify(result), status_code

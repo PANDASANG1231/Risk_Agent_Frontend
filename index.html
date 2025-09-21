@@ -1824,72 +1824,122 @@
             let contentHtml = '';
 
                          // Add public info section
-             if (apiData.publicInfo) {
+             if (apiData.publicInfo || apiData.publicAddress) {
                  contentHtml += `
                      <div class="mb-3">
-                         <h4 class="text-base font-semibold text-gray-900 mb-2">Company Information</h4>
-                         <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 shadow-sm">
-                             <div class="prose prose-blue max-w-none">
-                                 <div class="bg-white rounded-lg p-2 shadow-sm">
-                                     ${formatPublicInfoData(apiData.publicInfo)}
-                                 </div>
-                             </div>
-                         </div>
+                         ${formatPublicInfoData(apiData.publicInfo, apiData.publicAddress)}
                      </div>
                  `;
              }
 
-                         // Add public address section
-             if (apiData.publicAddress) {
-                 contentHtml += `
-                     <div class="mb-3">
-                         <h4 class="text-base font-semibold text-gray-900 mb-2">Address Information</h4>
-                         <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-3 shadow-sm">
-                             <div class="prose prose-green max-w-none">
-                                 <div class="bg-white rounded-lg p-2 shadow-sm">
-                                     ${formatPublicAddressData(apiData.publicAddress)}
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                 `;
-             }
 
             return contentHtml;
         }
 
         // Format public info data
-        function formatPublicInfoData(data) {
+        function formatPublicInfoData(data, addressData) {
+            // Format company info data
+            let companyInfoRows = '';
             if (typeof data === 'string') {
-                return `<div class="text-xs text-gray-700 leading-relaxed">${formatText(data)}</div>`;
+                companyInfoRows = `
+                    <tr>
+                        <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
+                            ${formatText(data).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '').replace(/^\s+/, '')}
+                        </td>
+                    </tr>
+                `;
             } else if (typeof data === 'object' && data !== null) {
                 const entries = Object.entries(data);
                 if (entries.length === 0) {
-                    return '<div class="text-xs text-gray-700">No company information available</div>';
+                    companyInfoRows = '<tr><td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">No company information available</td></tr>';
+                } else {
+                    companyInfoRows = entries.map(([key, value]) => {
+                        let formattedValue;
+                        
+                        if (typeof value === 'string') {
+                            formattedValue = formatText(value).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                        } else if (typeof value === 'object' && value !== null) {
+                            formattedValue = formatDictValue(value, 0).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                        } else {
+                            formattedValue = String(value).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                        }
+
+                        return `
+                            <tr>
+                                <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
+                                    ${formattedValue}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
                 }
-
-                return entries.map(([key, value]) => {
-                    const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    let formattedValue;
-                    
-                    if (typeof value === 'string') {
-                        formattedValue = formatText(value);
-                    } else if (typeof value === 'object' && value !== null) {
-                        formattedValue = formatDictValue(value, 0);
-                    } else {
-                        formattedValue = String(value);
-                    }
-
-                    return `
-                        <div class="mb-2 border-b border-gray-200 pb-2 last:border-b-0">
-                            <h5 class="text-sm font-semibold text-gray-900 mb-1">${formattedKey}</h5>
-                            <div class="text-xs text-gray-700 leading-relaxed">${formattedValue}</div>
-                        </div>
-                    `;
-                }).join('');
             } else {
-                return '<div class="text-xs text-gray-700">No company information available</div>';
+                companyInfoRows = '<tr><td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">No company information available</td></tr>';
             }
+
+            // Format address data
+            let addressRows = '';
+            if (typeof addressData === 'string') {
+                addressRows = `
+                    <tr>
+                        <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
+                            ${formatText(addressData).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '')}
+                        </td>
+                    </tr>
+                `;
+            } else if (typeof addressData === 'object' && addressData !== null) {
+                const entries = Object.entries(addressData);
+                if (entries.length === 0) {
+                    addressRows = '<tr><td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">No address information available</td></tr>';
+                } else {
+                    addressRows = entries.map(([key, value]) => {
+                        let formattedValue;
+                        
+                        if (typeof value === 'string') {
+                            formattedValue = formatText(value).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                        } else if (typeof value === 'object' && value !== null) {
+                            formattedValue = formatDictValue(value, 0).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                        } else {
+                            formattedValue = String(value).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                        }
+
+                        return `
+                            <tr>
+                                <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
+                                    ${formattedValue}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } else {
+                addressRows = '<tr><td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">No address information available</td></tr>';
+            }
+
+            return `
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead>
+                        <tr>
+                            <th data-sortable="true" style="width: 55%; padding: 0px 6px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; text-align: left; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'">
+                                Company Information<span class="sort-icon"></span>
+                            </th>
+                            <th data-sortable="true" style="width: 45%; padding: 0px 6px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; text-align: left; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'">
+                                Address Information<span class="sort-icon"></span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="width: 55%; padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
+                                ${companyInfoRows.replace(/<tr>|<\/tr>/g, '').replace(/<td[^>]*>|<\/td>/g, '')}
+                            </td>
+                            <td style="width: 45%; padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
+                                ${addressRows.replace(/<tr>|<\/tr>/g, '').replace(/<td[^>]*>|<\/td>/g, '')}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
         }
 
         // Format public address data
@@ -2174,9 +2224,9 @@
                     let passesAllFilters = true;
                     
                     // Check category filter
-                    if (category && category.trim() !== '') {
-                        const itemCategory = String(item.category || '').trim();
-                        const filterCategory = String(category).trim();
+                    if (category && category.replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '') !== '') {
+                        const itemCategory = String(item.category || '').replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                        const filterCategory = String(category).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
                         const categoryMatch = itemCategory.toLowerCase() === filterCategory.toLowerCase();
                         
                         console.log(`Category comparison:`);
@@ -2195,9 +2245,9 @@
                     }
                     
                     // Check direction filter
-                    if (direction && direction.trim() !== '' && passesAllFilters) {
-                        const itemDirection = String(item.direction || '').trim();
-                        const filterDirection = String(direction).trim();
+                    if (direction && direction.replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '') !== '' && passesAllFilters) {
+                        const itemDirection = String(item.direction || '').replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                        const filterDirection = String(direction).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
                         const directionMatch = itemDirection.toLowerCase() === filterDirection.toLowerCase();
                         
                         console.log(`Direction comparison:`);
@@ -2216,9 +2266,9 @@
                     }
                     
                     // Check user category filter (usage_category)
-                    if (userCategory && userCategory.trim() !== '' && passesAllFilters) {
-                        const itemUsageCategory = String(item.usage_category || '').trim();
-                        const filterUsageCategory = String(userCategory).trim();
+                    if (userCategory && userCategory.replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '') !== '' && passesAllFilters) {
+                        const itemUsageCategory = String(item.usage_category || '').replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                        const filterUsageCategory = String(userCategory).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
                         const usageCategoryMatch = itemUsageCategory.toLowerCase() === filterUsageCategory.toLowerCase();
                         
                         console.log(`Usage category comparison:`);
@@ -2266,7 +2316,7 @@
                     let passesAllFilters = true;
                     
                     // For object data, we check if the key matches our filters
-                    if (category && category.trim() !== '') {
+                    if (category && category.replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '') !== '') {
                         const keyMatch = key.toLowerCase() === category.toLowerCase();
                         console.log(`Key category comparison: "${key}" === "${category}" ? ${keyMatch}`);
                         if (!keyMatch) {
@@ -2279,9 +2329,9 @@
                     
                     // If the value is an object, check its properties
                     if (typeof value === 'object' && value !== null && passesAllFilters) {
-                        if (direction && direction.trim() !== '') {
-                            const itemDirection = String(value.direction || '').trim();
-                            const filterDirection = String(direction).trim();
+                        if (direction && direction.replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '') !== '') {
+                            const itemDirection = String(value.direction || '').replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                            const filterDirection = String(direction).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
                             const directionMatch = itemDirection.toLowerCase() === filterDirection.toLowerCase();
                             console.log(`Value direction comparison: "${itemDirection}" === "${filterDirection}" ? ${directionMatch}`);
                             if (!directionMatch) {
@@ -2292,9 +2342,9 @@
                             }
                         }
                         
-                        if (userCategory && userCategory.trim() !== '' && passesAllFilters) {
-                            const itemUsageCategory = String(value.usage_category || '').trim();
-                            const filterUsageCategory = String(userCategory).trim();
+                        if (userCategory && userCategory.replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '') !== '' && passesAllFilters) {
+                            const itemUsageCategory = String(value.usage_category || '').replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                            const filterUsageCategory = String(userCategory).replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
                             const usageCategoryMatch = itemUsageCategory.toLowerCase() === filterUsageCategory.toLowerCase();
                             console.log(`Value usage category comparison: "${itemUsageCategory}" === "${filterUsageCategory}" ? ${usageCategoryMatch}`);
                             if (!usageCategoryMatch) {
@@ -2347,13 +2397,13 @@
                         if (keys.length > 0) {
                             tableRows += `
                                 <tr>
-                                    <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
+                                    <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
                                         ${index + 1}
                                     </td>
-                                    <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
+                                    <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
                                         ${keys.join(', ')}
                                     </td>
-                                    <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-wrap;">
+                                    <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
                                         ${keys.map(key => `${key}: ${JSON.stringify(item[key])}`).join('\n')}
                                     </td>
                                 </tr>
@@ -2362,13 +2412,13 @@
                     } else {
                         tableRows += `
                             <tr>
-                                <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
+                                <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
                                     ${index + 1}
                                 </td>
-                                <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
+                                <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
                                     -
                                 </td>
-                                <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-wrap;">
+                                <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
                                     ${JSON.stringify(item)}
                                 </td>
                             </tr>
@@ -2382,13 +2432,13 @@
                     const value = data[key];
                     tableRows += `
                         <tr>
-                            <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
+                            <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
                                 ${index + 1}
                             </td>
-                            <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
+                            <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
                                 ${key}
                             </td>
-                            <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-wrap;">
+                            <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
                                 ${typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
                             </td>
                         </tr>
@@ -2398,13 +2448,13 @@
                 // Handle primitive data
                 tableRows += `
                     <tr>
-                        <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
+                        <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
                             1
                         </td>
-                        <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
+                        <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top;">
                             -
                         </td>
-                        <td style="padding: 8px 12px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-wrap;">
+                        <td style="padding: 0px 4px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; vertical-align: top; word-break: break-word; white-space: pre-line;">
                             ${String(data)}
                         </td>
                     </tr>
@@ -3096,7 +3146,7 @@
         // Create transaction usage dictionary table - Simple and cross-compatible
         function createTransactionUsageDictTable(data) {
             if (typeof data === 'string') {
-                return '<div style="background: #f9fafb; border-radius: 8px; padding: 16px;"><div style="font-size: 14px; color: #374151; line-height: 1.6;">' + formatText(data) + '</div></div>';
+                return '<div style="background: #f9fafb; border-radius: 8px; padding: 16px;"><div style="font-size: 12px; color: #374151; line-height: 1.6;">' + formatText(data) + '</div></div>';
             }
 
             if (typeof data === 'object' && data !== null) {
@@ -3230,7 +3280,7 @@
         // Create transaction usage detail table
         function createTransactionUsageDetailTable(data) {
             if (typeof data === 'string') {
-                return '<div style="background: #f9fafb; border-radius: 8px; padding: 16px;"><div style="font-size: 14px; color: #374151; line-height: 1.6;">' + formatText(data) + '</div></div>';
+                return '<div style="background: #f9fafb; border-radius: 8px; padding: 16px;"><div style="font-size: 12px; color: #374151; line-height: 1.6;">' + formatText(data) + '</div></div>';
             }
 
             if (typeof data === 'object' && data !== null) {
@@ -3897,8 +3947,8 @@
                     
                     if (!aCell || !bCell) return 0;
                     
-                    const aValue = aCell.textContent.trim();
-                    const bValue = bCell.textContent.trim();
+                    const aValue = aCell.textContent.replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
+                    const bValue = bCell.textContent.replace(/\n\n+/g, '\n').replace(/[ ]*-[ ]*/g, '').trim().replace(/^\s+/, '');
                     
                     // Try to parse as numbers
                     let aNum = parseFloat(aValue.replace(/[$,%]/g, ''));
