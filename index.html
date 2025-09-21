@@ -44,6 +44,26 @@
         .details-chevron {
             transition: transform 0.2s ease;
         }
+        
+        /* Sortable table headers */
+        th[data-sortable] {
+            transition: background-color 0.2s ease;
+        }
+        
+        th[data-sortable]:hover {
+            background-color: #e5e7eb !important;
+        }
+        
+        .sort-icon {
+            margin-left: 4px;
+            font-size: 10px;
+            opacity: 0.7;
+        }
+        
+        th[data-sort] .sort-icon {
+            opacity: 1;
+            font-weight: bold;
+        }
     </style>
 
 </head>
@@ -2156,10 +2176,10 @@
                 return '<div class="text-xs text-gray-700">No customer data available</div>';
             }
 
-            // Create table headers
+            // Create table headers with sorting capability
             const tableHeaders = keys.map(key => {
                 const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                return `<th style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; text-align: left;">${formattedKey}</th>`;
+                return `<th data-sortable="true" style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; text-align: left; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'">${formattedKey}<span class="sort-icon"></span></th>`;
             }).join('');
 
             // Create table rows
@@ -2189,7 +2209,7 @@
 
             return `
                 <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                    <table id="customer-info-table" style="width: 100%; border-collapse: collapse; font-size: 11px;">
                         <thead>
                             <tr>${tableHeaders}</tr>
                         </thead>
@@ -2753,10 +2773,10 @@
                         return '<tr>' + rowCells + '</tr>';
                      }).join('');
 
-                    // Create simple headers
+                    // Create sortable headers
                     const tableHeaders = finalKeys.map(function(key) {
                         const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
-                        return '<th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">' + formattedKey + '</th>';
+                        return '<th data-sortable="true" style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#e5e7eb\'" onmouseout="this.style.backgroundColor=\'#f3f4f6\'">' + formattedKey + '<span class="sort-icon"></span></th>';
                     }).join('');
 
                     return '<div style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;"><table style="width: 100%; border-collapse: collapse;" id="trans-usage-table"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
@@ -2784,7 +2804,7 @@
                         return '<tr><td style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f9fafb;">' + formattedKey + '</td><td style="padding: 8px 16px; font-size: 12px; color: #374151; border: 1px solid #e5e7eb; background-color: white;">' + formattedValue + '</td></tr>';
                     }).join('');
 
-                    return '<table style="width: 100%; border-collapse: collapse;"><thead><tr><th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">Key</th><th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">Value</th></tr></thead><tbody>' + tableRows + '</tbody></table>';
+                    return '<table style="width: 100%; border-collapse: collapse;"><thead><tr><th data-sortable="true" style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#e5e7eb\'" onmouseout="this.style.backgroundColor=\'#f3f4f6\'">Key<span class="sort-icon"></span></th><th data-sortable="true" style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#e5e7eb\'" onmouseout="this.style.backgroundColor=\'#f3f4f6\'">Value<span class="sort-icon"></span></th></tr></thead><tbody>' + tableRows + '</tbody></table>';
                 }
             }
 
@@ -2836,10 +2856,10 @@
                         return '<tr>' + rowCells + '</tr>';
                     }).join('');
 
-                    // Create table headers
+                    // Create sortable table headers
                     const tableHeaders = finalKeys.map(function(key) {
                         const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        return '<th style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6;">' + formattedKey + '</th>';
+                        return '<th data-sortable="true" style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#e5e7eb\'" onmouseout="this.style.backgroundColor=\'#f3f4f6\'">' + formattedKey + '<span class="sort-icon"></span></th>';
                     }).join('');
 
                     return '<div style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;"><table style="width: 100%; border-collapse: collapse;" id="trans-usage-detail-table"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
@@ -2905,11 +2925,11 @@
                 return '<tr id="' + rowId + '" data-account="' + accountNumber + '" class="cursor-pointer hover:bg-blue-50 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500" onclick="highlightNodeInGraph(\'' + accountNumber + '\')" title="Click to highlight corresponding node in graph">' + rowCells + '</tr>';
             }).join('');
 
-            // Create table headers with fixed order
+            // Create sortable table headers with fixed order
             const tableHeaders = columnOrder.map(function(key) {
                 let formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                 
-                return '<th style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
+                return '<th data-sortable="true" style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#f3f4f6\'" onmouseout="this.style.backgroundColor=\'white\'">' + formattedKey + '<span class="sort-icon"></span></th>';
             }).join('');
 
             return '<div style="overflow-x: auto;"><table id="utr-table" style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
@@ -2969,11 +2989,11 @@
                 return '<tr id="' + rowId + '" data-account="' + accountNumber + '" class="cursor-pointer hover:bg-blue-50 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500" onclick="highlightNodeInGraph(\'' + accountNumber + '\')" title="Click to highlight corresponding node in graph">' + rowCells + '</tr>';
             }).join('');
 
-            // Create table headers with fixed order
+            // Create sortable table headers with fixed order
             const tableHeaders = columnOrder.map(function(key) {
                 let formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                 
-                return '<th style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left;">' + formattedKey + '</th>';
+                return '<th data-sortable="true" style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#f3f4f6\'" onmouseout="this.style.backgroundColor=\'white\'">' + formattedKey + '<span class="sort-icon"></span></th>';
             }).join('');
 
             return '<div style="overflow-x: auto;"><table id="ctr-table" style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
@@ -3394,52 +3414,145 @@
         }
 
         // Sort table function
-        function sortTable(key, headerElement) {
-            const table = document.getElementById('trans-usage-table');
+        // Generic table sorting function
+        function sortTable(tableId, columnIndex, headerElement) {
+            if (!tableId || !columnIndex || !headerElement) {
+                console.warn('sortTable called with invalid parameters:', { tableId, columnIndex, headerElement });
+                return;
+            }
+            
+            const table = document.getElementById(tableId);
+            if (!table) {
+                console.warn('Table not found with ID:', tableId);
+                return;
+            }
+            
             const tbody = table.querySelector('tbody');
+            if (!tbody) {
+                console.warn('Table body not found in table:', tableId);
+                return;
+            }
+            
             const rows = Array.from(tbody.querySelectorAll('tr'));
+            if (rows.length === 0) {
+                console.warn('No rows found in table:', tableId);
+                return;
+            }
             
-            // Get current sort direction
-            const currentSort = headerElement.dataset.sort;
-            const newSort = currentSort === 'asc' ? 'desc' : 'asc';
+            // Get current sort direction and cycle through: none -> asc -> desc -> none
+            const currentSort = headerElement.dataset.sort || 'none';
+            let newSort;
+            if (currentSort === 'none') {
+                newSort = 'asc';
+            } else if (currentSort === 'asc') {
+                newSort = 'desc';
+            } else {
+                newSort = 'none';
+            }
             
-            // Reset all headers
+            // Reset all headers in this table
             table.querySelectorAll('th').forEach(th => {
-                th.dataset.sort = 'none';
-                 th.style.backgroundColor = 'transparent';
+                if (th.style) {
+                    th.dataset.sort = 'none';
+                    th.style.backgroundColor = 'transparent';
+                }
+                const sortIcon = th.querySelector('.sort-icon');
+                if (sortIcon) {
+                    sortIcon.innerHTML = '';
+                }
             });
             
             // Update current header
-            headerElement.dataset.sort = newSort;
-             headerElement.style.backgroundColor = newSort === 'asc' ? '#f0fdf4' : '#eff6ff';
+            if (headerElement.style) {
+                headerElement.dataset.sort = newSort;
+                if (newSort === 'none') {
+                    headerElement.style.backgroundColor = 'transparent';
+                } else {
+                    headerElement.style.backgroundColor = newSort === 'asc' ? '#f0fdf4' : '#eff6ff';
+                }
+            }
             
-                         // Sort rows
-             rows.sort((a, b) => {
-                 const aValue = a.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
-                 const bValue = b.querySelector(`td:nth-child(${getColumnIndex(key)})`).textContent.trim();
-                 
-                 let aNum = parseFloat(aValue.replace(/[$,]/g, ''));
-                 let bNum = parseFloat(bValue.replace(/[$,]/g, ''));
-                 
-                 // Check if both values are numbers
-                 if (!isNaN(aNum) && !isNaN(bNum)) {
-                     // Numeric sorting
-                     return newSort === 'asc' ? aNum - bNum : bNum - aNum;
-                 } else {
-                     // String sorting
-                     if (newSort === 'asc') {
-                         return aValue.localeCompare(bValue);
-                     } else {
-                         return bValue.localeCompare(aValue);
-                     }
-                 }
-             });
+            // Only sort if not returning to default (none) state
+            if (newSort !== 'none') {
+                // Sort rows
+                rows.sort((a, b) => {
+                    const aCell = a.querySelector(`td:nth-child(${columnIndex})`);
+                    const bCell = b.querySelector(`td:nth-child(${columnIndex})`);
+                    
+                    if (!aCell || !bCell) return 0;
+                    
+                    const aValue = aCell.textContent.trim();
+                    const bValue = bCell.textContent.trim();
+                    
+                    // Try to parse as numbers
+                    let aNum = parseFloat(aValue.replace(/[$,%]/g, ''));
+                    let bNum = parseFloat(bValue.replace(/[$,%]/g, ''));
+                    
+                    // Check if both values are numbers
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        // Numeric sorting
+                        return newSort === 'asc' ? aNum - bNum : bNum - aNum;
+                    } else {
+                        // String sorting
+                        if (newSort === 'asc') {
+                            return aValue.localeCompare(bValue);
+                        } else {
+                            return bValue.localeCompare(aValue);
+                        }
+                    }
+                });
+                
+                // Reorder rows in DOM
+                rows.forEach(row => tbody.appendChild(row));
+            } else {
+                // For 'none' state, we need to restore original order
+                // We'll need to store the original order or re-fetch the data
+                // For now, let's trigger a re-render of the table content
+                const tableContainer = headerElement.closest('[id*="-content"], [id*="-table"]');
+                if (tableContainer) {
+                    // Try to find the parent container and trigger a refresh
+                    const parentContainer = tableContainer.closest('.section-content');
+                    if (parentContainer) {
+                        // Find which section this table belongs to and refresh it
+                        const sectionId = parentContainer.id;
+                        if (sectionId === 'transactions-content') {
+                            loadTransactionUsageDict();
+                        } else if (sectionId === 'high-cash-content') {
+                            updateTablesForCurrentGraph(apiData.graph);
+                        } else if (sectionId === 'business-pattern-content') {
+                            // Refresh customer info
+                            const customerInfoContainer = document.getElementById('customer-info-content');
+                            if (customerInfoContainer && apiData.customerInfo) {
+                                customerInfoContainer.innerHTML = createCustomerInfoTable(apiData.customerInfo);
+                            }
+                        }
+                    }
+                }
+            }
             
-            // Reorder rows in DOM
-            rows.forEach(row => tbody.appendChild(row));
+            // Update sort indicators
+            updateSortIndicators(headerElement, newSort);
+        }
+        
+        // Update sort indicators on headers
+        function updateSortIndicators(headerElement, direction) {
+            if (!headerElement) return;
             
-             // Update sort indicators
-             updateSortIndicators(headerElement, newSort);
+            const sortIcon = headerElement.querySelector('.sort-icon');
+            if (sortIcon) {
+                if (direction === 'none') {
+                    sortIcon.innerHTML = '';
+                } else if (direction === 'asc') {
+                    sortIcon.innerHTML = ' &#9650;';
+                } else {
+                    sortIcon.innerHTML = ' &#9660;';
+                }
+            }
+        }
+        
+        // Legacy function for backward compatibility
+        function sortTableLegacy(key, headerElement) {
+            sortTable('trans-usage-table', getColumnIndex(key), headerElement);
         }
         
         // Get column index for a given key
@@ -3456,20 +3569,6 @@
             return 1; // fallback
         }
         
-                 // Update sort indicators
-         function updateSortIndicators(headerElement, sortDirection) {
-             const indicators = headerElement.querySelectorAll('span');
-             const upIndicator = indicators[1]; // ▲
-             const downIndicator = indicators[2]; // ▼
-            
-            if (sortDirection === 'asc') {
-                 upIndicator.style.color = '#059669'; // green-600
-                 downIndicator.style.color = '#9ca3af'; // gray-400
-            } else {
-                 downIndicator.style.color = '#2563eb'; // blue-600
-                 upIndicator.style.color = '#9ca3af'; // gray-400
-            }
-        }
         
         // Zoom functions for network graph
         function zoomIn() {
@@ -3756,9 +3855,34 @@
                 createIcons();
         }
 
+        // Global event listener for table sorting
+        document.addEventListener('click', (event) => {
+            try {
+                const sortableHeader = event.target.closest('th[data-sortable]');
+                if (sortableHeader) {
+                    const table = sortableHeader.closest('table');
+                    if (!table || !table.id) {
+                        console.warn('Table not found or missing ID for sortable header');
+                        return;
+                    }
+                    
+                    const tableId = table.id;
+                    const columnIndex = Array.from(sortableHeader.parentNode.children).indexOf(sortableHeader) + 1;
+                    
+                    if (columnIndex <= 0) {
+                        console.warn('Invalid column index:', columnIndex);
+                        return;
+                    }
+                    
+                    sortTable(tableId, columnIndex, sortableHeader);
+                }
+            } catch (error) {
+                console.error('Error in table sorting event listener:', error);
+            }
+        });
+
         // Initialize the dashboard when page loads
         document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
-</html>
-</html>
+</html></html>
