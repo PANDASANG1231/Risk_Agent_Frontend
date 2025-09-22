@@ -2273,7 +2273,7 @@
                         
                         console.log(`Usage category comparison:`);
                         console.log(`  Item usage_category: "${itemUsageCategory}"`);
-                        console.log(`  Filter user_category: "${filterUsageCategory}"`);
+                        console.log(`  Filter usage_category: "${filterUsageCategory}"`);
                         console.log(`  Match: ${usageCategoryMatch}`);
                         
                         if (!usageCategoryMatch) {
@@ -3160,8 +3160,8 @@
                         return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
                     }
 
-                    // Define column order for transaction usage dictionary table: Category, Direction, User Category, Trans Am
-                    const columnOrder = ['category', 'direction', 'user_category', 'trans_am', 'trans_am_pct'];
+                    // Define column order for transaction usage dictionary table: Category, Direction, Usage Category, Trans Am
+                    const columnOrder = ['category', 'direction', 'usage_category', 'trans_am', 'trans_am_pct'];
                     const availableKeys = Object.keys(firstItem);
                     
                     console.log('=== TRANSACTION USAGE DICT TABLE DEBUG ===');
@@ -3226,7 +3226,7 @@
                         const transactionType = item.category || item.transaction_type || 'unknown';
                         const category = item.category || '';
                         const direction = item.direction || '';
-                        const userCategory = item.user_category || '';
+                        const userCategory = item.usage_category || '';
                         const clickHandler = `onclick="showTransactionDetailModal('${transactionType}', '${category}', '${direction}', '${userCategory}')"`;
                         
                         return `<tr ${clickHandler} style="cursor: pointer;" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='white'">${rowCells}</tr>`;
