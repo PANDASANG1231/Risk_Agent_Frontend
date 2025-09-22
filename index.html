@@ -161,7 +161,7 @@
                                   <!-- Business Pattern Section -->
                   <section id="business-pattern" class="section-content">
                       <div class="section-header">
-                          <h2 class="text-xl font-bold text-gray-900">Business Pattern</h2>
+                          <h2 class="text-xl font-bold text-gray-900">Overall Summary</h2>
                           <p class="text-gray-600">Industry alignment</p>
                       </div>
                       <div class="card-elevated" id="business-pattern-content">
@@ -213,7 +213,7 @@
         
                  // Navigation configuration
          const sections = [
-             { id: 'business-pattern', name: 'Business Pattern', icon: 'bar-chart-3', description: 'Industry alignment' },
+             { id: 'business-pattern', name: 'Overall Summary', icon: 'bar-chart-3', description: 'Industry alignment' },
              { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
              { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' },
              { id: 'high-cash', name: 'Internal Analysis', icon: 'dollar-sign', description: 'Previous existing analysis' }
@@ -2106,6 +2106,7 @@
                 if (typeof apiData.businessPattern.dict_analysis === 'string') {
                     // If dict_analysis is a string, display it as text
                     const formattedText = formatText(apiData.businessPattern.dict_analysis);
+                    console.log('Formatted text:', formattedText);
                     contentHtml = `<div class="text-sm text-gray-700 leading-relaxed" style="word-break: keep-all; hyphens: none;">${formattedText}</div>`;
                 } else if (typeof apiData.businessPattern.dict_analysis === 'object' && apiData.businessPattern.dict_analysis !== null) {
                     // Handle dict_analysis as object - display key-value pairs
@@ -2142,14 +2143,14 @@
             }
 
                          return `
-                 <!-- Business Pattern Section with Customer Info Table -->
+                 <!-- Overall Summary Section with Customer Info Table -->
                  <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-2">
                      <div class="prose prose-gray max-w-none">
                          <div class="bg-white rounded-lg p-2 shadow-sm">
                              <!-- Customer Info Table First -->
                              ${createCustomerInfoContent()}
                              
-                             <!-- Business Pattern Content -->
+                             <!-- Overall Summary Content -->
                              <div class="mt-4 pt-4 border-t border-gray-200">
                              ${contentHtml}
                              </div>
