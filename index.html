@@ -64,6 +64,30 @@
             opacity: 1;
             font-weight: bold;
         }
+        
+        /* Modal scrollbar styling */
+        .modal-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e0 #f7fafc;
+        }
+        
+        .modal-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .modal-scrollbar::-webkit-scrollbar-track {
+            background: #f7fafc;
+            border-radius: 4px;
+        }
+        
+        .modal-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+        
+        .modal-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
     </style>
 
 </head>
@@ -678,18 +702,18 @@
                                 <span class="text-sm text-gray-600">&nbsp;Full Graph&nbsp&nbsp;&nbsp;&nbsp;&nbsp;</span>
                             </label>
                             <label class="flex items-center space-x-1 cursor-pointer mr-12">
-                                <input type="radio" id="show-tree" name="graph-view" value="tree" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2" checked>
+                                <input type="radio" id="show-tree" name="graph-view" value="tree" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
                                 <span class="text-sm text-gray-600">&nbsp;Tree&nbsp&nbsp;&nbsp;&nbsp;&nbsp;</span>
                             </label>
                             <label class="flex items-center space-x-1 cursor-pointer mr-4">
-                                <input type="radio" id="show-subgraph" name="graph-view" value="subgraph" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <input type="radio" id="show-subgraph" name="graph-view" value="subgraph" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2" checked>
                                 <span class="text-sm text-gray-600">&nbsp;Subgraph,&nbsp;</span>
                             </label>
                             <div class="flex items-center space-x-2">
                                 <label class="text-xs text-gray-600">Degree:</label>
                                 <select id="subgraph-degree" class="text-xs border border-gray-300 rounded px-2 py-1 bg-white">
-                                    <option value="1" selected>1</option>
-                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                    <option value="2" selected>2</option>
                                     <option value="3">3</option>
                                     <option value="4">4</option>
                                     <option value="5">5</option>
@@ -887,7 +911,7 @@
                 
                 // Get the degree value from the dropdown
                 const degreeDropdown = document.getElementById('subgraph-degree');
-                const degree = degreeDropdown ? degreeDropdown.value : '1';
+                const degree = degreeDropdown ? degreeDropdown.value : '2';
                 
                 // Call the new subgraph API endpoint
                 const response = await fetch(`/api/subgraph?acctno=${selectedAccount}&center_node=${encodeURIComponent(centerNode)}&degree=${degree}`);
@@ -1468,9 +1492,8 @@
             const subgraphRadio = document.getElementById('show-subgraph');
             const treeRadio = document.getElementById('show-tree');
             
-            let viewMode = 'tree'; // default
+            let viewMode = 'subgraph'; // default
             if (fullGraphRadio && fullGraphRadio.checked) viewMode = 'full';
-            else if (subgraphRadio && subgraphRadio.checked) viewMode = 'subgraph';
             else if (treeRadio && treeRadio.checked) viewMode = 'tree';
             
             console.log('Selected view mode:', viewMode);
@@ -4390,7 +4413,7 @@
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-            <div class="p-4 overflow-auto max-h-[calc(90vh-120px)]">
+            <div class="p-4 overflow-y-auto max-h-[calc(90vh-120px)] modal-scrollbar">
                 <div id="transaction-detail-content">
                     <div class="text-center py-8">
                         <i data-lucide="loader" class="w-8 h-8 mx-auto mb-2 animate-spin text-gray-400"></i>
