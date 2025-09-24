@@ -940,8 +940,8 @@ def list_accounts():
                 acctno = filename.replace('analysis_result_', '').replace('.json', '')
                 accounts.append(acctno)
         
-        # Sort account numbers for consistent output
-        accounts.sort()
+        # Sort account numbers based on the last part after splitting by underscore
+        accounts.sort(key=lambda x: x.split("_")[-1])
         
         logger.info(f"Found {len(accounts)} accounts: {accounts}")
         return jsonify({
