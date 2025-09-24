@@ -69,6 +69,7 @@
         .modal-scrollbar {
             scrollbar-width: thin;
             scrollbar-color: #cbd5e0 #f7fafc;
+            overflow-y: scroll !important;
         }
         
         .modal-scrollbar::-webkit-scrollbar {
@@ -87,6 +88,11 @@
         
         .modal-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #a0aec0;
+        }
+        
+        /* Force scrollbar to always show on webkit browsers */
+        .modal-scrollbar::-webkit-scrollbar-thumb:window-inactive {
+            background: #e2e8f0;
         }
     </style>
 
@@ -3352,7 +3358,7 @@
                         return '<th data-sortable="true" style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#e5e7eb\'" onmouseout="this.style.backgroundColor=\'#f3f4f6\'">' + formattedKey + '<span class="sort-icon"></span></th>';
                     }).join('');
 
-                    return '<div style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;"><table style="width: 100%; border-collapse: collapse;" id="trans-usage-detail-table"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
+                    return '<div style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow-x: scroll; max-height: 400px; overflow-y: scroll;" class="modal-scrollbar"><table style="width: 100%; border-collapse: collapse;" id="trans-usage-detail-table"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
                 }
             }
 
