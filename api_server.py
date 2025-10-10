@@ -9,6 +9,7 @@ import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
+app.json.sort_keys = False  # For Flask 2.2+
 
 # Configure logging
 logging.basicConfig(
@@ -786,6 +787,7 @@ def get_utr_info():
                 
         # Convert back to list of dictionaries
         result = df.to_dict('records')
+
         logger.info(f"Successfully processed UTR info for target account {target_acct}")
         
         return jsonify(result), 200
@@ -793,83 +795,6 @@ def get_utr_info():
     except Exception as e:
         logger.error(f"Error in get_utr_info: {str(e)}")
         return jsonify({'error': 'Internal server error processing UTR information'}), 500
-
-@app.route('/api/ctr-info')
-def get_ctr_info():
-    """Get CTR (Currency Transaction Report) information using pandas for simplified data processing"""
-    try:
-        acctno = request.args.get('acctno')
-        if not acctno:
-            return jsonify({'error': 'acctno parameter is required'}), 400
-            
-        logger.info(f"Received request for /api/ctr-info with acctno: {acctno}")
-
-        # Get customer info and validate
-        customer_info, customer_status = get_key_data('customer_info', acctno)
-        if customer_status != 200:
-            return jsonify({'error': 'Failed to retrieve customer information'}), customer_status
-            
-        target_acct = customer_info.get('frmtd_acct_no', "")
-        if not target_acct:
-            return jsonify({'error': 'Customer account number not found'}), 404
-            
-        target_acct = str(target_acct).zfill(16)
-
-        # Get CTR info and validate
-        result, status_code = get_key_data('ctr_info', acctno)
-        if status_code != 200:
-            return jsonify({'error': 'Failed to retrieve CTR information'}), status_code
-            
-        if not result:
-            result = [{'Account Number': target_acct, 'CTR Count': '0', 'Target Account': "Y"}]
-            return jsonify(result), 200
-
-        # Convert result to pandas DataFrame for easier manipulation
-        df = pd.DataFrame(result if isinstance(result, list) else [result])
-        
-        # Validate DataFrame structure
-        required_columns = ['Account Number', 'CTR Count']
-        if not all(col in df.columns for col in required_columns):
-            return jsonify({'error': 'Invalid CTR data structure'}), 500
-            
-        # Add Target Account column
-        ctr_col = 'Target Account'
-        df[ctr_col] = "N"
-        
-        # Process account numbers
-        acct_col = 'Account Number'
-        df[acct_col] = df[acct_col].astype(str).str.strip()
-        df[acct_col] = df[acct_col].apply(lambda x: x.zfill(16))
-        logger.info(f"Zero-padded account numbers in ctr_info")
-                            
-        # Check if target account exists
-        target_found = df[acct_col] == target_acct
-
-        if target_found.any():
-            # Modify CTR count for target account
-            df.loc[target_found, ctr_col] = "Y"
-            logger.info(f"Modified CTR count for target account {target_acct}")
-        else:
-            # Add new row for target account if not found
-            logger.info(f"Target account {target_acct} not found, adding new row")
-            new_row = pd.DataFrame([{
-                acct_col: target_acct,
-                'CTR Count': '0',
-                ctr_col: "Y"
-            }])
-            df = pd.concat([df, new_row], ignore_index=True)
-            logger.info(f"Added new row for target account {target_acct}")
-                
-        # Convert back to list of dictionaries
-        result = df.to_dict('records')
-        logger.info(f"Successfully processed CTR info for target account {target_acct}")
-        
-        return jsonify(result), 200
-        
-    except Exception as e:
-        logger.error(f"Error in get_ctr_info: {str(e)}")
-        return jsonify({'error': 'Internal server error processing CTR information'}), 500
-
 
 @app.route('/api/accounts')
 def list_accounts():
