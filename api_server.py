@@ -186,27 +186,6 @@ def get_money_usage_summary():
         print(f"Error in get_money_usage_summary: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/high-cash')
-def get_high_cash_summary():
-    """Get high cash summary analysis"""
-    try:
-        acctno = request.args.get('acctno')
-        if not acctno:
-            return jsonify({'error': 'acctno parameter is required'}), 400
-            
-        print(f"Received request for /api/high-cash with acctno: {acctno}")
-        result, status_code = get_key_data('high_cash_summary', acctno)
-        
-        # Apply text processing (hyphen replacement) to result
-        if status_code == 200:
-            logger.info("Applying text processing (hyphen replacement) to high cash data")
-            result = apply_text_processing(result)
-            
-        return jsonify(result), status_code
-    except Exception as e:
-        print(f"Error in get_high_cash_summary: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
 def process_business_pattern_text(text):
     """Process business pattern text with XML parsing and formatting"""
     original_text = text
@@ -553,24 +532,9 @@ def get_subgraph_data():
         logger.error(f"Error in get_subgraph_data: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/wire-usage')
-def get_wire_money_usage():
-    """Get wire transfer money usage analysis (bonus endpoint)"""
-    try:
-        acctno = request.args.get('acctno')
-        if not acctno:
-            return jsonify({'error': 'acctno parameter is required'}), 400
-            
-        print(f"Received request for /api/wire-usage with acctno: {acctno}")
-        result, status_code = get_key_data('wire_money_usage', acctno)
-        return jsonify(result), status_code
-    except Exception as e:
-        print(f"Error in get_wire_money_usage: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/api/transactions_usage_detail_dict')
 def get_trans_usage_detail_dict():
-    """Get concatenated transaction usage detail data from transactions_display and wire_money_usage_display"""
+    """Get transaction usage detail data from transactions_display"""
     try:
         acctno = request.args.get('acctno')
         if not acctno:
@@ -579,45 +543,32 @@ def get_trans_usage_detail_dict():
         print(f"Received request for /api/transactions_usage_detail_dict with acctno: {acctno}")
         
         # Get transactions_display data
-        transactions_display_result, status_code1 = get_key_data('transactions_display', acctno)
-        if status_code1 != 200:
-            return jsonify({'error': 'Failed to fetch transactions_display data'}), status_code1
-        
-        # Get wire_money_usage data to access wire_money_usage_display
-        wire_money_usage_result, status_code2 = get_key_data('wire_money_usage', acctno)
-        if status_code2 != 200:
-            return jsonify({'error': 'Failed to fetch wire_money_usage data'}), status_code2
-        
-        # Extract wire_money_usage_display from the result
-        wire_display_data = wire_money_usage_result.get('wire_money_usage_display', []) if isinstance(wire_money_usage_result, dict) else []
+        transactions_display_result, status_code = get_key_data('transactions_display', acctno)
+        if status_code != 200:
+            return jsonify({'error': 'Failed to fetch transactions_display data'}), status_code
         
         # Initialize result list
-        combined_result = []
+        result = []
         
         # Add transactions_display data
         if isinstance(transactions_display_result, list):
-            combined_result.extend(transactions_display_result)
+            result.extend(transactions_display_result)
             print(f"Added {len(transactions_display_result)} items from transactions_display")
         
-        # Add wire_money_usage_display data
-        if isinstance(wire_display_data, list):
-            combined_result.extend(wire_display_data)
-            print(f"Added {len(wire_display_data)} items from wire_money_usage_display")
+        # Apply text processing (hyphen replacement) to result
+        logger.info("Applying text processing (hyphen replacement) to transaction detail data")
+        result = apply_text_processing(result)
         
-        # Apply text processing (hyphen replacement) to combined result
-        logger.info("Applying text processing (hyphen replacement) to combined transaction detail data")
-        combined_result = apply_text_processing(combined_result)
-        
-        # Sort the combined data by direction (ascending) first, then by trans_am (descending)
-        if len(combined_result) > 0:
-            combined_result = sorted(combined_result, key=lambda x: (
+        # Sort the data by direction (ascending) first, then by trans_am (descending)
+        if len(result) > 0:
+            result = sorted(result, key=lambda x: (
                 str(x.get('direction', '')).lower(),  # direction ascending
                 -float(x.get('trans_am', 0))  # trans_am descending (negative for reverse sort)
             ))
-            print(f"Sorted {len(combined_result)} combined items by direction (asc) and trans_am (desc)")
+            print(f"Sorted {len(result)} items by direction (asc) and trans_am (desc)")
             
             # Format trans_am as currency and trans_am_pct as percentage for each item
-            for item in combined_result:
+            for item in result:
                 if 'trans_am' in item and item['trans_am'] is not None:
                     try:
                         # Convert to float, round, and format as currency
@@ -647,9 +598,9 @@ def get_trans_usage_detail_dict():
             
             logger.info("Formatted trans_am values as currency and trans_am_pct values as percentages")
 
-        print(f"Total concatenated items: {len(combined_result)} (transactions_display + wire_money_usage_display)")
-        print(f"Returning {len(combined_result)} combined transaction detail items")
-        return jsonify(combined_result), 200
+        print(f"Total items: {len(result)} (transactions_display)")
+        print(f"Returning {len(result)} transaction detail items")
+        return jsonify(result), 200
         
     except Exception as e:
         print(f"Error in get_trans_usage_detail_dict: {str(e)}")
@@ -990,12 +941,6 @@ def list_endpoints():
                 'parameters': ['acctno (required)']
             },
             {
-                'path': '/api/high-cash',
-                'method': 'GET',
-                'description': 'Get high cash summary analysis',
-                'parameters': ['acctno (required)']
-            },
-            {
                 'path': '/api/business-pattern',
                 'method': 'GET',
                 'description': 'Get business pattern analysis for industry alignment',
@@ -1032,12 +977,6 @@ def list_endpoints():
                 'parameters': ['acctno (required)']
             },
             {
-                'path': '/api/wire-usage',
-                'method': 'GET',
-                'description': 'Get wire transfer money usage analysis (bonus endpoint)',
-                'parameters': ['acctno (required)']
-            },
-            {
                 'path': '/api/transactions_usage_dict',
                 'method': 'GET',
                 'description': 'Get transaction usage dictionary data from JSON, sorted by direction (asc) and trans_am (desc)',
@@ -1046,7 +985,7 @@ def list_endpoints():
             {
                 'path': '/api/transactions_usage_detail_dict',
                 'method': 'GET',
-                'description': 'Get concatenated transaction usage detail data from transactions_display and wire_money_usage_display',
+                'description': 'Get transaction usage detail data from transactions_display',
                 'parameters': ['acctno (required)']
             },
             {

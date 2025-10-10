@@ -345,52 +345,43 @@
                 console.log('Fetching data from all API endpoints for account:', acctno);
                 const [
                     transactionsData,
-                    highCashData,
                     businessPatternData,
                     publicInfoData,
                     publicAddressData,
                     customerInfoData,
                     moneyFlowData,
                     moneyUsageData,
-                    wireUsageData,
                     transUsageDictData,
                     transUsageDetailDictData,
                     graphData,
-                    utrInfoData,
-                    ctrInfoData
+                    utrInfoData
                 ] = await Promise.all([
                     fetchApiData('transactions', acctno),
-                    fetchApiData('high-cash', acctno),
                     fetchApiData('business-pattern', acctno),
                     fetchApiData('public-info', acctno),
                     fetchApiData('public-address', acctno),
                     fetchApiData('customer-info', acctno),
                     fetchApiData('money-flow', acctno),
                     fetchApiData('money-usage', acctno),
-                    fetchApiData('wire-usage', acctno),
                     fetchApiData('transactions_usage_dict', acctno),
                     fetchApiData('transactions_usage_detail_dict', acctno),
                     fetchApiData('graph', acctno),
-                    fetchApiData('utr-info', acctno),
-                    fetchApiData('ctr-info', acctno)
+                    fetchApiData('utr-info', acctno)
                 ]);
 
                 // Store data globally
                 apiData = {
                     transactions: transactionsData,
-                    highCash: highCashData,
                     businessPattern: businessPatternData,
                     publicInfo: publicInfoData,
                     publicAddress: publicAddressData,
                     customerInfo: customerInfoData,
                     moneyFlow: moneyFlowData,
                     moneyUsage: moneyUsageData,
-                    wireUsage: wireUsageData,
                     transUsageDict: transUsageDictData,
                     transUsageDetailDict: transUsageDetailDictData,
                     graph: graphData,
-                    utrInfo: utrInfoData,
-                    ctrInfo: ctrInfoData
+                    utrInfo: utrInfoData
                 };
 
                 console.log('Stored apiData for account:', acctno, apiData);
@@ -632,43 +623,43 @@
             sectionElement.id = sectionId;
             sectionElement.className = 'section-content';
             
-                         // Special handling for high-cash section
-             if (sectionId === 'high-cash') {
-                 sectionElement.innerHTML = `
-                     <div class="section-header">
-                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                         <p class="text-gray-600">${sectionConfig.description}</p>
-                     </div>
-                     <div class="card-elevated" id="${sectionId}-content">
-                         ${createHighCashContent()}
-                     </div>
-                 `;
-                           } else if (sectionId === 'business-pattern') {
-                  sectionElement.innerHTML = `
-                      <div class="section-header">
-                          <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                          <p class="text-gray-600">${sectionConfig.description}</p>
-                      </div>
-                      <div class="card-elevated" id="${sectionId}-content">
-                          ${createBusinessPatternContent()}
-                      </div>
-                  `;
-              } else {
-                 sectionElement.innerHTML = `
-                     <div class="section-header">
-                         <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
-                         <p class="text-gray-600">${sectionConfig.description}</p>
-                     </div>
-                     <div class="card-elevated" id="${sectionId}-content">
-                         <div class="text-center">
-                             <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                                 <i data-lucide="${sectionConfig.icon}" class="w-6 h-6 text-primary-600"></i>
-                             </div>
-                             <p class="text-xs text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
-                         </div>
-                     </div>
-                 `;
-             }
+            // Special handling for high-cash section
+            if (sectionId === 'high-cash') {
+                sectionElement.innerHTML = `
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
+                    </div>
+                    <div class="card-elevated" id="${sectionId}-content">
+                        ${createHighCashContent()}
+                    </div>
+                `;
+            } else if (sectionId === 'business-pattern') {
+                sectionElement.innerHTML = `
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
+                    </div>
+                    <div class="card-elevated" id="${sectionId}-content">
+                        ${createBusinessPatternContent()}
+                    </div>
+                `;
+            } else {
+                sectionElement.innerHTML = `
+                    <div class="section-header">
+                        <h2 class="text-xl font-bold text-gray-900">${sectionConfig.name}</h2>
+                        <p class="text-gray-600">${sectionConfig.description}</p>
+                    </div>
+                    <div class="card-elevated" id="${sectionId}-content">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                <i data-lucide="${sectionConfig.icon}" class="w-6 h-6 text-primary-600"></i>
+                            </div>
+                            <p class="text-xs text-gray-600">Loading ${sectionConfig.name.toLowerCase()} data...</p>
+                        </div>
+                    </div>
+                `;
+            }
             
             container.appendChild(sectionElement);
             createIcons();
@@ -681,24 +672,18 @@
 
                  // Create high cash content
          function createHighCashContent() {
-             if (!apiData.highCash) {
-                 return `
-                     <div class="text-center">
-                         <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                             <i data-lucide="dollar-sign" class="w-6 h-6 text-primary-600"></i>
-                         </div>
-                         <p class="text-xs text-gray-600">Loading internal analysis data...</p>
-                     </div>
-                 `;
-             }
-
              return `
-                 <h4 class="text-base font-semibold text-gray-900 mb-2">Internal Analysis</h4>
-                 <div class="bg-white rounded-lg p-2 shadow-sm">
-                     <div class="text-xs text-gray-700 leading-relaxed">${formatText(apiData.highCash.raw_analysis)}</div>
-                 </div>
-                
-                <!-- Network Visualization and Transaction Reports Section -->
+                <!-- UTR Information Section -->
+                <div class="mt-4">
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
+                        <!-- Table -->
+                        <div style="height: 200px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 6px;">
+                            ${createUTRTable()}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Visualization Section -->
                 <div class="mt-4">
                     <div class="flex items-center gap-4 mb-2">
                         <h4 class="text-base font-semibold text-gray-900">Linkage analysis</h4>
@@ -732,38 +717,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex space-x-4 w-full">
-                        <!-- Left side: D3 Network Graph -->
-                        <div class="flex-1" style="height: 600px;">
-                            <div class="bg-white rounded-lg p-2 h-full border border-gray-200">
-                                <div class="h-full">
-                                    ${createNetworkVisualization()}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Right side: UTR and CTR Tables -->
-                        <div class="space-y-2" style="width: 33.33%; height: 600px; overflow-y: auto;">
-                            <!-- UTR Table -->
-                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="height: 290px;">
-                                <div class="h-full">
-                                    <h4 class="text-base font-semibold text-gray-900 mb-1">UTR Information ${apiData.utrInfo && Array.isArray(apiData.utrInfo) ? `(${apiData.utrInfo.length})` : ''}</h4>
-                                    <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
-                                    <div style="height: calc(100% - 50px); overflow-y: auto;">
-                                        ${createUTRTable()}
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- CTR Table -->
-                            <div class="bg-white rounded-lg p-2 border border-gray-200" style="height: 290px;">
-                                <div class="h-full">
-                                    <h4 class="text-base font-semibold text-gray-900 mb-1">CTR Information ${apiData.ctrInfo && Array.isArray(apiData.ctrInfo) ? `(${apiData.ctrInfo.length})` : ''}</h4>
-                                    <p class="text-xs text-gray-500 mb-2">💡 Click any row to highlight the corresponding node in the graph. Click again to cancel.</p>
-                                    <div style="height: calc(100% - 50px); overflow-y: auto;">
-                                        ${createCTRTable()}
-                                    </div>
-                                </div>
+                    <div class="w-full" style="height: 480px;">
+                        <div class="bg-white rounded-lg p-2 h-full border border-gray-200">
+                            <div class="h-full">
+                                ${createNetworkVisualization()}
                             </div>
                         </div>
                     </div>
@@ -814,7 +771,7 @@
                     </div>
                     
                     <!-- Network Graph Container -->
-                    <div id="network-graph" style="height: 500px; width: 100%; min-height: 400px; min-width: 400px; border: 1px solid #e5e7eb; border-radius: 8px; resize: both; overflow: hidden; margin: 0; background-color: white; position: relative;">
+                    <div id="network-graph" style="height: 400px; width: 100%; min-height: 320px; min-width: 400px; border: 1px solid #e5e7eb; border-radius: 8px; resize: both; overflow: hidden; margin: 0; background-color: white; position: relative;">
                         <div class="absolute inset-0 flex items-center justify-center text-gray-500">
                             <div class="text-center">
                                 <i data-lucide="network" class="w-8 h-8 mx-auto mb-2 text-gray-300"></i>
@@ -3190,42 +3147,17 @@
                         return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
                     }
 
-                    // Define column order for transaction usage dictionary table: Category, Direction, Usage Category, Trans Am
-                    const columnOrder = ['category', 'direction', 'usage_category', 'trans_am', 'trans_am_pct'];
+                    // Use all available columns from the data
                     const availableKeys = Object.keys(firstItem);
                     
                     console.log('=== TRANSACTION USAGE DICT TABLE DEBUG ===');
                     console.log('First item data:', firstItem);
                     console.log('Available keys in data:', availableKeys);
-                    console.log('Desired column order:', columnOrder);
-                    
-                    const orderedKeys = columnOrder.filter(key => availableKeys.includes(key));
-                    const remainingKeys = availableKeys.filter(key => !columnOrder.includes(key));
-                    const finalKeys = [...orderedKeys, ...remainingKeys];
-                    
-                    console.log('Ordered keys found:', orderedKeys);
-                    console.log('Remaining keys:', remainingKeys);
-                    console.log('Final keys array:', finalKeys);
                     console.log('=== END DEBUG ===');
                     
-                    // Force reorder data objects to ensure column order
-                    const reorderedData = data.map(function(item) {
-                        const reorderedItem = {};
-                        // Add columns in desired order first
-                        finalKeys.forEach(key => {
-                            if (item.hasOwnProperty(key)) {
-                                reorderedItem[key] = item[key];
-                            }
-                        });
-                        return reorderedItem;
-                    });
-                    
-                    console.log('Sample reordered item:', reorderedData[0]);
-                    console.log('Reordered item keys:', Object.keys(reorderedData[0]));
-                    
                     // Create simple table rows with click handlers
-                    const tableRows = reorderedData.map(function(item) {
-                        const rowCells = finalKeys.map(function(key) {
+                    const tableRows = data.map(function(item) {
+                        const rowCells = availableKeys.map(function(key) {
                              const value = item[key];
                              let formattedValue;
                              
@@ -3262,8 +3194,8 @@
                         return `<tr ${clickHandler} style="cursor: pointer;" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='white'">${rowCells}</tr>`;
                      }).join('');
 
-                    // Create sortable headers
-                    const tableHeaders = finalKeys.map(function(key) {
+                    // Create sortable headers preserving API column order
+                    const tableHeaders = availableKeys.map(function(key) {
                         const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                         return '<th data-sortable="true" style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#e5e7eb\'" onmouseout="this.style.backgroundColor=\'#f3f4f6\'">' + formattedKey + '<span class="sort-icon"></span></th>';
                     }).join('');
@@ -3324,16 +3256,12 @@
                         return '<div style="text-align: center; padding: 32px 16px; color: #6b7280;"><p>Invalid data format</p></div>';
                     }
 
-                    // Define column order for transaction usage detail table: Category, Direction, User Category, Trans Am
-                    const columnOrder = ['category', 'direction', 'usage_category', 'trans_desc', 'trans_am', 'trans_cnt'];
+                    // Use all available columns from the data
                     const availableKeys = Object.keys(firstItem);
-                    const orderedKeys = columnOrder.filter(key => availableKeys.includes(key));
-                    const remainingKeys = availableKeys.filter(key => !columnOrder.includes(key));
-                    const finalKeys = [...orderedKeys, ...remainingKeys];
 
                     // Create table rows
                     const tableRows = data.map(function(item, index) {
-                        const rowCells = finalKeys.map(function(key) {
+                        const rowCells = availableKeys.map(function(key) {
                             let value = item[key];
                             let formattedValue = '';
                             
@@ -3352,8 +3280,8 @@
                         return '<tr>' + rowCells + '</tr>';
                     }).join('');
 
-                    // Create sortable table headers
-                    const tableHeaders = finalKeys.map(function(key) {
+                    // Create sortable table headers preserving API column order
+                    const tableHeaders = availableKeys.map(function(key) {
                         const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                         return '<th data-sortable="true" style="padding: 8px 16px; font-size: 12px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: #f3f4f6; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#e5e7eb\'" onmouseout="this.style.backgroundColor=\'#f3f4f6\'">' + formattedKey + '<span class="sort-icon"></span></th>';
                     }).join('');
@@ -3381,13 +3309,13 @@
                 return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid UTR data format</p></div>';
             }
 
-            // Define fixed column order: Account Number, UTR Count, Target Account
-            const columnOrder = ['Account Number', 'UTR Count', 'Target Account'];
+            // Use all available columns from the data
+            const availableKeys = Object.keys(utrData[0]);
             
             // Create table rows with click functionality
             const tableRows = utrData.map(function(item, index) {
                 console.log('Processing UTR item:', item, 'for index:', index);
-                const rowCells = columnOrder.map(function(key) {
+                const rowCells = availableKeys.map(function(key) {
                     let value = item[key];
                     
                     // Handle missing columns gracefully
@@ -3421,78 +3349,14 @@
                 return '<tr id="' + rowId + '" data-account="' + accountNumber + '" class="cursor-pointer hover:bg-blue-50 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500" onclick="highlightNodeInGraph(\'' + accountNumber + '\')" title="Click to highlight corresponding node in graph">' + rowCells + '</tr>';
             }).join('');
 
-            // Create sortable table headers with fixed order
-            const tableHeaders = columnOrder.map(function(key) {
+            // Create sortable table headers with all available columns preserving API order
+            const tableHeaders = availableKeys.map(function(key) {
                 let formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
                 
                 return '<th data-sortable="true" style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#f3f4f6\'" onmouseout="this.style.backgroundColor=\'white\'">' + formattedKey + '<span class="sort-icon"></span></th>';
             }).join('');
 
             return '<div style="overflow-x: auto;"><table id="utr-table" style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
-        }
-
-        // Create CTR table
-        function createCTRTable(dataOverride = null) {
-            const ctrData = dataOverride || apiData.ctrInfo;
-            console.log('Creating CTR table with data:', ctrData);
-            
-            if (!ctrData || !Array.isArray(ctrData) || ctrData.length === 0) {
-                console.log('No CTR data available');
-                return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>No CTR information available</p></div>';
-            }
-
-            const firstItem = ctrData[0];
-            if (!firstItem || typeof firstItem !== 'object') {
-                console.log('Invalid CTR data format:', firstItem);
-                return '<div style="text-align: center; padding: 16px; color: #6b7280;"><p>Invalid CTR data format</p></div>';
-            }
-
-            // Define fixed column order: Account Number, CTR Count, Target Account
-            const columnOrder = ['Account Number', 'CTR Count', 'Target Account'];
-            
-            // Create table rows with click functionality
-            const tableRows = ctrData.map(function(item, index) {
-                const rowCells = columnOrder.map(function(key) {
-                    let value = item[key];
-                    
-                    // Handle missing columns gracefully
-                    if (value === undefined || value === null) {
-                        value = '-';
-                    }
-                    
-                    let formattedValue;
-                    
-                    if (typeof value === 'string') {
-                        formattedValue = formatText(value);
-                    } else if (typeof value === 'number') {
-                        formattedValue = value.toLocaleString('en-US');
-                    } else if (typeof value === 'object' && value !== null) {
-                        formattedValue = JSON.stringify(value);
-                    } else {
-                        formattedValue = String(value);
-                    }
-
-                    // Alternate row colors for better readability
-                    const bgColor = index % 2 === 0 ? 'white' : '#f9fafb';
-                    
-                    return '<td style="padding: 10px 14px; font-size: 13px; color: #374151; border: 1px solid #e5e7eb; background-color: ' + bgColor + '; text-align: left; vertical-align: top;">' + formattedValue + '</td>';
-                }).join('');
-
-                // Get account number for click functionality
-                const accountNumber = item['Account Number'] || item['account_number'] || item['accountNumber'];
-                const rowId = `ctr-row-${index}`;
-                
-                return '<tr id="' + rowId + '" data-account="' + accountNumber + '" class="cursor-pointer hover:bg-blue-50 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500" onclick="highlightNodeInGraph(\'' + accountNumber + '\')" title="Click to highlight corresponding node in graph">' + rowCells + '</tr>';
-            }).join('');
-
-            // Create sortable table headers with fixed order
-            const tableHeaders = columnOrder.map(function(key) {
-                let formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
-                
-                return '<th data-sortable="true" style="padding: 10px 14px; font-size: 13px; font-weight: bold; color: #374151; border: 1px solid #e5e7eb; background-color: white; text-align: left; cursor: pointer; user-select: none;" onmouseover="this.style.backgroundColor=\'#f3f4f6\'" onmouseout="this.style.backgroundColor=\'white\'">' + formattedKey + '<span class="sort-icon"></span></th>';
-            }).join('');
-
-            return '<div style="overflow-x: auto;"><table id="ctr-table" style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr>' + tableHeaders + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
         }
 
         // Function to filter table data based on current graph nodes
@@ -3520,7 +3384,7 @@
             });
         }
 
-        // Function to update CTR and UTR tables based on current graph
+        // Function to update UTR table based on current graph
         function updateTablesForCurrentGraph(graphData) {
             if (!graphData || !graphData.nodes) {
                 console.warn('No graph data available for table filtering');
@@ -3533,35 +3397,12 @@
             const filteredUTR = filterTableDataByGraph(apiData.utrInfo, graphData.nodes);
             console.log(`UTR filtered: ${apiData.utrInfo?.length || 0} -> ${filteredUTR.length} entries`);
             
-            // Filter CTR data  
-            const filteredCTR = filterTableDataByGraph(apiData.ctrInfo, graphData.nodes);
-            console.log(`CTR filtered: ${apiData.ctrInfo?.length || 0} -> ${filteredCTR.length} entries`);
-            
             // Update UTR table
-            const utrContainer = document.querySelector('#high-cash-content .space-y-2 > div:first-child .h-full > div:last-child');
+            const utrContainer = document.querySelector('#high-cash-content .mt-4:first-child .bg-white div');
             if (utrContainer && filteredUTR.length > 0) {
                 utrContainer.innerHTML = createUTRTable(filteredUTR);
             } else if (utrContainer) {
-                utrContainer.innerHTML = '<div class="text-center text-gray-500 text-xs">No UTR entries for current graph nodes</div>';
-            }
-            
-            // Update CTR table
-            const ctrContainer = document.querySelector('#high-cash-content .space-y-2 > div:last-child .h-full > div:last-child');
-            if (ctrContainer && filteredCTR.length > 0) {
-                ctrContainer.innerHTML = createCTRTable(filteredCTR);
-            } else if (ctrContainer) {
-                ctrContainer.innerHTML = '<div class="text-center text-gray-500 text-xs">No CTR entries for current graph nodes</div>';
-            }
-            
-            // Update table headers with filtered counts
-            const utrHeader = document.querySelector('#high-cash-content .space-y-2 > div:first-child h4');
-            if (utrHeader) {
-                utrHeader.textContent = `UTR Information (${filteredUTR.length})`;
-            }
-            
-            const ctrHeader = document.querySelector('#high-cash-content .space-y-2 > div:last-child h4');
-            if (ctrHeader) {
-                ctrHeader.textContent = `CTR Information (${filteredCTR.length})`;
+                utrContainer.innerHTML = '<div class="text-center text-gray-500 text-xs py-8">No UTR entries for current graph nodes</div>';
             }
         }
 
@@ -3598,12 +3439,13 @@
             }, 5000);
         }
 
-        // Function to highlight node in D3 graph when CTR table row is clicked
+        // Function to highlight node in D3 graph when UTR table row is clicked
         function highlightNodeInGraph(accountNumber) {
             console.log('Highlighting node for account:', accountNumber);
             
             // Check if this row is already highlighted
-            const isAlreadyHighlighted = document.querySelector(`#ctr-table tr[data-account="${accountNumber}"]`).classList.contains('bg-blue-100');
+            const utrRow = document.querySelector(`#utr-table tr[data-account="${accountNumber}"]`);
+            const isAlreadyHighlighted = utrRow && utrRow.classList.contains('bg-blue-100');
             
             if (isAlreadyHighlighted) {
                 // If already highlighted, clear all highlights
@@ -3670,11 +3512,6 @@
                 row.classList.remove('bg-blue-100', 'ring-2', 'ring-blue-500');
             });
             
-            // Clear CTR table highlights
-            document.querySelectorAll('#ctr-table tr').forEach(row => {
-                row.classList.remove('bg-blue-100', 'ring-2', 'ring-blue-500');
-            });
-            
             // Clear D3 graph/tree highlights and restore all nodes to 80% opacity (if visualization exists)
             if (window.currentSvg) {
                 const svg = d3.select(window.currentSvg);
@@ -3685,21 +3522,11 @@
             }
         }
 
-        // Function to highlight table rows (both UTR and CTR)
+        // Function to highlight table rows (UTR)
         function highlightTableRow(accountNumber) {
             // Highlight UTR table rows
             const utrRows = document.querySelectorAll('#utr-table tr[data-account]');
             utrRows.forEach(row => {
-                if (row.getAttribute('data-account') === accountNumber) {
-                    row.classList.add('bg-blue-100', 'ring-2', 'ring-blue-500');
-                } else {
-                    row.classList.remove('bg-blue-100', 'ring-2', 'ring-blue-500');
-                }
-            });
-            
-            // Highlight CTR table rows
-            const ctrRows = document.querySelectorAll('#ctr-table tr[data-account]');
-            ctrRows.forEach(row => {
                 if (row.getAttribute('data-account') === accountNumber) {
                     row.classList.add('bg-blue-100', 'ring-2', 'ring-blue-500');
                 } else {
@@ -4121,7 +3948,7 @@
                         <div class="w-16 h-16 bg-success-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <span class="text-2xl font-bold text-success-600">A+</span>
                         </div>
-                        <p class="text-sm text-gray-600">${apiData.highCash.raw_analysis.substring(0, 100)}...</p>
+                        <p class="text-sm text-gray-600">Cash flow analysis available in the dashboard</p>
                     </div>
                 </div>
             `;
