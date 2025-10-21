@@ -1,6 +1,6 @@
 dbx
 msal
-databricks-cli
+databricks-cli>=0.18.0
 pip-system-certs
 flask==3.0.0
 flask-cors==4.0.0
