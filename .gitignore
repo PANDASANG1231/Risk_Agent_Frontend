@@ -13,3 +13,7 @@ node_modules
 
 # python cache files
 __pycache__/
+
+# token files
+token.txt
+get_token.py
