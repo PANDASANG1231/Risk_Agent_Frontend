@@ -10,7 +10,8 @@
     "build:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --minify",
     "watch:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --watch",
     "dev:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --watch",
-    "setup": "bash setup_js_environment.bash && npm run build:css"
+    "setup": "bash setup_js_environment.bash && npm run build:css",
+    "sync": "python get_token.py && dbx sync workspace --source . --dest-dir /Workspace/Shared/wenjia.zhu@td.com/Risk-Agent-Frontend"
   },
   "keywords": [
     "risk-analysis",
