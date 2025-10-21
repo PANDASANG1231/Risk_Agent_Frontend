@@ -6,10 +6,22 @@ import logging
 from datetime import datetime
 import re
 import pandas as pd
+import argparse
 
 app = Flask(__name__)
 CORS(app)
 app.json.sort_keys = False  # For Flask 2.2+
+
+# Configuration variables - can be overridden by command line args or environment variables
+def normalize_api_url(url):
+    """Normalize API URL by removing trailing slash and ensuring it starts with /"""
+    if not url:
+        return '/api'
+    # Remove trailing slash if present
+    url = url.rstrip('/')
+    return url
+
+BASE_API_URL = normalize_api_url(os.getenv('BASE_API_URL', '/api'))  # Default to '/api', can be overridden
 
 # Configure logging
 logging.basicConfig(
@@ -942,7 +954,9 @@ def serve_app():
         logger.info("Received request for index.html")
         with open('index.html', 'r', encoding='utf-8') as file:
             content = file.read()
-            logger.info("index.html loaded successfully")
+            # Replace the hardcoded API URL with our configurable variable
+            content = content.replace('/api/', f'{BASE_API_URL}/')
+            logger.info("index.html loaded successfully with configurable API URL")
             return content
     except Exception as e:
         logger.error(f"Error serving app: {str(e)}")
@@ -959,7 +973,25 @@ def log_response_info(response):
     return response
 
 if __name__ == '__main__':
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Flask Risk Agent API Server')
+    parser.add_argument('--api-url', type=str, default=BASE_API_URL, 
+                       help='Base API URL path (default: /api)')
+    parser.add_argument('--port', type=int, default=5000, 
+                       help='Port to run the server on (default: 5000)')
+    parser.add_argument('--host', type=str, default='127.0.0.1', 
+                       help='Host to run the server on (default: 127.0.0.1)')
+    parser.add_argument('--debug', action='store_true', default=True,
+                       help='Run in debug mode (default: True)')
+    
+    args = parser.parse_args()
+    
+    # Update BASE_API_URL with command line argument and normalize it
+    BASE_API_URL = normalize_api_url(args.api_url)
+    
     logger.info("Starting Flask Risk Agent API Server...")
-    logger.info("Server configuration: Debug=True, Port=5000")
+    logger.info(f"Server configuration: Debug={args.debug}, Port={args.port}, Host={args.host}")
+    logger.info(f"API Base URL: {BASE_API_URL}")
     logger.info("Log file: api_server.log")
-    app.run(debug=True, port=5000)
+    
+    app.run(debug=args.debug, port=args.port, host=args.host)

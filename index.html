@@ -244,7 +244,7 @@
         createIcons();
 
                  // Global state
-         let currentSection = 'business-pattern';
+        let currentSection = 'business-pattern';
         let apiData = {};
         let selectedAccount = null;
         let availableAccounts = [];
@@ -2711,10 +2711,10 @@
             const credits = transactionsData.transactions.filter(t => t.direction === 'Credit');
             const debits = transactionsData.transactions.filter(t => t.direction === 'Debit');
             
-            const totalInflow = credits.reduce((sum, t) => sum + t.amount, 0);
-            const totalOutflow = debits.reduce((sum, t) => sum + t.amount, 0);
+            const totalInflow = credits.reduce((sum, t) => sum + parseInt(t.amount, 10), 0);
+            const totalOutflow = debits.reduce((sum, t) => sum + parseInt(t.amount, 10), 0);
             const netFlow = totalInflow - totalOutflow;
-            const totalTransactions = transactionsData.transactions.reduce((sum, t) => sum + t.count, 0);
+            const totalTransactions = transactionsData.transactions.reduce((sum, t) => sum + parseInt(t.count, 10), 0);
             
             const metrics = [
                 {
