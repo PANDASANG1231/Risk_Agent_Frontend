@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "python -m pip install -r requirements.txt && python api_server.py",
-    "dev": "python -m pip install -r requirements.txt && python api_server.py",
+    "start_cloud": "python -m pip install -r requirements.txt && python api_server.py --api-url https://adb-dp-2508611930024345.5.azuredatabricks.net/driver-proxy/o/2508611930024345/1206-161355-paqfgaas/7595/api --port 7595 --host 0.0.0.0",
     "test": "python -m pytest tests/",
     "build:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --minify",
     "watch:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --watch",
