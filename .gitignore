@@ -17,3 +17,6 @@ __pycache__/
 # token files
 token.txt
 get_token.py
+
+# dbx cache files
+.dbx/
