@@ -3399,18 +3399,18 @@
                 return;
             }
             
-            console.log(`Filtering tables for graph with ${graphData.nodes.length} nodes`);
+            console.log(`Table will show full data (no filtering) - graph has ${graphData.nodes.length} nodes`);
             
-            // Filter UTR data
-            const filteredUTR = filterTableDataByGraph(apiData.utrInfo, graphData.nodes);
-            console.log(`UTR filtered: ${apiData.utrInfo?.length || 0} -> ${filteredUTR.length} entries`);
+            // Always use full UTR data (no filtering)
+            const fullUTR = apiData.utrInfo;
+            console.log(`UTR showing full data: ${fullUTR?.length || 0} entries`);
             
-            // Update UTR table
+            // Update UTR table with full data
             const utrContainer = document.querySelector('#high-cash-content .mt-4:first-child .bg-white div');
-            if (utrContainer && filteredUTR.length > 0) {
-                utrContainer.innerHTML = createUTRTable(filteredUTR);
+            if (utrContainer && fullUTR && fullUTR.length > 0) {
+                utrContainer.innerHTML = createUTRTable(fullUTR);
             } else if (utrContainer) {
-                utrContainer.innerHTML = '<div class="text-center text-gray-500 text-xs py-8">No UTR entries for current graph nodes</div>';
+                utrContainer.innerHTML = '<div class="text-center text-gray-500 text-xs py-8">No UTR entries available</div>';
             }
         }
 
