@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import json
 import os
@@ -429,6 +429,8 @@ def get_subgraph_data():
     try:
         acctno = request.args.get('acctno')
         center_node = request.args.get('center_node', str(acctno).zfill(16))
+        center_node = center_node.split("_")[0].zfill(16)
+        print("center_node", center_node)
         degree = request.args.get('degree', '1')  # Default to 1st degree
         
         if not acctno:
@@ -467,10 +469,12 @@ def get_subgraph_data():
         # Find the center node
         center_node_obj = None
         for node in full_nodes:
+            print("node", node, center_node)
             if node.get('id') == center_node:
                 center_node_obj = node
                 break
         
+        print("hello", center_node_obj)
         if not center_node_obj:
             return jsonify({'error': f'Center node {center_node} not found in graph'}), 404
         
@@ -746,11 +750,24 @@ def get_utr_info():
         if customer_status != 200:
             return jsonify({'error': 'Failed to retrieve customer information'}), customer_status
             
-        target_acct = customer_info.get('frmtd_acct_no', "")
-        if not target_acct:
-            return jsonify({'error': 'Customer account number not found'}), 404
+        # Extract all frmtd_acct_no values from customer_info list
+        target_accts = []
+        if isinstance(customer_info, list):
+            for customer in customer_info:
+                if isinstance(customer, dict) and 'frmtd_acct_no' in customer:
+                    acct_no = customer['frmtd_acct_no']
+                    if acct_no:
+                        target_accts.append(str(acct_no).zfill(16))
+        elif isinstance(customer_info, dict) and 'frmtd_acct_no' in customer_info:
+            # Handle legacy dict structure for backward compatibility
+            acct_no = customer_info['frmtd_acct_no']
+            if acct_no:
+                target_accts.append(str(acct_no).zfill(16))
+        
+        if not target_accts:
+            return jsonify({'error': 'Customer account numbers not found'}), 404
             
-        target_acct = str(target_acct).zfill(16)
+        logger.info(f"Found target accounts: {target_accts}")
 
         # Get UTR info and validate
         result, status_code = get_key_data('utr_info', acctno)
@@ -758,7 +775,10 @@ def get_utr_info():
             return jsonify({'error': 'Failed to retrieve UTR information'}), status_code
             
         if not result:
-            result = [{'Account Number': target_acct, 'UTR Count': '0', 'Target Account': "Y"}]
+            # Create result for all target accounts
+            result = []
+            for target_acct in target_accts:
+                result.append({'Account Number': target_acct, 'UTR Count': '0', 'Target Account': "Y"})
             return jsonify(result), 200
 
         # Convert result to pandas DataFrame for easier manipulation
@@ -780,27 +800,27 @@ def get_utr_info():
         logger.info(f"Zero-padded account numbers in utr_info")
                             
         # Check if target account exists
-        target_found = df[acct_col] == target_acct
+        target_found = df[acct_col].isin(target_accts)
 
         if target_found.any():
             # Modify UTR count for target account
             df.loc[target_found, utr_col] = "Y"
-            logger.info(f"Modified UTR count for target account {target_acct}")
+            logger.info(f"Modified UTR count for target account {target_accts}")
         else:
             # Add new row for target account if not found
-            logger.info(f"Target account {target_acct} not found, adding new row")
+            logger.info(f"Target account {target_accts} not found, adding new row")
             new_row = pd.DataFrame([{
-                acct_col: target_acct,
+                acct_col: target_accts,
                 'UTR Count': '0',
                 utr_col: "Y"
             }])
             df = pd.concat([df, new_row], ignore_index=True)
-            logger.info(f"Added new row for target account {target_acct}")
+            logger.info(f"Added new row for target account {target_accts}")
                 
         # Convert back to list of dictionaries
         result = df.to_dict('records')
 
-        logger.info(f"Successfully processed UTR info for target account {target_acct}")
+        logger.info(f"Successfully processed UTR info for target accounts {target_accts}")
         
         return jsonify(result), 200
         
@@ -961,6 +981,10 @@ def serve_app():
     except Exception as e:
         logger.error(f"Error serving app: {str(e)}")
         return str(e), 500
+
+@app.route('/<path:filename>')
+def serve_file(filename):
+    return send_from_directory('.', filename)
 
 # Add request logging middleware
 @app.before_request
