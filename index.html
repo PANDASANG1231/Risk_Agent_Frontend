@@ -4333,19 +4333,25 @@
             }
             
             try {
+                console.log('Creating horizontal tabs for account:', currentAccount);
+
                 // Extract search string in format "RM-xxxx_NM-xxxx" from selected account
                 let searchString = '';
                 
                 // Check if account matches pattern with RM- and NM-
                 const rmMatch = currentAccount.match(/RM-[^_]+/);
                 const nmMatch = currentAccount.match(/NM-[^_]+/);
+                const acctMatch = currentAccount.match(/ACCT-[^_]+/);
                 
+
                 if (rmMatch && nmMatch) {
                     searchString = `${rmMatch[0]}_${nmMatch[0]}`;
+                } else if (acctMatch && nmMatch) {
+                    searchString = `${acctMatch[0]}_${nmMatch[0]}`;
                 } else if (rmMatch) {
                     searchString = rmMatch[0];
-                } else if (nmMatch) {
-                    searchString = nmMatch[0];
+                } else if (acctMatch) {
+                    searchString = acctMatch[0];
                 } else {
                     // Fallback to using the account as-is
                     searchString = currentAccount.split('_')[0];
@@ -4361,7 +4367,7 @@
                 }
                 
                 const data = await response.json();
-                const accounts = data.accounts || [];
+                let accounts = data.accounts || [];
                 
                 console.log(`Found ${accounts.length} related accounts:`, accounts);
                 
@@ -4373,6 +4379,18 @@
                     `;
                     return;
                 }
+                
+                // Sort accounts: Summary first, then others
+                accounts.sort((a, b) => {
+                    const aIsSummary = a.includes('Summary') || a.includes('summary');
+                    const bIsSummary = b.includes('Summary') || b.includes('summary');
+                    
+                    if (aIsSummary && !bIsSummary) return -1;
+                    if (!aIsSummary && bIsSummary) return 1;
+                    return 0; // Keep original order for non-summary items
+                });
+                
+                console.log('Sorted accounts (Summary first):', accounts);
                 
                 // Create tabs for each account
                 const tabsHTML = accounts.map(acct => {
