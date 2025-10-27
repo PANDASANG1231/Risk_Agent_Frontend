@@ -855,6 +855,8 @@ def list_accounts():
         
         # Extract account numbers from filenames
         accounts = []
+        account_set = set()  # Use set to avoid duplicates
+        
         for filename in json_files:
             if filename.startswith('analysis_result_') and filename.endswith('.json'):
                 acctno = filename.replace('analysis_result_', '').replace('.json', '')
@@ -863,10 +865,12 @@ def list_accounts():
                 if search_str:
                     # Case-insensitive search
                     if search_str.lower() in acctno.lower():
-                        accounts.append(acctno)
+                        account_set.add(acctno)
                 else:
                     # No filter, add all accounts
-                    accounts.append(acctno)
+                    account_set.add(acctno)
+        
+        accounts = list(account_set)
         
         # Sort account numbers based on the last part after splitting by underscore
         accounts.sort(key=lambda x: x.split("_")[-1])

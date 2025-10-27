@@ -359,8 +359,14 @@
                 const accountsData = await fetchApiData('accounts');
                 
                 if (accountsData && accountsData.accounts) {
-                    availableAccounts = accountsData.accounts;
-                    console.log('Available accounts:', availableAccounts);
+                    // Filter to only show accounts that have Summary
+                    const allAccounts = accountsData.accounts;
+                    availableAccounts = allAccounts.filter(acctno => 
+                        acctno.includes('Summary') || acctno.includes('summary')
+                    );
+                    
+                    console.log(`Total accounts: ${allAccounts.length}, Summary accounts: ${availableAccounts.length}`);
+                    console.log('Available summary accounts:', availableAccounts);
                     
                     // Populate account selector
                     const accountSelector = document.getElementById('account-selector');
@@ -378,11 +384,38 @@
                     const accountFromUrl = urlParams.get('account');
                     
                     if (accountFromUrl && availableAccounts.includes(accountFromUrl)) {
-                        // Auto-select account from URL
+                        // Auto-select account from URL if it's a summary account
                         accountSelector.value = accountFromUrl;
                         selectedAccount = accountFromUrl;
                         await loadAccountData(selectedAccount);
                         console.log('Auto-selected account from URL:', selectedAccount);
+                    } else if (accountFromUrl) {
+                        // URL has an account but it's not a summary - find matching summary
+                        const rmMatch = accountFromUrl.match(/RM-[^_]+/);
+                        const nmMatch = accountFromUrl.match(/NM-[^_]+/);
+                        const acctMatch = accountFromUrl.match(/ACCT-[^_]+/);
+                        
+                        let searchPattern = '';
+                        if (rmMatch && nmMatch) {
+                            searchPattern = `${rmMatch[0]}_${nmMatch[0]}`;
+                        } else if (acctMatch && nmMatch) {
+                            searchPattern = `${acctMatch[0]}_${nmMatch[0]}`;
+                        }
+                        
+                        if (searchPattern) {
+                            const matchingSummary = availableAccounts.find(acct => 
+                                acct.includes(searchPattern) && (acct.includes('Summary') || acct.includes('summary'))
+                            );
+                            
+                            if (matchingSummary) {
+                                accountSelector.value = matchingSummary;
+                                selectedAccount = matchingSummary;
+                                await loadAccountData(selectedAccount);
+                                console.log('Auto-selected matching summary account:', selectedAccount);
+                            } else {
+                                console.warn('No summary account found for URL parameter:', accountFromUrl);
+                            }
+                        }
                     } else if (availableAccounts.length === 1) {
                         // If there's only one account, auto-select it
                         accountSelector.value = availableAccounts[0];
