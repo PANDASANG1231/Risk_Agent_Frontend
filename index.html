@@ -144,6 +144,11 @@
             margin-right: 0.5rem;
             display: inline-flex;
         }
+        
+        /* Section scroll positioning */
+        .section-content {
+            scroll-margin-top: 8rem;
+        }
     </style>
 
 </head>
@@ -368,8 +373,18 @@
                         accountSelector.appendChild(option);
                     });
                     
-                    // If there's only one account, auto-select it
-                    if (availableAccounts.length === 1) {
+                    // Check if account is passed in URL parameter
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const accountFromUrl = urlParams.get('account');
+                    
+                    if (accountFromUrl && availableAccounts.includes(accountFromUrl)) {
+                        // Auto-select account from URL
+                        accountSelector.value = accountFromUrl;
+                        selectedAccount = accountFromUrl;
+                        await loadAccountData(selectedAccount);
+                        console.log('Auto-selected account from URL:', selectedAccount);
+                    } else if (availableAccounts.length === 1) {
+                        // If there's only one account, auto-select it
                         accountSelector.value = availableAccounts[0];
                         selectedAccount = availableAccounts[0];
                         await loadAccountData(selectedAccount);
@@ -570,11 +585,6 @@
                  item.classList.toggle('active', item.dataset.section === sectionId);
              });
 
-             // Update horizontal tabs
-             document.querySelectorAll('.horizontal-tab').forEach(item => {
-                 item.classList.toggle('active', item.dataset.section === sectionId);
-             });
-
              // Create section if it doesn't exist
              if (!document.getElementById(sectionId) && sectionId !== 'transactions' && sectionId !== 'public-info' && sectionId !== 'business-pattern') {
                  createSection(sectionId);
@@ -629,7 +639,6 @@
         function updateActiveNavigation() {
             const sections = document.querySelectorAll('.section-content');
             const navItems = document.querySelectorAll('.nav-item');
-            const horizontalTabs = document.querySelectorAll('.horizontal-tab');
             
                          let currentActiveSection = 'business-pattern';
             
@@ -647,11 +656,6 @@
             
             // Update navigation active state
             navItems.forEach(item => {
-                item.classList.toggle('active', item.dataset.section === currentActiveSection);
-            });
-            
-            // Update horizontal tabs active state
-            horizontalTabs.forEach(item => {
                 item.classList.toggle('active', item.dataset.section === currentActiveSection);
             });
             
@@ -3031,13 +3035,13 @@
         // Initialize dashboard
         async function initDashboard() {
             try {
-                // First load available accounts
+                // First load available accounts (this may auto-select an account from URL)
                 await loadAvailableAccounts();
                 
                 // Create basic UI structure
                 createNavigation();
                 
-                // Create horizontal tabs
+                // Create horizontal tabs (with account parameter if available)
                 createHorizontalTabs();
                 
                 // Initialize features
@@ -4103,12 +4107,16 @@
                 const selectedAcctno = event.target.value;
                 if (selectedAcctno) {
                     await loadAccountData(selectedAcctno);
+                    // Update horizontal tabs with new account
+                    createHorizontalTabs();
                 } else {
                     // Clear data when no account is selected
                     apiData = {};
                     selectedAccount = null;
                     // Update account status
                     updateAccountStatus();
+                    // Update horizontal tabs
+                    createHorizontalTabs();
                     // Clear content containers
                     document.querySelectorAll('.section-content').forEach(section => {
                         const contentContainer = section.querySelector('[id$="-content"]');
@@ -4310,17 +4318,30 @@
         // Create horizontal tabs navigation
         function createHorizontalTabs() {
             const tabContainer = document.getElementById('horizontal-tab-container');
-            tabContainer.innerHTML = sections.map(section => `
+            const currentPath = window.location.pathname;
+            const isSummary = currentPath === '/' || currentPath === '/summary' || currentPath === '';
+            const isDetail = currentPath.includes('/detail');
+            
+            // Get current selected account to maintain selection
+            const currentAccount = selectedAccount || '';
+            const accountParam = currentAccount ? `?account=${encodeURIComponent(currentAccount)}` : '';
+            
+            tabContainer.innerHTML = `
                 <button 
-                    class="horizontal-tab"
-                    data-section="${section.id}"
-                    onclick="showSection('${section.id}')"
-                    title="${section.description}"
+                    class="horizontal-tab ${isSummary ? 'active' : ''}"
+                    onclick="window.location.href='/${accountParam}'"
                 >
-                    <i data-lucide="${section.icon}" class="tab-icon"></i>
-                    <span>${section.name}</span>
+                    <i data-lucide="layout-list" class="tab-icon"></i>
+                    <span>Summary</span>
                 </button>
-            `).join('');
+                <button 
+                    class="horizontal-tab ${isDetail ? 'active' : ''}"
+                    onclick="window.location.href='/detail${accountParam}'"
+                >
+                    <i data-lucide="building-2" class="tab-icon"></i>
+                    <span>Industry</span>
+                </button>
+            `;
             
             createIcons();
         }
