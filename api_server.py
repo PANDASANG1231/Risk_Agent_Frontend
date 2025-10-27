@@ -971,7 +971,7 @@ def list_endpoints():
 @app.route('/')
 def serve_app():
     try:
-        logger.info("Received request for index.html")
+        logger.info("Received request for index.html (summary page)")
         with open('index.html', 'r', encoding='utf-8') as file:
             content = file.read()
             # Replace the hardcoded API URL with our configurable variable
@@ -980,6 +980,20 @@ def serve_app():
             return content
     except Exception as e:
         logger.error(f"Error serving app: {str(e)}")
+        return str(e), 500
+
+@app.route('/detail')
+def serve_detail():
+    try:
+        logger.info("Received request for index.html (detail page)")
+        with open('index.html', 'r', encoding='utf-8') as file:
+            content = file.read()
+            # Replace the hardcoded API URL with our configurable variable
+            content = content.replace('/api/', f'{BASE_API_URL}/')
+            logger.info("index.html (detail) loaded successfully with configurable API URL")
+            return content
+    except Exception as e:
+        logger.error(f"Error serving detail app: {str(e)}")
         return str(e), 500
 
 @app.route('/<path:filename>')

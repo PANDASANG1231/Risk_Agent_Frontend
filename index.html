@@ -102,6 +102,48 @@
         .modal-scrollbar::-webkit-scrollbar-thumb:window-inactive {
             background: #e2e8f0;
         }
+        
+        /* Horizontal Tab Styling */
+        .horizontal-tab {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            border-radius: 8px;
+            background-color: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+        }
+        
+        .horizontal-tab:hover {
+            background-color: rgba(79, 70, 229, 0.08);
+            color: #4f46e5;
+            transform: translateY(-2px);
+        }
+        
+        .horizontal-tab.active {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        
+        .horizontal-tab.active:hover {
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+            transform: translateY(-3px);
+        }
+        
+        .horizontal-tab .tab-icon {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+            display: inline-flex;
+        }
     </style>
 
 </head>
@@ -169,10 +211,17 @@
         </div>
     </header>
 
+    <!-- Horizontal Tab Navigation -->
+    <nav class="fixed top-[5.5rem] left-[calc(100vw/6+1rem)] right-2 z-20 glass rounded-xl" id="horizontal-nav">
+        <div class="flex items-center overflow-x-auto px-4 py-2 gap-1" id="horizontal-tab-container">
+            <!-- Will be populated dynamically -->
+        </div>
+    </nav>
+
     <!-- Main Layout -->
-    <div class="flex pt-20">
+    <div class="flex pt-32">
         <!-- Sidebar -->
-        <aside class="fixed left-2 top-20 bottom-2 w-1/6 glass rounded-xl p-3 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar">
+        <aside class="fixed left-2 top-[5.5rem] bottom-2 w-1/6 glass rounded-xl p-3 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar">
             <!-- Navigation -->
             <nav class="space-y-1" id="navigation">
                 <!-- Will be populated dynamically -->
@@ -521,6 +570,11 @@
                  item.classList.toggle('active', item.dataset.section === sectionId);
              });
 
+             // Update horizontal tabs
+             document.querySelectorAll('.horizontal-tab').forEach(item => {
+                 item.classList.toggle('active', item.dataset.section === sectionId);
+             });
+
              // Create section if it doesn't exist
              if (!document.getElementById(sectionId) && sectionId !== 'transactions' && sectionId !== 'public-info' && sectionId !== 'business-pattern') {
                  createSection(sectionId);
@@ -575,6 +629,7 @@
         function updateActiveNavigation() {
             const sections = document.querySelectorAll('.section-content');
             const navItems = document.querySelectorAll('.nav-item');
+            const horizontalTabs = document.querySelectorAll('.horizontal-tab');
             
                          let currentActiveSection = 'business-pattern';
             
@@ -592,6 +647,11 @@
             
             // Update navigation active state
             navItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.section === currentActiveSection);
+            });
+            
+            // Update horizontal tabs active state
+            horizontalTabs.forEach(item => {
                 item.classList.toggle('active', item.dataset.section === currentActiveSection);
             });
             
@@ -2977,6 +3037,9 @@
                 // Create basic UI structure
                 createNavigation();
                 
+                // Create horizontal tabs
+                createHorizontalTabs();
+                
                 // Initialize features
                 initEventListeners();
                 
@@ -4243,6 +4306,24 @@
 
         // Initialize the dashboard when page loads
         document.addEventListener('DOMContentLoaded', initDashboard);
+
+        // Create horizontal tabs navigation
+        function createHorizontalTabs() {
+            const tabContainer = document.getElementById('horizontal-tab-container');
+            tabContainer.innerHTML = sections.map(section => `
+                <button 
+                    class="horizontal-tab"
+                    data-section="${section.id}"
+                    onclick="showSection('${section.id}')"
+                    title="${section.description}"
+                >
+                    <i data-lucide="${section.icon}" class="tab-icon"></i>
+                    <span>${section.name}</span>
+                </button>
+            `).join('');
+            
+            createIcons();
+        }
     </script>
 
     <!-- Transaction Usage Detail Popup Modal -->
