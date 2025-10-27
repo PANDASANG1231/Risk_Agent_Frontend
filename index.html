@@ -904,8 +904,8 @@
                 }
                 
                 const data = await response.json();
-                if (data && data.frmtd_acct_no) {
-                    const frmtdAcctno = String(data.frmtd_acct_no).padStart(16, '0');
+                if (Array.isArray(data) && data.length > 0 && data[0].frmtd_acct_no) {
+                    const frmtdAcctno = String(data[0].frmtd_acct_no).padStart(16, '0');
                     console.log(`Formatted account number: ${acctno} -> ${frmtdAcctno}`);
                     return frmtdAcctno;
                 } else {
@@ -2146,7 +2146,7 @@
 
 
                  // Create business pattern content
-         function createBusinessPatternContent() {
+        function createBusinessPatternContent() {
              if (!apiData.businessPattern) {
                  return `
                      <div class="text-center">
