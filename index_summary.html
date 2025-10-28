@@ -4143,7 +4143,8 @@
                     // Navigate with route based on account suffix
                     const isSummary = selectedAcctno.toLowerCase().endsWith('-summary');
                     const target = isSummary ? '/summary' : '/';
-                    window.location.href = `${target}?account=${encodeURIComponent(selectedAcctno)}`;
+                    window.baseUrl = 'http://localhost:5000';
+                    window.location.href = `${window.baseUrl}${target}?account=${encodeURIComponent(selectedAcctno)}`;
                 } else {
                     // Clear data when no account is selected
                     apiData = {};

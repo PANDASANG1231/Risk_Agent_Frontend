@@ -21,7 +21,7 @@ def normalize_api_url(url):
     url = url.rstrip('/')
     return url
 
-BASE_API_URL = normalize_api_url(os.getenv('BASE_API_URL', '/api'))  # Default to '/api', can be overridden
+BASE_API_URL = normalize_api_url(os.getenv('BASE_API_URL', 'http://localhost:5000/api'))  # Default to '/api', can be overridden
 
 # Configure logging
 logging.basicConfig(
@@ -1002,6 +1002,7 @@ def serve_app():
         with open('index.html', 'r', encoding='utf-8') as file:
             content = file.read()
             # Replace the hardcoded API URL with our configurable variable
+            content = content.replace('http://localhost:5000', BASE_API_URL.replace('/api', ''))
             content = content.replace('/api/', f'{BASE_API_URL}/')
             logger.info("index.html loaded successfully with configurable API URL")
             return content
@@ -1016,8 +1017,8 @@ def serve_summary():
         with open('index_summary.html', 'r', encoding='utf-8') as file:
             content = file.read()
             # Replace the hardcoded API URL with our configurable variable
+            content = content.replace('http://localhost:5000', BASE_API_URL.replace('/api', ''))
             content = content.replace('/api/', f'{BASE_API_URL}/')
-            logger.info("index_summary.html (summary) loaded successfully with configurable API URL")
             return content
     except Exception as e:
         logger.error(f"Error serving summary app: {str(e)}")
@@ -1041,7 +1042,7 @@ if __name__ == '__main__':
     # Parse command line arguments
     parser = argparse.ArgumentParser(description='Flask Risk Agent API Server')
     parser.add_argument('--api-url', type=str, default=BASE_API_URL, 
-                       help='Base API URL path (default: /api)')
+                       help='Base API URL path (default: http://localhost:5000/api)')
     parser.add_argument('--port', type=int, default=5000, 
                        help='Port to run the server on (default: 5000)')
     parser.add_argument('--host', type=str, default='127.0.0.1', 
