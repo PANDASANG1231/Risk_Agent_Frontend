@@ -1009,18 +1009,18 @@ def serve_app():
         logger.error(f"Error serving app: {str(e)}")
         return str(e), 500
 
-@app.route('/detail')
-def serve_detail():
+@app.route('/summary')
+def serve_summary():
     try:
-        logger.info("Received request for index.html (detail page)")
-        with open('index.html', 'r', encoding='utf-8') as file:
+        logger.info("Received request for summary.html (summary page)")
+        with open('index_summary.html', 'r', encoding='utf-8') as file:
             content = file.read()
             # Replace the hardcoded API URL with our configurable variable
             content = content.replace('/api/', f'{BASE_API_URL}/')
-            logger.info("index.html (detail) loaded successfully with configurable API URL")
+            logger.info("index_summary.html (summary) loaded successfully with configurable API URL")
             return content
     except Exception as e:
-        logger.error(f"Error serving detail app: {str(e)}")
+        logger.error(f"Error serving summary app: {str(e)}")
         return str(e), 500
 
 @app.route('/<path:filename>')
