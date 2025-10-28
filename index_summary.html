@@ -4140,8 +4140,10 @@
             document.getElementById('account-selector').addEventListener('change', async (event) => {
                 const selectedAcctno = event.target.value;
                 if (selectedAcctno) {
-                    // Navigate so URL carries the selected account; tabs and APIs will align
-                    window.location.href = `?account=${encodeURIComponent(selectedAcctno)}`;
+                    // Navigate with route based on account suffix
+                    const isSummary = selectedAcctno.toLowerCase().endsWith('-summary');
+                    const target = isSummary ? '/summary' : '/';
+                    window.location.href = `${target}?account=${encodeURIComponent(selectedAcctno)}`;
                 } else {
                     // Clear data when no account is selected
                     apiData = {};
@@ -4456,7 +4458,7 @@
                     return `
                         <button 
                             class="horizontal-tab ${isActive ? 'active' : ''}"
-							onclick="window.location.href='?account=${encodeURIComponent(acct)}'"
+							onclick="(function(a){var t=a.toLowerCase().endsWith('-summary')?'/summary':'/';window.location.href=t+'?account='+encodeURIComponent(a);})('${acct.replace(/'/g, "\\'")}')"
                             title="${acct}"
                         >
                             <i data-lucide="file-text" class="tab-icon"></i>
