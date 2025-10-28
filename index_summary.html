@@ -4459,7 +4459,7 @@
                     return `
                         <button 
                             class="horizontal-tab ${isActive ? 'active' : ''}"
-							onclick="(function(a){var t=a.toLowerCase().endsWith('-summary')?'/summary':'/';window.location.href=t+'?account='+encodeURIComponent(a);})('${acct.replace(/'/g, "\\'")}')"
+                            onclick="(function(a){var t=a.toLowerCase().endsWith('-summary')?'/summary':'/';window.location.href='http://localhost:5000'+t+'?account='+encodeURIComponent(a);})('${acct.replace(/'/g, "\\'")}')"
                             title="${acct}"
                         >
                             <i data-lucide="file-text" class="tab-icon"></i>
