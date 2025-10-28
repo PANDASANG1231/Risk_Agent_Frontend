@@ -4140,9 +4140,8 @@
             document.getElementById('account-selector').addEventListener('change', async (event) => {
                 const selectedAcctno = event.target.value;
                 if (selectedAcctno) {
-                    await loadAccountData(selectedAcctno);
-                    // Update horizontal tabs with new account
-                    await createHorizontalTabs();
+                    // Navigate so URL carries the selected account; tabs and APIs will align
+                    window.location.href = `http://localhost:5000/?account=${encodeURIComponent(selectedAcctno)}`;
                 } else {
                     // Clear data when no account is selected
                     apiData = {};
