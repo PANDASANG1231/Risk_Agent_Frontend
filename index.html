@@ -382,38 +382,39 @@
                     // Check if account is passed in URL parameter
                     const urlParams = new URLSearchParams(window.location.search);
                     const accountFromUrl = urlParams.get('account');
-                    
-                    if (accountFromUrl && availableAccounts.includes(accountFromUrl)) {
-                        // Auto-select account from URL if it's a summary account
-                        accountSelector.value = accountFromUrl;
-                        selectedAccount = accountFromUrl;
-                        await loadAccountData(selectedAccount);
-                        console.log('Auto-selected account from URL:', selectedAccount);
-                    } else if (accountFromUrl) {
-                        // URL has an account but it's not a summary - find matching summary
-                        const rmMatch = accountFromUrl.match(/RM-[^_]+/);
-                        const nmMatch = accountFromUrl.match(/NM-[^_]+/);
-                        const acctMatch = accountFromUrl.match(/ACCT-[^_]+/);
-                        
-                        let searchPattern = '';
-                        if (rmMatch && nmMatch) {
-                            searchPattern = `${rmMatch[0]}_${nmMatch[0]}`;
-                        } else if (acctMatch && nmMatch) {
-                            searchPattern = `${acctMatch[0]}_${nmMatch[0]}`;
-                        }
-                        
-                        if (searchPattern) {
-                            const matchingSummary = availableAccounts.find(acct => 
-                                acct.includes(searchPattern) && (acct.includes('Summary') || acct.includes('summary'))
-                            );
-                            
-                            if (matchingSummary) {
-                                accountSelector.value = matchingSummary;
-                                selectedAccount = matchingSummary;
-                                await loadAccountData(selectedAccount);
-                                console.log('Auto-selected matching summary account:', selectedAccount);
-                            } else {
-                                console.warn('No summary account found for URL parameter:', accountFromUrl);
+
+                    if (accountFromUrl) {
+                        // Prefer exact account from URL for API calls (tab-driven)
+                        if (allAccounts.includes(accountFromUrl)) {
+                            selectedAccount = accountFromUrl;
+                            await loadAccountData(selectedAccount);
+                            console.log('Auto-selected account from URL (exact):', selectedAccount);
+                        } else {
+                            // Fallback: find matching Summary using RM/NM or ACCT/NM pattern
+                            const rmMatch = accountFromUrl.match(/RM-[^_]+/);
+                            const nmMatch = accountFromUrl.match(/NM-[^_]+/);
+                            const acctMatch = accountFromUrl.match(/ACCT-[^_]+/);
+
+                            let searchPattern = '';
+                            if (rmMatch && nmMatch) {
+                                searchPattern = `${rmMatch[0]}_${nmMatch[0]}`;
+                            } else if (acctMatch && nmMatch) {
+                                searchPattern = `${acctMatch[0]}_${nmMatch[0]}`;
+                            }
+
+                            if (searchPattern) {
+                                const matchingSummary = availableAccounts.find(acct => 
+                                    acct.includes(searchPattern) && (acct.includes('Summary') || acct.includes('summary'))
+                                );
+
+                                if (matchingSummary) {
+                                    accountSelector.value = matchingSummary;
+                                    selectedAccount = matchingSummary;
+                                    await loadAccountData(selectedAccount);
+                                    console.log('Auto-selected matching summary account (fallback):', selectedAccount);
+                                } else {
+                                    console.warn('No summary account found for URL parameter:', accountFromUrl);
+                                }
                             }
                         }
                     } else if (availableAccounts.length === 1) {
@@ -4352,10 +4353,13 @@
         async function createHorizontalTabs() {
             const tabContainer = document.getElementById('horizontal-tab-container');
             
-            // Get current selected account
+            // Get current selected account and URL param for active tab
             const currentAccount = selectedAccount || '';
+            const urlParams = new URLSearchParams(window.location.search);
+            const accountFromUrl = urlParams.get('account') || '';
+            const activeAccount = accountFromUrl || currentAccount;
             
-            if (!currentAccount) {
+            if (!currentAccount && !accountFromUrl) {
                 // If no account selected, show placeholder
                 tabContainer.innerHTML = `
                     <div class="text-xs text-gray-500 italic px-2">
@@ -4427,7 +4431,7 @@
                 
                 // Create tabs for each account
                 const tabsHTML = accounts.map(acct => {
-                    const isActive = acct === currentAccount;
+                    const isActive = acct === activeAccount;
                     const accountParam = `?account=${encodeURIComponent(acct)}`;
                     
                     // Extract display name from account string
@@ -4453,7 +4457,7 @@
                     return `
                         <button 
                             class="horizontal-tab ${isActive ? 'active' : ''}"
-                            onclick="loadAccountFromTab('${acct.replace(/'/g, "\\'")}')"
+							onclick="window.location.href='http://localhost:5000/?account=${encodeURIComponent(acct)}'"
                             title="${acct}"
                         >
                             <i data-lucide="file-text" class="tab-icon"></i>
