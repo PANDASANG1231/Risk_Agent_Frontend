@@ -453,6 +453,9 @@
                 // Update UI with new data
                 updateDashboardWithAccountData();
                 
+                // Update horizontal tabs for related accounts
+                await createHorizontalTabs();
+                
             } catch (error) {
                 console.error('Error loading account data:', error);
                 showError(`Failed to load data for account ${acctno}: ${error.message}`);
@@ -3045,7 +3048,7 @@
                 createNavigation();
                 
                 // Create horizontal tabs
-                createHorizontalTabs();
+                await createHorizontalTabs();
                 
                 // Initialize features
                 initEventListeners();
@@ -4116,6 +4119,8 @@
                     selectedAccount = null;
                     // Update account status
                     updateAccountStatus();
+                    // Update horizontal tabs
+                    await createHorizontalTabs();
                     // Clear content containers
                     document.querySelectorAll('.section-content').forEach(section => {
                         const contentContainer = section.querySelector('[id$="-content"]');
@@ -4315,21 +4320,155 @@
         document.addEventListener('DOMContentLoaded', initDashboard);
 
         // Create horizontal tabs navigation
-        function createHorizontalTabs() {
+        async function createHorizontalTabs() {
             const tabContainer = document.getElementById('horizontal-tab-container');
-            tabContainer.innerHTML = sections.map(section => `
-                <button 
-                    class="horizontal-tab"
-                    data-section="${section.id}"
-                    onclick="showSection('${section.id}')"
-                    title="${section.description}"
-                >
-                    <i data-lucide="${section.icon}" class="tab-icon"></i>
-                    <span>${section.name}</span>
-                </button>
-            `).join('');
             
-            createIcons();
+            // Get current selected account and URL param for active tab
+            const currentAccount = selectedAccount || '';
+            const urlParams = new URLSearchParams(window.location.search);
+            const accountFromUrl = urlParams.get('account') || '';
+            const activeAccount = accountFromUrl || currentAccount;
+            
+            if (!currentAccount && !accountFromUrl) {
+                // If no account selected, show placeholder
+                tabContainer.innerHTML = `
+                    <div class="text-xs text-gray-500 italic px-2">
+                        Select an account to view related analysis
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                console.log('Creating horizontal tabs for account:', currentAccount);
+
+                // Extract search string in format "RM-xxxx_NM-xxxx" or "ACCT-xxxx_NM-xxxx" from selected account
+                let searchString = '';
+                
+                // Check if account matches pattern with RM- and NM-
+                const rmMatch = currentAccount.match(/RM-[^_]+/);
+                const nmMatch = currentAccount.match(/NM-[^_]+/);
+                const acctMatch = currentAccount.match(/ACCT-[^_]+/);
+                
+
+                if (rmMatch && nmMatch) {
+                    searchString = `${rmMatch[0]}_${nmMatch[0]}`;
+                } else if (acctMatch && nmMatch) {
+                    searchString = `${acctMatch[0]}_${nmMatch[0]}`;
+                } else if (rmMatch) {
+                    searchString = rmMatch[0];
+                } else if (acctMatch) {
+                    searchString = acctMatch[0];
+                } else {
+                    // Fallback to using the account as-is
+                    searchString = currentAccount.split('_')[0];
+                }
+                
+                console.log(`Searching for accounts with: ${searchString}`);
+                
+                // Fetch related accounts from API
+                const response = await fetch(`/api/accounts?search=${encodeURIComponent(searchString)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                let accounts = data.accounts || [];
+                
+                console.log(`Found ${accounts.length} related accounts:`, accounts);
+                
+                if (accounts.length === 0) {
+                    tabContainer.innerHTML = `
+                        <div class="text-xs text-gray-500 italic px-2">
+                            No related analysis found
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort accounts: Summary first, then others
+                accounts.sort((a, b) => {
+                    const aIsSummary = a.includes('Summary') || a.includes('summary');
+                    const bIsSummary = b.includes('Summary') || b.includes('summary');
+                    
+                    if (aIsSummary && !bIsSummary) return -1;
+                    if (!aIsSummary && bIsSummary) return 1;
+                    return 0; // Keep original order for non-summary items
+                });
+                
+                console.log('Sorted accounts (Summary first):', accounts);
+                
+                // Create tabs for each account
+                const tabsHTML = accounts.map(acct => {
+                    const isActive = acct === activeAccount;
+                    
+                    // Extract display name - prioritize IND- part
+                    let displayName = acct;
+                    
+                    // Try to extract industry from IND- prefix
+                    const indMatch = acct.match(/IND-([^_\.]+)/);
+                    if (indMatch) {
+                        // Extract and clean up the industry name
+                        displayName = indMatch[1]
+                            .replace(/-/g, ' ')
+                            .replace(/_/g, ' ')
+                            .split(' ')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                            .join(' ');
+                    } else if (acct.includes('Summary') || acct.includes('summary')) {
+                        displayName = 'Summary';
+                    } else {
+                        // Use last part after underscore
+                        const parts = acct.split('_');
+                        displayName = parts[parts.length - 1].replace(/-/g, ' ');
+                    }
+                    
+                    // Limit display name length
+                    if (displayName.length > 25) {
+                        displayName = displayName.substring(0, 22) + '...';
+                    }
+                    
+                    return `
+                        <button 
+                            class="horizontal-tab ${isActive ? 'active' : ''}"
+                            onclick="loadAccountFromTab('${acct.replace(/'/g, "\\'")}')"
+                            title="${acct}"
+                        >
+                            <i data-lucide="file-text" class="tab-icon"></i>
+                            <span>${displayName}</span>
+                        </button>
+                    `;
+                }).join('');
+                
+                tabContainer.innerHTML = tabsHTML;
+                createIcons();
+                
+            } catch (error) {
+                console.error('Error creating horizontal tabs:', error);
+                tabContainer.innerHTML = `
+                    <div class="text-xs text-gray-500 italic px-2">
+                        Error loading related accounts
+                    </div>
+                `;
+            }
+        }
+        
+        // Load account data when clicking a horizontal tab
+        async function loadAccountFromTab(acctno) {
+            if (!acctno) return;
+            
+            console.log(`Loading account from tab: ${acctno}`);
+            
+            // Update the dropdown selector
+            const accountSelector = document.getElementById('account-selector');
+            accountSelector.value = acctno;
+            
+            // Load the account data
+            await loadAccountData(acctno);
+            
+            // Recreate horizontal tabs to update active state
+            await createHorizontalTabs();
         }
     </script>
 
