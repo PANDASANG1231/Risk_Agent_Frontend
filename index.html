@@ -305,13 +305,33 @@
         let selectedAccount = null;
         let availableAccounts = [];
         
-                 // Navigation configuration
-         const sections = [
-             { id: 'business-pattern', name: 'Overall Summary', icon: 'bar-chart-3', description: 'Industry alignment' },
-             { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
-             { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' },
-             { id: 'high-cash', name: 'Internal Analysis', icon: 'dollar-sign', description: 'Previous existing analysis' }
-         ];
+                // Navigation configuration
+        const sections = [
+            { id: 'business-pattern', name: 'Overall Summary', icon: 'bar-chart-3', description: 'Industry alignment' },
+            { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
+            { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' },
+            { id: 'high-cash', name: 'Internal Analysis', icon: 'dollar-sign', description: 'Previous existing analysis' }
+        ];
+        
+        // Get filtered sections based on selected account
+        function getFilteredSections() {
+            // Check if selected account is a summary account
+            const isSummaryAccount = selectedAccount && (
+                selectedAccount.includes('IND-Summary') || 
+                selectedAccount.includes('IND-summary') ||
+                selectedAccount.toLowerCase().includes('-summary')
+            );
+            
+            if (isSummaryAccount) {
+                // Filter out 'public-info' (Company Info) and 'high-cash' (Internal Analysis) for summary accounts
+                return sections.filter(section => 
+                    section.id !== 'public-info' && section.id !== 'high-cash'
+                );
+            }
+            
+            // Return all sections for non-summary accounts
+            return sections;
+        }
 
         // Utility functions
         function formatCurrency(amount) {
@@ -509,14 +529,46 @@
                 businessPatternContainer.innerHTML = createBusinessPatternContent();
             }
             
-            // Update public-info section content
+            // Check if selected account is a summary account
+            const isSummaryAccount = selectedAccount && (
+                selectedAccount.includes('IND-Summary') || 
+                selectedAccount.includes('IND-summary') ||
+                selectedAccount.toLowerCase().includes('-summary')
+            );
+            
+            // Update public-info section content and visibility
+            const publicInfoSection = document.getElementById('public-info');
             const publicInfoContainer = document.getElementById('public-info-content');
-            if (publicInfoContainer) {
-                publicInfoContainer.innerHTML = createPublicInfoContent();
+            if (publicInfoSection) {
+                if (isSummaryAccount) {
+                    // Hide Company Info section for summary accounts
+                    publicInfoSection.style.display = 'none';
+                } else {
+                    // Show and populate Company Info section for non-summary accounts
+                    publicInfoSection.style.display = 'block';
+                    if (publicInfoContainer) {
+                        publicInfoContainer.innerHTML = createPublicInfoContent();
+                    }
+                }
             }
             
+            // Update high-cash section visibility
+            const highCashSection = document.getElementById('high-cash');
+            if (highCashSection) {
+                if (isSummaryAccount) {
+                    // Hide Internal Analysis section for summary accounts
+                    highCashSection.style.display = 'none';
+                } else {
+                    // Show Internal Analysis section for non-summary accounts
+                    highCashSection.style.display = 'block';
+                }
+            }
+            
+            // Get filtered sections based on account type
+            const filteredSections = getFilteredSections();
+            
             // Create other sections
-            sections.forEach(section => {
+            filteredSections.forEach(section => {
                 if (section.id !== 'transactions' && section.id !== 'public-info' && section.id !== 'business-pattern') {
                     createSection(section.id);
                 }
@@ -543,8 +595,20 @@
             // Populate transaction usage detail content
             populateTransactionUsageDetail();
             
-            // Show business pattern as default
-            showSection('business-pattern');
+            // Show current section or default to business pattern
+            // Check if current section exists in filtered sections
+            const currentSectionExists = filteredSections.some(s => s.id === currentSection);
+            
+            // If current section is hidden (high-cash or public-info on summary accounts), switch to first available
+            const isCurrentSectionHidden = (currentSection === 'high-cash' || currentSection === 'public-info') && isSummaryAccount;
+            
+            if (currentSectionExists && !isCurrentSectionHidden) {
+                // Stay on current section without scrolling (preserve user's position)
+                showSection(currentSection, false);
+            } else {
+                // Fallback to first available section without scrolling
+                showSection(filteredSections[0]?.id || 'business-pattern', false);
+            }
             
             // Set up scroll sync
             setupScrollSync();
@@ -576,7 +640,8 @@
         // Create navigation
         function createNavigation() {
             const nav = document.getElementById('navigation');
-            nav.innerHTML = sections.map(section => `
+            const filteredSections = getFilteredSections();
+            nav.innerHTML = filteredSections.map(section => `
                 <button 
                     class="nav-item w-full flex items-center p-2 rounded-lg text-left transition-all group"
                     data-section="${section.id}"
@@ -597,7 +662,7 @@
         }
 
                  // Show section and scroll to it
-         function showSection(sectionId) {
+         function showSection(sectionId, shouldScroll = true) {
              currentSection = sectionId;
              
              // Update navigation
@@ -635,10 +700,13 @@
                      }, 500);
                  }, 100);
                  
-                 targetSection.scrollIntoView({ 
-                     behavior: 'smooth', 
-                     block: 'start' 
-                 });
+                 // Only scroll if explicitly requested
+                 if (shouldScroll) {
+                     targetSection.scrollIntoView({ 
+                         behavior: 'smooth', 
+                         block: 'start' 
+                     });
+                 }
              }
              
              // Update progress
@@ -2795,8 +2863,9 @@
 
         // Update progress bar
         function updateProgress() {
-            const currentIndex = sections.findIndex(s => s.id === currentSection);
-            const progress = ((currentIndex + 1) / sections.length) * 100;
+            const filteredSections = getFilteredSections();
+            const currentIndex = filteredSections.findIndex(s => s.id === currentSection);
+            const progress = ((currentIndex + 1) / filteredSections.length) * 100;
             document.getElementById('progress-indicator').style.width = `${progress}%`;
         }
 
