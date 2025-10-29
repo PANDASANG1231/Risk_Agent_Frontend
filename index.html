@@ -357,12 +357,19 @@
         // Load available accounts
         async function loadAvailableAccounts() {
             try {
-                console.log('Loading available accounts...');
-                const accountsData = await fetchApiData('accounts');
+                console.log('Loading available accounts (summary only)...');
+                // Fetch accounts with "summary" filter
+                const response = await fetch('/api/accounts?search=summary');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const accountsData = await response.json();
                 
                 if (accountsData && accountsData.accounts) {
                     availableAccounts = accountsData.accounts;
-                    console.log('Available accounts:', availableAccounts);
+                    console.log('Available summary accounts:', availableAccounts);
                     
                     // Populate account selector
                     const accountSelector = document.getElementById('account-selector');
@@ -371,7 +378,25 @@
                     availableAccounts.forEach(acctno => {
                         const option = document.createElement('option');
                         option.value = acctno;
-                        option.textContent = `Account ${acctno}`;
+                        // Extract a cleaner display name
+                        let displayName = acctno;
+                        
+                        // Try to extract company name from NM- pattern
+                        const nmMatch = acctno.match(/NM-([^_]+)/);
+                        const rmMatch = acctno.match(/RM-([^_]+)/);
+                        const acctMatch = acctno.match(/ACCT-([^_]+)/);
+                        
+                        if (nmMatch) {
+                            const companyName = nmMatch[1].replace(/-/g, ' ');
+                            displayName = companyName;
+                            if (rmMatch) {
+                                displayName = `${rmMatch[1]} - ${companyName}`;
+                            } else if (acctMatch) {
+                                displayName = `${acctMatch[1]} - ${companyName}`;
+                            }
+                        }
+                        
+                        option.textContent = displayName;
                         accountSelector.appendChild(option);
                     });
                     
