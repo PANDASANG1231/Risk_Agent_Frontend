@@ -428,8 +428,8 @@ def get_subgraph_data():
     """Get subgraph data for a specific node at a given degree"""
     try:
         acctno = request.args.get('acctno')
-        center_node = request.args.get('center_node', str(acctno).zfill(16))
-        center_node = center_node.split("_")[0].zfill(16)
+        center_node = request.args.get('center_node', str(acctno))
+        center_node = center_node.split("RM-")[1].split("_")[0].zfill(14)
         print("center_node", center_node)
         degree = request.args.get('degree', '1')  # Default to 1st degree
         
