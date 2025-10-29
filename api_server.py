@@ -830,9 +830,21 @@ def get_utr_info():
 
 @app.route('/api/accounts')
 def list_accounts():
-    """List all available account numbers from cache_data folder"""
+    """List all available account numbers from cache_data folder
+    
+    Query Parameters:
+        search (optional): Filter accounts by string matching (case-insensitive)
+        
+    Example:
+        /api/accounts - Returns all accounts
+        /api/accounts?search=RM-123456 - Returns only accounts containing "RM-123456"
+        /api/accounts?search=Summary - Returns only accounts containing "Summary"
+    """
     try:
-        logger.info("Received request for /api/accounts")
+        # Get optional search parameter
+        search_str = request.args.get('search', '').strip()
+        
+        logger.info(f"Received request for /api/accounts with search: '{search_str}'")
         
         if not os.path.exists('cache_data'):
             logger.warning("cache_data folder not found")
@@ -843,19 +855,34 @@ def list_accounts():
         
         # Extract account numbers from filenames
         accounts = []
+        account_set = set()  # Use set to avoid duplicates
+        
         for filename in json_files:
             if filename.startswith('analysis_result_') and filename.endswith('.json'):
                 acctno = filename.replace('analysis_result_', '').replace('.json', '')
-                accounts.append(acctno)
+                
+                # Apply search filter if provided
+                if search_str:
+                    # Case-insensitive search
+                    if search_str.lower() in acctno.lower():
+                        account_set.add(acctno)
+                else:
+                    # No filter, add all accounts
+                    account_set.add(acctno)
+        
+        accounts = list(account_set)
         
         # Sort account numbers based on the last part after splitting by underscore
         accounts.sort(key=lambda x: x.split("_")[-1])
         
-        logger.info(f"Found {len(accounts)} accounts: {accounts}")
+        search_info = f" matching '{search_str}'" if search_str else ""
+        logger.info(f"Found {len(accounts)} accounts{search_info}: {accounts}")
+        
         return jsonify({
             'accounts': accounts,
             'total_count': len(accounts),
-            'message': f'Found {len(accounts)} account(s) with analysis data'
+            'search_filter': search_str if search_str else None,
+            'message': f'Found {len(accounts)} account(s){search_info} with analysis data'
         })
         
     except Exception as e:
