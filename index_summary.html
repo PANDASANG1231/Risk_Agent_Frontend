@@ -145,6 +145,13 @@
             display: inline-flex;
         }
         
+        /* Responsive positioning for horizontal nav */
+        @media (min-width: 1024px) {
+            #horizontal-nav {
+                left: calc(16.666667% + 1rem) !important;
+            }
+        }
+        
         /* Section scroll positioning */
         .section-content {
             scroll-margin-top: 8rem;
@@ -217,16 +224,16 @@
     </header>
 
     <!-- Horizontal Tab Navigation -->
-    <nav class="fixed top-[5.5rem] left-[calc(100vw/6+1rem)] right-2 z-20 glass rounded-xl" id="horizontal-nav">
+    <nav class="fixed left-2 right-2 z-20 glass rounded-xl" id="horizontal-nav" style="top: 5.5rem;">
         <div class="flex items-center overflow-x-auto px-4 py-2 gap-1" id="horizontal-tab-container">
             <!-- Will be populated dynamically -->
         </div>
     </nav>
 
     <!-- Main Layout -->
-    <div class="flex pt-32">
+    <div class="flex" style="padding-top: 8rem;">
         <!-- Sidebar -->
-        <aside class="fixed left-2 top-[5.5rem] bottom-2 w-1/6 glass rounded-xl p-3 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar">
+        <aside class="fixed left-2 bottom-2 w-1/6 glass rounded-xl p-3 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar" style="top: 5.5rem;">
             <!-- Navigation -->
             <nav class="space-y-1" id="navigation">
                 <!-- Will be populated dynamically -->
