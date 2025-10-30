@@ -7,6 +7,7 @@ from datetime import datetime
 import re
 import pandas as pd
 import argparse
+from functools import lru_cache
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +23,11 @@ def normalize_api_url(url):
     return url
 
 BASE_API_URL = normalize_api_url(os.getenv('BASE_API_URL', '/api'))  # Default to '/api', can be overridden
+
+# Cache configuration
+CACHE_MAX_SIZE = 128  # Maximum number of accounts to cache
+_cache_timestamps = {}  # Track when data was loaded
+CACHE_TTL_SECONDS = 300  # Cache expires after 5 minutes (300 seconds)
 
 # Configure logging
 logging.basicConfig(
@@ -105,11 +111,13 @@ def apply_text_processing(data):
     else:
         return data
 
-# Load data from JSON file
-def load_data(acctno):
+# Load data from JSON file with caching
+@lru_cache(maxsize=CACHE_MAX_SIZE)
+def _load_data_cached(acctno, cache_buster=None):
+    """Internal cached version of load_data. cache_buster forces refresh."""
     try:
         file_path = os.path.join('cache_data', f'analysis_result_{acctno}.json')
-        logger.info(f"Attempting to load data from {os.path.abspath(file_path)}")
+        logger.info(f"Loading data from disk: {os.path.abspath(file_path)}")
         
         if not os.path.exists(file_path):
             logger.error(f"File not found: {file_path}")
@@ -117,11 +125,42 @@ def load_data(acctno):
             
         with open(file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
-            logger.info("Data loaded successfully")
+            logger.info(f"Data loaded successfully for {acctno} (cached)")
             return data
     except Exception as e:
         logger.error(f"Error loading data: {str(e)}")
         raise
+
+def load_data(acctno):
+    """Load data with TTL-based caching"""
+    current_time = datetime.now()
+    
+    # Check if we need to invalidate cache (TTL expired)
+    if acctno in _cache_timestamps:
+        time_diff = (current_time - _cache_timestamps[acctno]).total_seconds()
+        if time_diff > CACHE_TTL_SECONDS:
+            logger.info(f"Cache expired for {acctno} (age: {time_diff:.1f}s), refreshing...")
+            # Clear this specific entry by using a new cache_buster value
+            _cache_timestamps[acctno] = current_time
+            return _load_data_cached(acctno, cache_buster=current_time.timestamp())
+    else:
+        _cache_timestamps[acctno] = current_time
+    
+    # Return cached data or load fresh
+    return _load_data_cached(acctno)
+
+def clear_cache(acctno=None):
+    """Clear cache for specific account or all accounts"""
+    if acctno:
+        # Clear specific account
+        if acctno in _cache_timestamps:
+            del _cache_timestamps[acctno]
+        logger.info(f"Cleared cache for account: {acctno}")
+    else:
+        # Clear all
+        _load_data_cached.cache_clear()
+        _cache_timestamps.clear()
+        logger.info("Cleared all cache")
 
 # Helper function to get specific data with error handling
 def get_key_data(key_name, acctno):
@@ -889,6 +928,50 @@ def list_accounts():
         logger.error(f"Error in list_accounts: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/clear-cache')
+def api_clear_cache():
+    """Clear the data cache (optional: specify acctno parameter to clear specific account)"""
+    try:
+        acctno = request.args.get('acctno')
+        clear_cache(acctno)
+        
+        cache_info = _load_data_cached.cache_info()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Cache cleared for {acctno}' if acctno else 'All cache cleared',
+            'cache_stats': {
+                'hits': cache_info.hits,
+                'misses': cache_info.misses,
+                'size': cache_info.currsize,
+                'max_size': cache_info.maxsize
+            }
+        })
+    except Exception as e:
+        logger.error(f"Error clearing cache: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/cache-stats')
+def api_cache_stats():
+    """Get cache statistics"""
+    try:
+        cache_info = _load_data_cached.cache_info()
+        
+        return jsonify({
+            'cache_stats': {
+                'hits': cache_info.hits,
+                'misses': cache_info.misses,
+                'current_size': cache_info.currsize,
+                'max_size': cache_info.maxsize,
+                'hit_rate': f"{(cache_info.hits / (cache_info.hits + cache_info.misses) * 100):.2f}%" if (cache_info.hits + cache_info.misses) > 0 else "0%",
+                'ttl_seconds': CACHE_TTL_SECONDS,
+                'cached_accounts': list(_cache_timestamps.keys())
+            }
+        })
+    except Exception as e:
+        logger.error(f"Error getting cache stats: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/endpoints')
 def list_endpoints():
     """List all available API endpoints"""
@@ -985,13 +1068,25 @@ def list_endpoints():
                 'parameters': ['acctno (required)']
             },
             {
+                'path': '/api/clear-cache',
+                'method': 'GET',
+                'description': 'Clear the data cache (optional: specify acctno parameter to clear specific account)',
+                'parameters': ['acctno (optional)']
+            },
+            {
+                'path': '/api/cache-stats',
+                'method': 'GET',
+                'description': 'Get cache statistics including hit rate, size, and cached accounts',
+                'parameters': []
+            },
+            {
                 'path': '/api/endpoints',
                 'method': 'GET',
                 'description': 'List all available API endpoints'
             }
         ],
         'base_url': 'http://localhost:5000',
-        'note': 'All endpoints (except /api/endpoints and /api/accounts) require acctno parameter. Example: /api/data?acctno=12345'
+        'note': 'All endpoints (except /api/endpoints, /api/accounts, /api/clear-cache, and /api/cache-stats) require acctno parameter. Example: /api/data?acctno=12345. Data is cached for 5 minutes (300 seconds) to improve performance.'
     }
     return jsonify(endpoints)
 
