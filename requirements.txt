@@ -1,4 +1,4 @@
-dbx
+dbx==0.8.19
 msal
 databricks-cli>=0.18.0
 pip-system-certs
