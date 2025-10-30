@@ -2213,44 +2213,44 @@
             
             let formattedText = text;
             
-            // Rule 0: Protect compound words by temporarily replacing them
-            const compoundWords = ['non-financial-account', 'self-employed', 'risk-based', 'pre-existing'];
-            const protectedWords = {};
+            // // Rule 0: Protect compound words by temporarily replacing them
+            // const compoundWords = ['non-financial-account', 'self-employed', 'risk-based', 'pre-existing'];
+            // const protectedWords = {};
             
-            compoundWords.forEach((word, index) => {
-                if (formattedText.includes(word)) {
-                    console.log(`Found compound word: ${word} in text`);
-                    const placeholder = `__PROTECTED_${index}__`;
-                    protectedWords[placeholder] = word;
-                    formattedText = formattedText.replace(new RegExp(word, 'g'), placeholder);
-                    console.log(`Replaced ${word} with ${placeholder}`);
-                }
-            });
+            // compoundWords.forEach((word, index) => {
+            //     if (formattedText.includes(word)) {
+            //         console.log(`Found compound word: ${word} in text`);
+            //         const placeholder = `__PROTECTED_${index}__`;
+            //         protectedWords[placeholder] = word;
+            //         formattedText = formattedText.replace(new RegExp(word, 'g'), placeholder);
+            //         console.log(`Replaced ${word} with ${placeholder}`);
+            //     }
+            // });
             
-            // Rule 1: Convert /n to line breaks
-            formattedText = formattedText.replace(/\/n/g, '<br/>');
+            // // Rule 1: Convert /n to line breaks
+            // formattedText = formattedText.replace(/\/n/g, '<br/>');
             
-            // Rule 2: Handle . **text** - convert to period + two line breaks + bold
-            // Only apply if there are spaces after the period and before the **
-            formattedText = formattedText.replace(/\.\s+\*\*([^*]+)\*\*/g, '.<br/><br/><strong>$1</strong>');
+            // // Rule 2: Handle . **text** - convert to period + two line breaks + bold
+            // // Only apply if there are spaces after the period and before the **
+            // formattedText = formattedText.replace(/\.\s+\*\*([^*]+)\*\*/g, '.<br/><br/><strong>$1</strong>');
             
-            // Rule 3: Convert remaining **text** to bold (for regular cases)
-            formattedText = formattedText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            // // Rule 3: Convert remaining **text** to bold (for regular cases)
+            // formattedText = formattedText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
             
-            // Rule 4: Convert "text - text:" pattern to "text<br/>text" (with line break)
-            // This handles cases like "hello - finance:" becoming "hello<br/>finance"
-            formattedText = formattedText.replace(/(\w+)\s*-\s*(\w+):/g, '$1<br/>$2');
+            // // Rule 4: Convert "text - text:" pattern to "text<br/>text" (with line break)
+            // // This handles cases like "hello - finance:" becoming "hello<br/>finance"
+            // formattedText = formattedText.replace(/(\w+)\s*-\s*(\w+):/g, '$1<br/>$2');
             
-            // Rule 5: Restore protected compound words
-            Object.keys(protectedWords).forEach(placeholder => {
-                console.log(`Restoring ${placeholder} back to ${protectedWords[placeholder]}`);
-                formattedText = formattedText.replace(new RegExp(placeholder, 'g'), protectedWords[placeholder]);
-            });
+            // // Rule 5: Restore protected compound words
+            // Object.keys(protectedWords).forEach(placeholder => {
+            //     console.log(`Restoring ${placeholder} back to ${protectedWords[placeholder]}`);
+            //     formattedText = formattedText.replace(new RegExp(placeholder, 'g'), protectedWords[placeholder]);
+            // });
             
-            // Final debug
-            if (text.includes('non-financial-account')) {
-                console.log('FINAL RESULT:', formattedText.substring(formattedText.indexOf('non') - 20, formattedText.indexOf('non') + 50));
-            }
+            // // Final debug
+            // if (text.includes('non-financial-account')) {
+            //     console.log('FINAL RESULT:', formattedText.substring(formattedText.indexOf('non') - 20, formattedText.indexOf('non') + 50));
+            // }
             
             return formattedText;
         }
