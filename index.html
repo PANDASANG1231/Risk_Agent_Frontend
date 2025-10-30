@@ -564,6 +564,18 @@
                 }
             }
             
+            // Update Transaction Usage Dictionary section visibility
+            const transUsageDictSection = document.getElementById('trans-usage-dict-section');
+            if (transUsageDictSection) {
+                if (isSummaryAccount) {
+                    // Hide Transaction Usage Dictionary for summary accounts
+                    transUsageDictSection.style.display = 'none';
+                } else {
+                    // Show Transaction Usage Dictionary for non-summary accounts
+                    transUsageDictSection.style.display = 'block';
+                }
+            }
+            
             // Get filtered sections based on account type
             const filteredSections = getFilteredSections();
             
@@ -2947,7 +2959,7 @@
                 </div>
                 
                                  <!-- Transaction Usage Dictionary Table -->
-                <div class="mt-4">
+                <div class="mt-4" id="trans-usage-dict-section">
                     <div class="bg-white rounded-xl shadow-sm p-4">
                         <h3 class="text-lg font-semibold text-gray-900 mb-3">Transaction Usage Dictionary</h3>
                         <div id="trans-usage-dict-table" class="overflow-x-auto">
