@@ -274,11 +274,11 @@
                      </div>
                  </section>
 
-                 <!-- Company Info Section -->
+                 <!-- Google Search Section -->
                  <section id="public-info" class="section-content">
                      <div class="section-header">
-                         <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
-                         <p class="text-gray-600">Public information</p>
+                         <h2 class="text-xl font-bold text-gray-900">Google Search</h2>
+                         <p class="text-gray-600">Search company information</p>
                      </div>
                      <div class="card-elevated" id="public-info-content">
                          <!-- Will be populated dynamically -->
@@ -323,8 +323,8 @@
         const sections = [
             { id: 'business-pattern', name: 'Overall Summary', icon: 'bar-chart-3', description: 'Industry alignment' },
             { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
-            { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' },
-            { id: 'high-cash', name: 'Internal Analysis', icon: 'dollar-sign', description: 'Previous existing analysis' }
+            { id: 'public-info', name: 'Google Search', icon: 'search', description: 'Search company information' },
+            { id: 'high-cash', name: 'Network', icon: 'network', description: 'risk flags & network' }
         ];
         
         // Get filtered sections based on selected account
@@ -337,7 +337,7 @@
             );
             
             if (isSummaryAccount) {
-                // Filter out 'public-info' (Company Info) and 'high-cash' (Internal Analysis) for summary accounts
+                // Filter out 'public-info' (Google Search) and 'high-cash' (Network) for summary accounts
                 return sections.filter(section => 
                     section.id !== 'public-info' && section.id !== 'high-cash'
                 );
@@ -555,10 +555,10 @@
             const publicInfoContainer = document.getElementById('public-info-content');
             if (publicInfoSection) {
                 if (isSummaryAccount) {
-                    // Hide Company Info section for summary accounts
+                    // Hide Google Search section for summary accounts
                     publicInfoSection.style.display = 'none';
                 } else {
-                    // Show and populate Company Info section for non-summary accounts
+                    // Show and populate Google Search section for non-summary accounts
                     publicInfoSection.style.display = 'block';
                     if (publicInfoContainer) {
                         publicInfoContainer.innerHTML = createPublicInfoContent();
@@ -570,10 +570,10 @@
             const highCashSection = document.getElementById('high-cash');
             if (highCashSection) {
                 if (isSummaryAccount) {
-                    // Hide Internal Analysis section for summary accounts
+                    // Hide Network section for summary accounts
                     highCashSection.style.display = 'none';
                 } else {
-                    // Show Internal Analysis section for non-summary accounts
+                    // Show Network section for non-summary accounts
                     highCashSection.style.display = 'block';
                 }
             }
