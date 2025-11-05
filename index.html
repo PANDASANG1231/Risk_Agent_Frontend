@@ -1824,6 +1824,15 @@
                         resetHighlighting();
                         
                     })
+                    .on('click', function(event, d) {
+                        console.log('Network graph node clicked:', d.label || d.id);
+                        
+                        // Show node details in modal
+                        showNodeDetails(d);
+                        
+                        // Prevent event bubbling
+                        event.stopPropagation();
+                    })
                     .each(function(d, i) {
                         // Set initial positions in a circle
                         const angle = (i / graphData.nodes.length) * 2 * Math.PI;
@@ -3737,7 +3746,7 @@
         }
 
         // Function to show node details (works for all graph types)
-        function showNodeDetails(d) {
+        async function showNodeDetails(d) {
             console.log('Showing node details for:', d);
             
             // Extract node data based on format (tree vs graph)
@@ -3746,15 +3755,147 @@
             const nodeLabel = nodeData.label || nodeId;
             const nodeColor = nodeData.color || '#666';
             
-            // Log detailed information
-            console.log(`Node Details:
-                ID: ${nodeId}
-                Label: ${nodeLabel}
-                Color: ${nodeColor}
-                Type: ${d.data ? 'Tree Node' : 'Graph Node'}`);
+            // Show the modal
+            const modal = document.getElementById('node-detail-modal');
+            const content = document.getElementById('node-detail-content');
             
-            // You can extend this to show a modal, tooltip, or side panel
-            // For now, we'll just highlight the node and its connections
+            modal.classList.remove('hidden');
+            
+            // Show loading state
+            content.innerHTML = `
+                <div class="text-center py-8">
+                    <i data-lucide="loader" class="w-8 h-8 mx-auto mb-2 animate-spin text-gray-400"></i>
+                    <p class="text-gray-500">Loading node details...</p>
+                </div>
+            `;
+            createIcons();
+            
+            try {
+                // Build the details HTML
+                let detailsHTML = `
+                    <div class="space-y-4">
+                        <!-- Basic Info Card -->
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                            <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                <i data-lucide="user-circle" class="w-5 h-5 mr-2 text-blue-600"></i>
+                                Basic Information
+                            </h4>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <p class="text-xs text-gray-600 mb-1">Node ID</p>
+                                    <p class="font-mono text-sm font-semibold text-gray-900">${nodeId}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-600 mb-1">Label</p>
+                                    <p class="text-sm font-semibold text-gray-900">${nodeLabel}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-600 mb-1">Color</p>
+                                    <div class="flex items-center">
+                                        <div class="w-6 h-6 rounded border border-gray-300 mr-2" style="background-color: ${nodeColor}"></div>
+                                        <p class="text-sm font-mono text-gray-700">${nodeColor}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-600 mb-1">Type</p>
+                                    <p class="text-sm text-gray-900">${d.data ? 'Tree Node' : 'Graph Node'}</p>
+                                </div>
+                            </div>
+                        </div>
+                `;
+                
+                // Add all custom properties from the node data
+                const standardProps = ['id', 'label', 'color', 'x', 'y', 'vx', 'vy', 'fx', 'fy', 'index', 'data', 'children', 'isRoot'];
+                const customProps = Object.keys(nodeData).filter(key => !standardProps.includes(key));
+                
+                if (customProps.length > 0) {
+                    detailsHTML += `
+                        <div class="bg-white rounded-lg p-4 border border-gray-200">
+                            <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                <i data-lucide="list" class="w-5 h-5 mr-2 text-gray-600"></i>
+                                Additional Properties
+                            </h4>
+                            <div class="space-y-2">
+                    `;
+                    
+                    customProps.forEach(prop => {
+                        const value = nodeData[prop];
+                        let formattedValue = value;
+                        
+                        if (typeof value === 'object' && value !== null) {
+                            formattedValue = JSON.stringify(value, null, 2);
+                        }
+                        
+                        detailsHTML += `
+                            <div class="flex justify-between items-start py-2 border-b border-gray-100 last:border-0">
+                                <span class="text-sm font-medium text-gray-600">${prop.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</span>
+                                <span class="text-sm text-gray-900 font-mono ml-4 text-right">${formattedValue}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    detailsHTML += `
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Try to fetch additional details from API if nodeId looks like an account number
+                if (String(nodeId).length >= 10) {
+                    try {
+                        const customerInfoResponse = await fetchApiData('customer-info', nodeId);
+                        
+                        if (customerInfoResponse && Object.keys(customerInfoResponse).length > 0) {
+                            detailsHTML += `
+                                <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                                    <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                        <i data-lucide="database" class="w-5 h-5 mr-2 text-green-600"></i>
+                                        Customer Information
+                                    </h4>
+                                    <div class="space-y-2">
+                            `;
+                            
+                            Object.entries(customerInfoResponse).forEach(([key, value]) => {
+                                if (value !== null && value !== undefined && value !== '') {
+                                    detailsHTML += `
+                                        <div class="flex justify-between items-start py-2 border-b border-green-100 last:border-0">
+                                            <span class="text-sm font-medium text-gray-600">${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</span>
+                                            <span class="text-sm text-gray-900 ml-4 text-right">${value}</span>
+                                        </div>
+                                    `;
+                                }
+                            });
+                            
+                            detailsHTML += `
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    } catch (error) {
+                        console.log('Could not fetch customer info for node:', nodeId, error);
+                    }
+                }
+                
+                detailsHTML += `
+                    </div>
+                `;
+                
+                content.innerHTML = detailsHTML;
+                createIcons();
+                
+            } catch (error) {
+                console.error('Error showing node details:', error);
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <i data-lucide="alert-circle" class="w-8 h-8 mx-auto mb-2 text-red-400"></i>
+                        <p class="text-gray-700 font-semibold">Error loading node details</p>
+                        <p class="text-sm text-gray-500 mt-2">${error.message}</p>
+                    </div>
+                `;
+                createIcons();
+            }
+            
+            // Also highlight the node and its connections
             highlightNodeConnections(d);
         }
 
@@ -4444,29 +4585,51 @@
 
         // Modal event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            // Close modal when clicking the X button
-            const closeBtn = document.getElementById('close-transaction-detail-modal');
-            const modal = document.getElementById('transaction-detail-modal');
+            // Transaction detail modal
+            const transCloseBtn = document.getElementById('close-transaction-detail-modal');
+            const transModal = document.getElementById('transaction-detail-modal');
             
-            if (closeBtn) {
-                closeBtn.addEventListener('click', function() {
-                    modal.classList.add('hidden');
+            if (transCloseBtn) {
+                transCloseBtn.addEventListener('click', function() {
+                    transModal.classList.add('hidden');
                 });
             }
             
-            // Close modal when clicking outside the modal content
-            if (modal) {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === modal) {
-                        modal.classList.add('hidden');
+            if (transModal) {
+                transModal.addEventListener('click', function(e) {
+                    if (e.target === transModal) {
+                        transModal.classList.add('hidden');
                     }
                 });
             }
             
-            // Close modal with Escape key
+            // Node detail modal
+            const nodeCloseBtn = document.getElementById('close-node-detail-modal');
+            const nodeModal = document.getElementById('node-detail-modal');
+            
+            if (nodeCloseBtn) {
+                nodeCloseBtn.addEventListener('click', function() {
+                    nodeModal.classList.add('hidden');
+                });
+            }
+            
+            if (nodeModal) {
+                nodeModal.addEventListener('click', function(e) {
+                    if (e.target === nodeModal) {
+                        nodeModal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Close modals with Escape key
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                    modal.classList.add('hidden');
+                if (e.key === 'Escape') {
+                    if (transModal && !transModal.classList.contains('hidden')) {
+                        transModal.classList.add('hidden');
+                    }
+                    if (nodeModal && !nodeModal.classList.contains('hidden')) {
+                        nodeModal.classList.add('hidden');
+                    }
                 }
             });
         });
@@ -4628,6 +4791,29 @@
             await createHorizontalTabs();
         }
     </script>
+
+    <!-- Node Details Modal -->
+    <div id="node-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i data-lucide="info" class="w-5 h-5 mr-2 text-blue-600"></i>
+                    Node Details
+                </h3>
+                <button id="close-node-detail-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)] modal-scrollbar">
+                <div id="node-detail-content">
+                    <div class="text-center py-8">
+                        <i data-lucide="loader" class="w-8 h-8 mx-auto mb-2 animate-spin text-gray-400"></i>
+                        <p class="text-gray-500">Loading node details...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Transaction Usage Detail Popup Modal -->
     <div id="transaction-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
