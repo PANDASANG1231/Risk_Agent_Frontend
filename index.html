@@ -299,7 +299,21 @@
         const { createIcons } = window.lucide;
         createIcons();
 
-                 // Global state
+        // Detect offline snapshot mode (set during HTML export)
+        const isOfflineSnapshot = window.IS_OFFLINE_SNAPSHOT === true;
+
+        if (isOfflineSnapshot && window.fetch) {
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = function(url, options) {
+                if (typeof url === 'string' && url.startsWith('/api/')) {
+                    console.warn('API call blocked in offline snapshot:', url);
+                    return Promise.reject(new Error('Offline snapshot: API calls are disabled.'));
+                }
+                return originalFetch(url, options);
+            };
+        }
+
+        // Global state
         let currentSection = 'business-pattern';
         let apiData = {};
         let selectedAccount = null;
@@ -4146,23 +4160,40 @@
         // Download HTML file with embedded CSS
         async function downloadHTML() {
             if (!selectedAccount) {
-                alert('Please select an account first');
+                alert('Please select an account first before downloading.');
                 return;
             }
             
             try {
-                // Fetch the CSS content
-                const cssResponse = await fetch('./static/css/output.css');
-                const cssContent = await cssResponse.text();
-                
                 // Get the current HTML content
                 let htmlContent = document.documentElement.outerHTML;
                 
-                // Replace the external CSS link with embedded CSS
-                htmlContent = htmlContent.replace(
-                    /<link href="\.\/static\/css\/output\.css" rel="stylesheet">/g,
-                    `<style>${cssContent}</style>`
-                );
+                // Try to fetch the CSS content, but don't fail if it's not available
+                let cssContent = '';
+                try {
+                    const cssResponse = await fetch('./static/css/output.css');
+                    if (cssResponse.ok) {
+                        cssContent = await cssResponse.text();
+                    } else {
+                        console.warn('CSS file not found, proceeding without embedded CSS');
+                    }
+                } catch (cssError) {
+                    console.warn('Could not fetch CSS file, proceeding without embedded CSS:', cssError);
+                }
+                
+                // Replace the external CSS link with embedded CSS if available
+                if (cssContent) {
+                    htmlContent = htmlContent.replace(
+                        /<link href="\.\/static\/css\/output\.css" rel="stylesheet">/g,
+                        `<style>${cssContent}</style>`
+                    );
+                } else {
+                    // If CSS fetch failed, remove the link but keep the Tailwind CDN fallback
+                    htmlContent = htmlContent.replace(
+                        /<link href="\.\/static\/css\/output\.css" rel="stylesheet">/g,
+                        ''
+                    );
+                }
                 
                 // Remove Google Fonts dependencies for offline use
                 htmlContent = htmlContent.replace(
@@ -4187,12 +4218,27 @@
                     </style>
                 `;
                 
-                // Insert the font override CSS after the main CSS
-                htmlContent = htmlContent.replace(
-                    /<\/style>/,
-                    `</style>${fontOverrideCSS}`
-                );
+                // Insert the font override CSS after the main CSS or before </head>
+                if (htmlContent.includes('</style>')) {
+                    htmlContent = htmlContent.replace(
+                        /<\/style>/,
+                        `</style>${fontOverrideCSS}`
+                    );
+                } else {
+                    htmlContent = htmlContent.replace(
+                        /<\/head>/,
+                        `${fontOverrideCSS}</head>`
+                    );
+                }
                 
+                // Inject offline snapshot flag so the saved file skips live init
+                const offlineFlagScript = [
+                    '<script>',
+                    '    window.IS_OFFLINE_SNAPSHOT = true;',
+                    '</' + 'script>'
+                ].join('\n');
+                htmlContent = htmlContent.replace('</head>', `${offlineFlagScript}\n</head>`);
+
                 // Create a blob with the HTML content
                 const blob = new Blob([htmlContent], { type: 'text/html' });
                 const url = URL.createObjectURL(blob);
@@ -4200,15 +4246,18 @@
                 // Create a download link
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `risk-analysis-${selectedAccount}-${new Date().toISOString().split('T')[0]}.html`;
+                const sanitizedAccount = selectedAccount.replace(/[^a-zA-Z0-9-_]/g, '_');
+                a.download = `risk-analysis-${sanitizedAccount}-${new Date().toISOString().split('T')[0]}.html`;
+                document.body.appendChild(a);
                 a.click();
+                document.body.removeChild(a);
                 
                 // Clean up
                 URL.revokeObjectURL(url);
                 
             } catch (error) {
                 console.error('Error downloading HTML:', error);
-                alert('Error downloading HTML file. Please try again.');
+                alert(`Error downloading HTML file: ${error.message}\n\nPlease try again or check the browser console for more details.`);
             }
         }
 
@@ -4422,8 +4471,10 @@
             });
         });
 
-        // Initialize the dashboard when page loads
-        document.addEventListener('DOMContentLoaded', initDashboard);
+        // Initialize the dashboard when page loads (skip in offline snapshot mode)
+        if (!isOfflineSnapshot) {
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        }
 
         // Create horizontal tabs navigation
         async function createHorizontalTabs() {
