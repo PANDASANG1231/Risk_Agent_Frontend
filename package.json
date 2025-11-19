@@ -5,14 +5,14 @@
   "main": "index.html",
   "scripts": {
     "start": "python -m pip install -r requirements.txt && python api_server.py",
-    "start_cloud": "python -m pip install -r requirements.txt && python api_server.py --api-url https://adb-dp-2508611930024345.5.azuredatabricks.net/driver-proxy/o/2508611930024345/1206-161355-paqfgaas/7595/api --port 7595 --host 0.0.0.0",
+    "start_cloud": "python -m pip install -r requirements.txt && python api_server.py --api-url https://adb-dp-2508611930024345.5.azuredatabricks.net/driver-proxy/o/2508611930024345/1206-161355-paqfgaas/${npm_config_port:-7595}/api --port ${npm_config_port:-7595} --host 0.0.0.0",
     "test": "python -m pytest tests/",
     "build:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --minify",
     "watch:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --watch",
     "dev:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --watch",
     "setup": "bash setup_js_environment.bash && npm run build:css",
-    "setup_cloud": "cp setup_js_environment.bash setup_js_environment.sh && bash setup_js_environment.sh && npm run build:css",
-    "sync": "python get_token.py && dbx sync workspace --source . --dest-dir /Workspace/Shared/wenjia.zhu@td.com/Risk-Agent-Frontend"
+    "setup_cloud": "sed -i 's/\r$//' setup_js_environment.bash && bash setup_js_environment.bash && npm run build:css",
+    "sync": "python get_token.py && dbx sync workspace --source . --dest-dir ${npm_config_destdir:-/Workspace/Shared/wenjia.zhu@td.com/Risk-Agent-Frontend}"
   },
   "keywords": [
     "risk-analysis",
