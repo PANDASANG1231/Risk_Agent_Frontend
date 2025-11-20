@@ -1,7 +1,7 @@
 dbx==0.8.19
-msal
-databricks-cli>=0.18.0
-pip-system-certs
+msal==1.32.0
+databricks-cli==0.17.8
+pip-system-certs==4.0.0
 flask==3.0.0
 flask-cors==4.0.0
 pandas==2.3.2
