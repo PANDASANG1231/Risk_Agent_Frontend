@@ -102,6 +102,55 @@
         .modal-scrollbar::-webkit-scrollbar-thumb:window-inactive {
             background: #e2e8f0;
         }
+        
+        /* Horizontal Tab Styling */
+        .horizontal-tab {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            margin-right: 0.5rem;
+            border-radius: 6px;
+            background-color: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: #6b7280;
+        }
+        
+        .horizontal-tab:hover {
+            background-color: rgba(79, 70, 229, 0.08);
+            color: #4f46e5;
+            transform: translateY(-2px);
+        }
+        
+        .horizontal-tab.active {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        
+        .horizontal-tab.active:hover {
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+            transform: translateY(-3px);
+        }
+        
+        .horizontal-tab .tab-icon {
+            width: 0.875rem;
+            height: 0.875rem;
+            margin-right: 0.375rem;
+            display: inline-flex;
+        }
+        
+        /* Responsive positioning for horizontal nav */
+        @media (min-width: 1024px) {
+            #horizontal-nav {
+                left: calc(16.666667% + 1rem) !important;
+            }
+        }
     </style>
 
 </head>
@@ -169,10 +218,17 @@
         </div>
     </header>
 
+    <!-- Horizontal Tab Navigation -->
+    <nav class="fixed left-2 right-2 z-20 glass rounded-xl" id="horizontal-nav" style="top: 5.5rem;">
+        <div class="flex items-center overflow-x-auto px-3 py-1 gap-1" id="horizontal-tab-container">
+            <!-- Will be populated dynamically -->
+        </div>
+    </nav>
+
     <!-- Main Layout -->
-    <div class="flex pt-20">
+    <div class="flex" style="padding-top: 8rem;">
         <!-- Sidebar -->
-        <aside class="fixed left-2 top-20 bottom-2 w-1/6 glass rounded-xl p-3 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar">
+        <aside class="fixed left-2 bottom-2 w-1/6 glass rounded-xl p-3 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300" id="sidebar" style="top: 5.5rem;">
             <!-- Navigation -->
             <nav class="space-y-1" id="navigation">
                 <!-- Will be populated dynamically -->
@@ -218,11 +274,11 @@
                      </div>
                  </section>
 
-                 <!-- Company Info Section -->
+                 <!-- Google Search Section -->
                  <section id="public-info" class="section-content">
                      <div class="section-header">
-                         <h2 class="text-xl font-bold text-gray-900">Company Info</h2>
-                         <p class="text-gray-600">Public information</p>
+                         <h2 class="text-xl font-bold text-gray-900">Google Search</h2>
+                         <p class="text-gray-600">Search company information</p>
                      </div>
                      <div class="card-elevated" id="public-info-content">
                          <!-- Will be populated dynamically -->
@@ -243,19 +299,53 @@
         const { createIcons } = window.lucide;
         createIcons();
 
-                 // Global state
+        // Detect offline snapshot mode (set during HTML export)
+        const isOfflineSnapshot = window.IS_OFFLINE_SNAPSHOT === true;
+
+        if (isOfflineSnapshot && window.fetch) {
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = function(url, options) {
+                if (typeof url === 'string' && url.startsWith('/api/')) {
+                    console.warn('API call blocked in offline snapshot:', url);
+                    return Promise.reject(new Error('Offline snapshot: API calls are disabled.'));
+                }
+                return originalFetch(url, options);
+            };
+        }
+
+        // Global state
         let currentSection = 'business-pattern';
         let apiData = {};
         let selectedAccount = null;
         let availableAccounts = [];
         
-                 // Navigation configuration
-         const sections = [
-             { id: 'business-pattern', name: 'Overall Summary', icon: 'bar-chart-3', description: 'Industry alignment' },
-             { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
-             { id: 'public-info', name: 'Company Info', icon: 'building', description: 'Public information' },
-             { id: 'high-cash', name: 'Internal Analysis', icon: 'dollar-sign', description: 'Previous existing analysis' }
-         ];
+                // Navigation configuration
+        const sections = [
+            { id: 'business-pattern', name: 'Overall Summary', icon: 'bar-chart-3', description: 'Industry alignment' },
+            { id: 'transactions', name: 'Transactions', icon: 'trending-up', description: 'Transaction breakdown' },
+            { id: 'public-info', name: 'Google Search', icon: 'search', description: 'Search company information' },
+            { id: 'high-cash', name: 'Network', icon: 'network', description: 'risk flags & network' }
+        ];
+        
+        // Get filtered sections based on selected account
+        function getFilteredSections() {
+            // Check if selected account is a summary account
+            const isSummaryAccount = selectedAccount && (
+                selectedAccount.includes('IND-Summary') || 
+                selectedAccount.includes('IND-summary') ||
+                selectedAccount.toLowerCase().includes('-summary')
+            );
+            
+            if (isSummaryAccount) {
+                // Filter out 'public-info' (Google Search) and 'high-cash' (Network) for summary accounts
+                return sections.filter(section => 
+                    section.id !== 'public-info' && section.id !== 'high-cash'
+                );
+            }
+            
+            // Return all sections for non-summary accounts
+            return sections;
+        }
 
         // Utility functions
         function formatCurrency(amount) {
@@ -301,12 +391,19 @@
         // Load available accounts
         async function loadAvailableAccounts() {
             try {
-                console.log('Loading available accounts...');
-                const accountsData = await fetchApiData('accounts');
+                console.log('Loading available accounts (summary only)...');
+                // Fetch accounts with "summary" filter
+                const response = await fetch('/api/accounts?search=summary');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const accountsData = await response.json();
                 
                 if (accountsData && accountsData.accounts) {
                     availableAccounts = accountsData.accounts;
-                    console.log('Available accounts:', availableAccounts);
+                    console.log('Available summary accounts:', availableAccounts);
                     
                     // Populate account selector
                     const accountSelector = document.getElementById('account-selector');
@@ -315,7 +412,25 @@
                     availableAccounts.forEach(acctno => {
                         const option = document.createElement('option');
                         option.value = acctno;
-                        option.textContent = `Account ${acctno}`;
+                        // Extract a cleaner display name
+                        let displayName = acctno;
+                        
+                        // Try to extract company name from NM- pattern
+                        const nmMatch = acctno.match(/NM-([^_]+)/);
+                        const rmMatch = acctno.match(/RM-([^_]+)/);
+                        const acctMatch = acctno.match(/ACCT-([^_]+)/);
+                        
+                        if (nmMatch) {
+                            const companyName = nmMatch[1].replace(/-/g, ' ');
+                            displayName = companyName;
+                            if (rmMatch) {
+                                displayName = `${rmMatch[1]} - ${companyName}`;
+                            } else if (acctMatch) {
+                                displayName = `${acctMatch[1]} - ${companyName}`;
+                            }
+                        }
+                        
+                        option.textContent = displayName;
                         accountSelector.appendChild(option);
                     });
                     
@@ -397,6 +512,9 @@
                 // Update UI with new data
                 updateDashboardWithAccountData();
                 
+                // Update horizontal tabs for related accounts
+                await createHorizontalTabs();
+                
             } catch (error) {
                 console.error('Error loading account data:', error);
                 showError(`Failed to load data for account ${acctno}: ${error.message}`);
@@ -425,14 +543,58 @@
                 businessPatternContainer.innerHTML = createBusinessPatternContent();
             }
             
-            // Update public-info section content
+            // Check if selected account is a summary account
+            const isSummaryAccount = selectedAccount && (
+                selectedAccount.includes('IND-Summary') || 
+                selectedAccount.includes('IND-summary') ||
+                selectedAccount.toLowerCase().includes('-summary')
+            );
+            
+            // Update public-info section content and visibility
+            const publicInfoSection = document.getElementById('public-info');
             const publicInfoContainer = document.getElementById('public-info-content');
-            if (publicInfoContainer) {
-                publicInfoContainer.innerHTML = createPublicInfoContent();
+            if (publicInfoSection) {
+                if (isSummaryAccount) {
+                    // Hide Google Search section for summary accounts
+                    publicInfoSection.style.display = 'none';
+                } else {
+                    // Show and populate Google Search section for non-summary accounts
+                    publicInfoSection.style.display = 'block';
+                    if (publicInfoContainer) {
+                        publicInfoContainer.innerHTML = createPublicInfoContent();
+                    }
+                }
             }
             
+            // Update high-cash section visibility
+            const highCashSection = document.getElementById('high-cash');
+            if (highCashSection) {
+                if (isSummaryAccount) {
+                    // Hide Network section for summary accounts
+                    highCashSection.style.display = 'none';
+                } else {
+                    // Show Network section for non-summary accounts
+                    highCashSection.style.display = 'block';
+                }
+            }
+            
+            // Update Transaction Usage Dictionary section visibility
+            const transUsageDictSection = document.getElementById('trans-usage-dict-section');
+            if (transUsageDictSection) {
+                if (isSummaryAccount) {
+                    // Hide Transaction Usage Dictionary for summary accounts
+                    transUsageDictSection.style.display = 'none';
+                } else {
+                    // Show Transaction Usage Dictionary for non-summary accounts
+                    transUsageDictSection.style.display = 'block';
+                }
+            }
+            
+            // Get filtered sections based on account type
+            const filteredSections = getFilteredSections();
+            
             // Create other sections
-            sections.forEach(section => {
+            filteredSections.forEach(section => {
                 if (section.id !== 'transactions' && section.id !== 'public-info' && section.id !== 'business-pattern') {
                     createSection(section.id);
                 }
@@ -459,8 +621,20 @@
             // Populate transaction usage detail content
             populateTransactionUsageDetail();
             
-            // Show business pattern as default
-            showSection('business-pattern');
+            // Show current section or default to business pattern
+            // Check if current section exists in filtered sections
+            const currentSectionExists = filteredSections.some(s => s.id === currentSection);
+            
+            // If current section is hidden (high-cash or public-info on summary accounts), switch to first available
+            const isCurrentSectionHidden = (currentSection === 'high-cash' || currentSection === 'public-info') && isSummaryAccount;
+            
+            if (currentSectionExists && !isCurrentSectionHidden) {
+                // Stay on current section without scrolling (preserve user's position)
+                showSection(currentSection, false);
+            } else {
+                // Fallback to first available section without scrolling
+                showSection(filteredSections[0]?.id || 'business-pattern', false);
+            }
             
             // Set up scroll sync
             setupScrollSync();
@@ -492,7 +666,8 @@
         // Create navigation
         function createNavigation() {
             const nav = document.getElementById('navigation');
-            nav.innerHTML = sections.map(section => `
+            const filteredSections = getFilteredSections();
+            nav.innerHTML = filteredSections.map(section => `
                 <button 
                     class="nav-item w-full flex items-center p-2 rounded-lg text-left transition-all group"
                     data-section="${section.id}"
@@ -513,11 +688,16 @@
         }
 
                  // Show section and scroll to it
-         function showSection(sectionId) {
+         function showSection(sectionId, shouldScroll = true) {
              currentSection = sectionId;
              
              // Update navigation
              document.querySelectorAll('.nav-item').forEach(item => {
+                 item.classList.toggle('active', item.dataset.section === sectionId);
+             });
+
+             // Update horizontal tabs
+             document.querySelectorAll('.horizontal-tab').forEach(item => {
                  item.classList.toggle('active', item.dataset.section === sectionId);
              });
 
@@ -546,10 +726,13 @@
                      }, 500);
                  }, 100);
                  
-                 targetSection.scrollIntoView({ 
-                     behavior: 'smooth', 
-                     block: 'start' 
-                 });
+                 // Only scroll if explicitly requested
+                 if (shouldScroll) {
+                     targetSection.scrollIntoView({ 
+                         behavior: 'smooth', 
+                         block: 'start' 
+                     });
+                 }
              }
              
              // Update progress
@@ -575,6 +758,7 @@
         function updateActiveNavigation() {
             const sections = document.querySelectorAll('.section-content');
             const navItems = document.querySelectorAll('.nav-item');
+            const horizontalTabs = document.querySelectorAll('.horizontal-tab');
             
                          let currentActiveSection = 'business-pattern';
             
@@ -592,6 +776,11 @@
             
             // Update navigation active state
             navItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.section === currentActiveSection);
+            });
+            
+            // Update horizontal tabs active state
+            horizontalTabs.forEach(item => {
                 item.classList.toggle('active', item.dataset.section === currentActiveSection);
             });
             
@@ -1635,6 +1824,15 @@
                         resetHighlighting();
                         
                     })
+                    .on('click', function(event, d) {
+                        console.log('Network graph node clicked:', d.label || d.id);
+                        
+                        // Show node details in modal
+                        showNodeDetails(d);
+                        
+                        // Prevent event bubbling
+                        event.stopPropagation();
+                    })
                     .each(function(d, i) {
                         // Set initial positions in a circle
                         const angle = (i / graphData.nodes.length) * 2 * Math.PI;
@@ -2038,44 +2236,44 @@
             
             let formattedText = text;
             
-            // Rule 0: Protect compound words by temporarily replacing them
-            const compoundWords = ['non-financial-account', 'self-employed', 'risk-based', 'pre-existing'];
-            const protectedWords = {};
+            // // Rule 0: Protect compound words by temporarily replacing them
+            // const compoundWords = ['non-financial-account', 'self-employed', 'risk-based', 'pre-existing'];
+            // const protectedWords = {};
             
-            compoundWords.forEach((word, index) => {
-                if (formattedText.includes(word)) {
-                    console.log(`Found compound word: ${word} in text`);
-                    const placeholder = `__PROTECTED_${index}__`;
-                    protectedWords[placeholder] = word;
-                    formattedText = formattedText.replace(new RegExp(word, 'g'), placeholder);
-                    console.log(`Replaced ${word} with ${placeholder}`);
-                }
-            });
+            // compoundWords.forEach((word, index) => {
+            //     if (formattedText.includes(word)) {
+            //         console.log(`Found compound word: ${word} in text`);
+            //         const placeholder = `__PROTECTED_${index}__`;
+            //         protectedWords[placeholder] = word;
+            //         formattedText = formattedText.replace(new RegExp(word, 'g'), placeholder);
+            //         console.log(`Replaced ${word} with ${placeholder}`);
+            //     }
+            // });
             
-            // Rule 1: Convert /n to line breaks
-            formattedText = formattedText.replace(/\/n/g, '<br/>');
+            // // Rule 1: Convert /n to line breaks
+            // formattedText = formattedText.replace(/\/n/g, '<br/>');
             
-            // Rule 2: Handle . **text** - convert to period + two line breaks + bold
-            // Only apply if there are spaces after the period and before the **
-            formattedText = formattedText.replace(/\.\s+\*\*([^*]+)\*\*/g, '.<br/><br/><strong>$1</strong>');
+            // // Rule 2: Handle . **text** - convert to period + two line breaks + bold
+            // // Only apply if there are spaces after the period and before the **
+            // formattedText = formattedText.replace(/\.\s+\*\*([^*]+)\*\*/g, '.<br/><br/><strong>$1</strong>');
             
-            // Rule 3: Convert remaining **text** to bold (for regular cases)
-            formattedText = formattedText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            // // Rule 3: Convert remaining **text** to bold (for regular cases)
+            // formattedText = formattedText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
             
-            // Rule 4: Convert "text - text:" pattern to "text<br/>text" (with line break)
-            // This handles cases like "hello - finance:" becoming "hello<br/>finance"
-            formattedText = formattedText.replace(/(\w+)\s*-\s*(\w+):/g, '$1<br/>$2');
+            // // Rule 4: Convert "text - text:" pattern to "text<br/>text" (with line break)
+            // // This handles cases like "hello - finance:" becoming "hello<br/>finance"
+            // formattedText = formattedText.replace(/(\w+)\s*-\s*(\w+):/g, '$1<br/>$2');
             
-            // Rule 5: Restore protected compound words
-            Object.keys(protectedWords).forEach(placeholder => {
-                console.log(`Restoring ${placeholder} back to ${protectedWords[placeholder]}`);
-                formattedText = formattedText.replace(new RegExp(placeholder, 'g'), protectedWords[placeholder]);
-            });
+            // // Rule 5: Restore protected compound words
+            // Object.keys(protectedWords).forEach(placeholder => {
+            //     console.log(`Restoring ${placeholder} back to ${protectedWords[placeholder]}`);
+            //     formattedText = formattedText.replace(new RegExp(placeholder, 'g'), protectedWords[placeholder]);
+            // });
             
-            // Final debug
-            if (text.includes('non-financial-account')) {
-                console.log('FINAL RESULT:', formattedText.substring(formattedText.indexOf('non') - 20, formattedText.indexOf('non') + 50));
-            }
+            // // Final debug
+            // if (text.includes('non-financial-account')) {
+            //     console.log('FINAL RESULT:', formattedText.substring(formattedText.indexOf('non') - 20, formattedText.indexOf('non') + 50));
+            // }
             
             return formattedText;
         }
@@ -2700,8 +2898,9 @@
 
         // Update progress bar
         function updateProgress() {
-            const currentIndex = sections.findIndex(s => s.id === currentSection);
-            const progress = ((currentIndex + 1) / sections.length) * 100;
+            const filteredSections = getFilteredSections();
+            const currentIndex = filteredSections.findIndex(s => s.id === currentSection);
+            const progress = ((currentIndex + 1) / filteredSections.length) * 100;
             document.getElementById('progress-indicator').style.width = `${progress}%`;
         }
 
@@ -2783,7 +2982,7 @@
                 </div>
                 
                                  <!-- Transaction Usage Dictionary Table -->
-                <div class="mt-4">
+                <div class="mt-4" id="trans-usage-dict-section">
                     <div class="bg-white rounded-xl shadow-sm p-4">
                         <h3 class="text-lg font-semibold text-gray-900 mb-3">Transaction Usage Dictionary</h3>
                         <div id="trans-usage-dict-table" class="overflow-x-auto">
@@ -2976,6 +3175,9 @@
                 
                 // Create basic UI structure
                 createNavigation();
+                
+                // Create horizontal tabs
+                await createHorizontalTabs();
                 
                 // Initialize features
                 initEventListeners();
@@ -3544,7 +3746,7 @@
         }
 
         // Function to show node details (works for all graph types)
-        function showNodeDetails(d) {
+        async function showNodeDetails(d) {
             console.log('Showing node details for:', d);
             
             // Extract node data based on format (tree vs graph)
@@ -3553,15 +3755,147 @@
             const nodeLabel = nodeData.label || nodeId;
             const nodeColor = nodeData.color || '#666';
             
-            // Log detailed information
-            console.log(`Node Details:
-                ID: ${nodeId}
-                Label: ${nodeLabel}
-                Color: ${nodeColor}
-                Type: ${d.data ? 'Tree Node' : 'Graph Node'}`);
+            // Show the modal
+            const modal = document.getElementById('node-detail-modal');
+            const content = document.getElementById('node-detail-content');
             
-            // You can extend this to show a modal, tooltip, or side panel
-            // For now, we'll just highlight the node and its connections
+            modal.classList.remove('hidden');
+            
+            // Show loading state
+            content.innerHTML = `
+                <div class="text-center py-8">
+                    <i data-lucide="loader" class="w-8 h-8 mx-auto mb-2 animate-spin text-gray-400"></i>
+                    <p class="text-gray-500">Loading node details...</p>
+                </div>
+            `;
+            createIcons();
+            
+            try {
+                // Build the details HTML
+                let detailsHTML = `
+                    <div class="space-y-4">
+                        <!-- Basic Info Card -->
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                            <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                <i data-lucide="user-circle" class="w-5 h-5 mr-2 text-blue-600"></i>
+                                Basic Information
+                            </h4>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <p class="text-xs text-gray-600 mb-1">Node ID</p>
+                                    <p class="font-mono text-sm font-semibold text-gray-900">${nodeId}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-600 mb-1">Label</p>
+                                    <p class="text-sm font-semibold text-gray-900">${nodeLabel}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-600 mb-1">Color</p>
+                                    <div class="flex items-center">
+                                        <div class="w-6 h-6 rounded border border-gray-300 mr-2" style="background-color: ${nodeColor}"></div>
+                                        <p class="text-sm font-mono text-gray-700">${nodeColor}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-600 mb-1">Type</p>
+                                    <p class="text-sm text-gray-900">${d.data ? 'Tree Node' : 'Graph Node'}</p>
+                                </div>
+                            </div>
+                        </div>
+                `;
+                
+                // Add all custom properties from the node data
+                const standardProps = ['id', 'label', 'color', 'x', 'y', 'vx', 'vy', 'fx', 'fy', 'index', 'data', 'children', 'isRoot'];
+                const customProps = Object.keys(nodeData).filter(key => !standardProps.includes(key));
+                
+                if (customProps.length > 0) {
+                    detailsHTML += `
+                        <div class="bg-white rounded-lg p-4 border border-gray-200">
+                            <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                <i data-lucide="list" class="w-5 h-5 mr-2 text-gray-600"></i>
+                                Additional Properties
+                            </h4>
+                            <div class="space-y-2">
+                    `;
+                    
+                    customProps.forEach(prop => {
+                        const value = nodeData[prop];
+                        let formattedValue = value;
+                        
+                        if (typeof value === 'object' && value !== null) {
+                            formattedValue = JSON.stringify(value, null, 2);
+                        }
+                        
+                        detailsHTML += `
+                            <div class="flex justify-between items-start py-2 border-b border-gray-100 last:border-0">
+                                <span class="text-sm font-medium text-gray-600">${prop.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</span>
+                                <span class="text-sm text-gray-900 font-mono ml-4 text-right">${formattedValue}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    detailsHTML += `
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Try to fetch additional details from API if nodeId looks like an account number
+                if (String(nodeId).length >= 10) {
+                    try {
+                        const customerInfoResponse = await fetchApiData('customer-info', nodeId);
+                        
+                        if (customerInfoResponse && Object.keys(customerInfoResponse).length > 0) {
+                            detailsHTML += `
+                                <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                                    <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                        <i data-lucide="database" class="w-5 h-5 mr-2 text-green-600"></i>
+                                        Customer Information
+                                    </h4>
+                                    <div class="space-y-2">
+                            `;
+                            
+                            Object.entries(customerInfoResponse).forEach(([key, value]) => {
+                                if (value !== null && value !== undefined && value !== '') {
+                                    detailsHTML += `
+                                        <div class="flex justify-between items-start py-2 border-b border-green-100 last:border-0">
+                                            <span class="text-sm font-medium text-gray-600">${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</span>
+                                            <span class="text-sm text-gray-900 ml-4 text-right">${value}</span>
+                                        </div>
+                                    `;
+                                }
+                            });
+                            
+                            detailsHTML += `
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    } catch (error) {
+                        console.log('Could not fetch customer info for node:', nodeId, error);
+                    }
+                }
+                
+                detailsHTML += `
+                    </div>
+                `;
+                
+                content.innerHTML = detailsHTML;
+                createIcons();
+                
+            } catch (error) {
+                console.error('Error showing node details:', error);
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <i data-lucide="alert-circle" class="w-8 h-8 mx-auto mb-2 text-red-400"></i>
+                        <p class="text-gray-700 font-semibold">Error loading node details</p>
+                        <p class="text-sm text-gray-500 mt-2">${error.message}</p>
+                    </div>
+                `;
+                createIcons();
+            }
+            
+            // Also highlight the node and its connections
             highlightNodeConnections(d);
         }
 
@@ -3967,23 +4301,40 @@
         // Download HTML file with embedded CSS
         async function downloadHTML() {
             if (!selectedAccount) {
-                alert('Please select an account first');
+                alert('Please select an account first before downloading.');
                 return;
             }
             
             try {
-                // Fetch the CSS content
-                const cssResponse = await fetch('./static/css/output.css');
-                const cssContent = await cssResponse.text();
-                
                 // Get the current HTML content
                 let htmlContent = document.documentElement.outerHTML;
                 
-                // Replace the external CSS link with embedded CSS
-                htmlContent = htmlContent.replace(
-                    /<link href="\.\/static\/css\/output\.css" rel="stylesheet">/g,
-                    `<style>${cssContent}</style>`
-                );
+                // Try to fetch the CSS content, but don't fail if it's not available
+                let cssContent = '';
+                try {
+                    const cssResponse = await fetch('./static/css/output.css');
+                    if (cssResponse.ok) {
+                        cssContent = await cssResponse.text();
+                    } else {
+                        console.warn('CSS file not found, proceeding without embedded CSS');
+                    }
+                } catch (cssError) {
+                    console.warn('Could not fetch CSS file, proceeding without embedded CSS:', cssError);
+                }
+                
+                // Replace the external CSS link with embedded CSS if available
+                if (cssContent) {
+                    htmlContent = htmlContent.replace(
+                        /<link href="\.\/static\/css\/output\.css" rel="stylesheet">/g,
+                        `<style>${cssContent}</style>`
+                    );
+                } else {
+                    // If CSS fetch failed, remove the link but keep the Tailwind CDN fallback
+                    htmlContent = htmlContent.replace(
+                        /<link href="\.\/static\/css\/output\.css" rel="stylesheet">/g,
+                        ''
+                    );
+                }
                 
                 // Remove Google Fonts dependencies for offline use
                 htmlContent = htmlContent.replace(
@@ -4008,12 +4359,27 @@
                     </style>
                 `;
                 
-                // Insert the font override CSS after the main CSS
-                htmlContent = htmlContent.replace(
-                    /<\/style>/,
-                    `</style>${fontOverrideCSS}`
-                );
+                // Insert the font override CSS after the main CSS or before </head>
+                if (htmlContent.includes('</style>')) {
+                    htmlContent = htmlContent.replace(
+                        /<\/style>/,
+                        `</style>${fontOverrideCSS}`
+                    );
+                } else {
+                    htmlContent = htmlContent.replace(
+                        /<\/head>/,
+                        `${fontOverrideCSS}</head>`
+                    );
+                }
                 
+                // Inject offline snapshot flag so the saved file skips live init
+                const offlineFlagScript = [
+                    '<script>',
+                    '    window.IS_OFFLINE_SNAPSHOT = true;',
+                    '</' + 'script>'
+                ].join('\n');
+                htmlContent = htmlContent.replace('</head>', `${offlineFlagScript}\n</head>`);
+
                 // Create a blob with the HTML content
                 const blob = new Blob([htmlContent], { type: 'text/html' });
                 const url = URL.createObjectURL(blob);
@@ -4021,15 +4387,18 @@
                 // Create a download link
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `risk-analysis-${selectedAccount}-${new Date().toISOString().split('T')[0]}.html`;
+                const sanitizedAccount = selectedAccount.replace(/[^a-zA-Z0-9-_]/g, '_');
+                a.download = `risk-analysis-${sanitizedAccount}-${new Date().toISOString().split('T')[0]}.html`;
+                document.body.appendChild(a);
                 a.click();
+                document.body.removeChild(a);
                 
                 // Clean up
                 URL.revokeObjectURL(url);
                 
             } catch (error) {
                 console.error('Error downloading HTML:', error);
-                alert('Error downloading HTML file. Please try again.');
+                alert(`Error downloading HTML file: ${error.message}\n\nPlease try again or check the browser console for more details.`);
             }
         }
 
@@ -4046,6 +4415,8 @@
                     selectedAccount = null;
                     // Update account status
                     updateAccountStatus();
+                    // Update horizontal tabs
+                    await createHorizontalTabs();
                     // Clear content containers
                     document.querySelectorAll('.section-content').forEach(section => {
                         const contentContainer = section.querySelector('[id$="-content"]');
@@ -4214,36 +4585,235 @@
 
         // Modal event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            // Close modal when clicking the X button
-            const closeBtn = document.getElementById('close-transaction-detail-modal');
-            const modal = document.getElementById('transaction-detail-modal');
+            // Transaction detail modal
+            const transCloseBtn = document.getElementById('close-transaction-detail-modal');
+            const transModal = document.getElementById('transaction-detail-modal');
             
-            if (closeBtn) {
-                closeBtn.addEventListener('click', function() {
-                    modal.classList.add('hidden');
+            if (transCloseBtn) {
+                transCloseBtn.addEventListener('click', function() {
+                    transModal.classList.add('hidden');
                 });
             }
             
-            // Close modal when clicking outside the modal content
-            if (modal) {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === modal) {
-                        modal.classList.add('hidden');
+            if (transModal) {
+                transModal.addEventListener('click', function(e) {
+                    if (e.target === transModal) {
+                        transModal.classList.add('hidden');
                     }
                 });
             }
             
-            // Close modal with Escape key
+            // Node detail modal
+            const nodeCloseBtn = document.getElementById('close-node-detail-modal');
+            const nodeModal = document.getElementById('node-detail-modal');
+            
+            if (nodeCloseBtn) {
+                nodeCloseBtn.addEventListener('click', function() {
+                    nodeModal.classList.add('hidden');
+                });
+            }
+            
+            if (nodeModal) {
+                nodeModal.addEventListener('click', function(e) {
+                    if (e.target === nodeModal) {
+                        nodeModal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Close modals with Escape key
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                    modal.classList.add('hidden');
+                if (e.key === 'Escape') {
+                    if (transModal && !transModal.classList.contains('hidden')) {
+                        transModal.classList.add('hidden');
+                    }
+                    if (nodeModal && !nodeModal.classList.contains('hidden')) {
+                        nodeModal.classList.add('hidden');
+                    }
                 }
             });
         });
 
-        // Initialize the dashboard when page loads
-        document.addEventListener('DOMContentLoaded', initDashboard);
+        // Initialize the dashboard when page loads (skip in offline snapshot mode)
+        if (!isOfflineSnapshot) {
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        }
+
+        // Create horizontal tabs navigation
+        async function createHorizontalTabs() {
+            const tabContainer = document.getElementById('horizontal-tab-container');
+            
+            // Get current selected account and URL param for active tab
+            const currentAccount = selectedAccount || '';
+            const urlParams = new URLSearchParams(window.location.search);
+            const accountFromUrl = urlParams.get('account') || '';
+            const activeAccount = accountFromUrl || currentAccount;
+            
+            if (!currentAccount && !accountFromUrl) {
+                // If no account selected, show placeholder
+                tabContainer.innerHTML = `
+                    <div class="text-xs text-gray-500 italic px-2">
+                        Select an account to view related analysis
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                console.log('Creating horizontal tabs for account:', currentAccount);
+
+                // Extract search string in format "RM-xxxx_NM-xxxx" or "ACCT-xxxx_NM-xxxx" from selected account
+                let searchString = '';
+                
+                // Check if account matches pattern with RM- and NM-
+                const rmMatch = currentAccount.match(/RM-[^_]+/);
+                const nmMatch = currentAccount.match(/NM-[^_]+/);
+                const acctMatch = currentAccount.match(/ACCT-[^_]+/);
+                
+
+                if (rmMatch && nmMatch) {
+                    searchString = `${rmMatch[0]}_${nmMatch[0]}`;
+                } else if (acctMatch && nmMatch) {
+                    searchString = `${acctMatch[0]}_${nmMatch[0]}`;
+                } else if (rmMatch) {
+                    searchString = rmMatch[0];
+                } else if (acctMatch) {
+                    searchString = acctMatch[0];
+                } else {
+                    // Fallback to using the account as-is
+                    searchString = currentAccount.split('_')[0];
+                }
+                
+                console.log(`Searching for accounts with: ${searchString}`);
+                
+                // Fetch related accounts from API
+                const response = await fetch(`/api/accounts?search=${encodeURIComponent(searchString)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                let accounts = data.accounts || [];
+                
+                console.log(`Found ${accounts.length} related accounts:`, accounts);
+                
+                if (accounts.length === 0) {
+                    tabContainer.innerHTML = `
+                        <div class="text-xs text-gray-500 italic px-2">
+                            No related analysis found
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort accounts: Summary first, then others
+                accounts.sort((a, b) => {
+                    const aIsSummary = a.includes('Summary') || a.includes('summary');
+                    const bIsSummary = b.includes('Summary') || b.includes('summary');
+                    
+                    if (aIsSummary && !bIsSummary) return -1;
+                    if (!aIsSummary && bIsSummary) return 1;
+                    return 0; // Keep original order for non-summary items
+                });
+                
+                console.log('Sorted accounts (Summary first):', accounts);
+                
+                // Create tabs for each account
+                const tabsHTML = accounts.map(acct => {
+                    const isActive = acct === activeAccount;
+                    
+                    // Extract display name - prioritize IND- part
+                    let displayName = acct;
+                    
+                    // Try to extract industry from IND- prefix
+                    const indMatch = acct.match(/IND-([^_\.]+)/);
+                    if (indMatch) {
+                        // Extract and clean up the industry name
+                        displayName = indMatch[1]
+                            .replace(/-/g, ' ')
+                            .replace(/_/g, ' ')
+                            .split(' ')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                            .join(' ');
+                    } else if (acct.includes('Summary') || acct.includes('summary')) {
+                        displayName = 'Summary';
+                    } else {
+                        // Use last part after underscore
+                        const parts = acct.split('_');
+                        displayName = parts[parts.length - 1].replace(/-/g, ' ');
+                    }
+                    
+                    // Limit display name length
+                    if (displayName.length > 25) {
+                        displayName = displayName.substring(0, 22) + '...';
+                    }
+                    
+                    return `
+                        <button 
+                            class="horizontal-tab ${isActive ? 'active' : ''}"
+                            onclick="loadAccountFromTab('${acct.replace(/'/g, "\\'")}')"
+                            title="${acct}"
+                        >
+                            <i data-lucide="file-text" class="tab-icon"></i>
+                            <span>${displayName}</span>
+                        </button>
+                    `;
+                }).join('');
+                
+                tabContainer.innerHTML = tabsHTML;
+                createIcons();
+                
+            } catch (error) {
+                console.error('Error creating horizontal tabs:', error);
+                tabContainer.innerHTML = `
+                    <div class="text-xs text-gray-500 italic px-2">
+                        Error loading related accounts
+                    </div>
+                `;
+            }
+        }
+        
+        // Load account data when clicking a horizontal tab
+        async function loadAccountFromTab(acctno) {
+            if (!acctno) return;
+            
+            console.log(`Loading account from tab: ${acctno}`);
+            
+            // Update the dropdown selector
+            const accountSelector = document.getElementById('account-selector');
+            accountSelector.value = acctno;
+            
+            // Load the account data
+            await loadAccountData(acctno);
+            
+            // Recreate horizontal tabs to update active state
+            await createHorizontalTabs();
+        }
     </script>
+
+    <!-- Node Details Modal -->
+    <div id="node-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i data-lucide="info" class="w-5 h-5 mr-2 text-blue-600"></i>
+                    Node Details
+                </h3>
+                <button id="close-node-detail-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)] modal-scrollbar">
+                <div id="node-detail-content">
+                    <div class="text-center py-8">
+                        <i data-lucide="loader" class="w-8 h-8 mx-auto mb-2 animate-spin text-gray-400"></i>
+                        <p class="text-gray-500">Loading node details...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Transaction Usage Detail Popup Modal -->
     <div id="transaction-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
